@@ -29,7 +29,7 @@ const MobileNavbar = ({
 
     return (
         <div
-            className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? 'max-h-[82vh] opacity-100 border-t border-white/10' : 'max-h-0 opacity-0'}`}
+            className={`xl:hidden transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? 'max-h-[82vh] opacity-100 border-t border-white/10' : 'max-h-0 opacity-0'}`}
         >
             <div className="flex flex-col p-4 sm:p-5 gap-1.5 max-h-[80vh] overflow-y-auto">
                     <Link onClick={closeMenu} to={getLink('/')} className={`${linkBaseClass} ${isActive('/') ? activeClass : inactiveClass}`}>
@@ -85,6 +85,10 @@ const MobileNavbar = ({
 
                     <Link onClick={closeMenu} to={getLink('/careers')} className={`${linkBaseClass} ${isActive('/careers') ? activeClass : inactiveClass}`}>
                         Careers
+                    </Link>
+
+                    <Link onClick={closeMenu} to={getLink('/blog')} className={`${linkBaseClass} ${isActive('/blog') ? activeClass : inactiveClass}`}>
+                        Blog
                     </Link>
 
                     <div className="pt-2" onClick={(e) => { closeMenu(); handleContactClick(e); }}>
