@@ -62,10 +62,4 @@ app.post("/chat", async (req, res) => {
 // ─── Start ────────────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
     console.log(`\n[SERVER] MANO RAG API running at http://localhost:${PORT}`);
-    console.log(`[SERVER] Routes:`);
-    console.log(`         GET  /health`);
-    console.log(`         POST /chat`);
-    console.log(`\n[CONFIG] GROQ_MODEL   = ${process.env.GROQ_MODEL || "llama-3.3-70b-versatile (default)"}`);
-    console.log(`[CONFIG] GROQ_API_KEY = ${process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.substring(0, 10) + "..." : "NOT SET"}`);
-    console.log(`[CONFIG] CHROMA_URL   = ${process.env.CHROMA_URL || "http://localhost:8000 (default)"}\n`);
 });
