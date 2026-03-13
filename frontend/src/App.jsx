@@ -21,6 +21,8 @@ import Projects from "./pages/Projects"
 import Careers from "./pages/Careers"
 import ContractManagement from './pages/Services/ContractManagement';
 import EPC from './pages/Services/EPC';
+import BlogPage from "./pages/Blog";
+import BlogDetail from "./pages/Blog/BlogDetail";
 
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
@@ -63,6 +65,8 @@ function App() {
           <Route path="services/project-planning" element={<ProjectPlanning />} />
           <Route path="projects" element={<Projects />} />
           <Route path="careers" element={<Careers />} />
+          <Route path="blog" element={<BlogPage />} />
+          <Route path="blog/:id" element={<BlogDetail />} />
         </Route>
 
         {/* Catch-all redirect to Gateway */}

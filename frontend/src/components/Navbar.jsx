@@ -116,7 +116,7 @@ const Navbar = () => {
                     </Link>
 
                     {/* Desktop Navigation Links */}
-                    <div className="hidden lg:flex items-center gap-10 xl:gap-14">
+                    <div className="hidden xl:flex items-center gap-10 xl:gap-14">
                         <Link to={getLink('/')} className={`${linkBaseClass} ${isActive('/') ? activeClass : inactiveClass}`}>
                             Home
                         </Link>
@@ -143,11 +143,14 @@ const Navbar = () => {
                         <Link to={getLink('/careers')} className={`${linkBaseClass} ${isActive('/careers') ? activeClass : inactiveClass}`}>
                             Careers
                         </Link>
+                        <Link to={getLink('/blog')} className={`${linkBaseClass} ${isActive('/blog') ? activeClass : inactiveClass}`}>
+                            Blog
+                        </Link>
                     </div>
 
                     {/* Right Side: CTA Button and Mobile Menu Toggle */}
                     <div className="flex items-center gap-4">
-                        <div className="hidden lg:block">
+                        <div className="hidden xl:block">
                             <div onClick={handleContactClick} className="cursor-pointer">
                                 <RainbowButton borderRadius="rounded-xl">
                                     {isCareersPage ? 'Apply' : 'Get in Touch'}
@@ -158,7 +161,7 @@ const Navbar = () => {
 
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="lg:hidden p-2.5 text-white hover:bg-white/10 rounded-lg transition-colors"
+                            className="xl:hidden p-2.5 text-white hover:bg-white/10 rounded-lg transition-colors"
                             aria-label={isMobileMenuOpen ? 'Close mobile menu' : 'Open mobile menu'}
                             aria-expanded={isMobileMenuOpen}
                         >
@@ -180,7 +183,7 @@ const Navbar = () => {
 
                 {/* Desktop Expanding Mega Menu Section (Existing) */}
                 <div
-                    className={`hidden lg:block w-full transition-all duration-300 ease-out ${isServicesOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}
+                    className={`hidden xl:block w-full transition-all duration-300 ease-out ${isServicesOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}
                 >
                     <div className="px-12 pb-8 pt-2 flex gap-12 border-t border-white/10 mt-2 mx-8">
                         <div className="w-1/3 flex flex-col justify-between pt-4">
