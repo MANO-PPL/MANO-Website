@@ -146,7 +146,7 @@ export default function LandingHero() {
                                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                                 className="absolute top-10 right-10 w-[60%] h-[70%] rounded-[2rem] overflow-hidden border border-white/5 opacity-50 z-0 grayscale"
                             >
-                                <img src={BACKGROUND_IMAGES[2]} alt="Detail" className="w-full h-full object-cover" />
+                                <img src={BACKGROUND_IMAGES[2]} alt="MANO Construction Project Detail" className="w-full h-full object-cover" />
                             </motion.div>
 
                             {/* Middle Layer - Architects */}
@@ -155,7 +155,7 @@ export default function LandingHero() {
                                 transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                                 className="absolute bottom-20 left-10 w-[55%] h-[45%] rounded-[2rem] overflow-hidden border border-white/10 shadow-xl z-10"
                             >
-                                <img src={BACKGROUND_IMAGES[1]} alt="Architects" className="w-full h-full object-cover" />
+                                <img src={BACKGROUND_IMAGES[1]} alt="MANO Project Management Team" className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 bg-blue-500/20 mix-blend-overlay" />
                             </motion.div>
 
