@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { blogPosts, CategoryBadge } from "./BlogPage";
 import ContactModal from "../../components/ContactModal";
-import RainbowButton from "../../components/RainbowButton";
+import SEO from "../../components/common/SEO";
 import useDeviceType from "../../hooks/useDeviceType";
 
 // ─── Full Blog Content ─────────────────────────────────────────────────────────
@@ -635,6 +635,18 @@ export default function BlogDetail() {
 
   return (
     <div className="min-h-screen bg-blue-pattern text-white overflow-x-hidden font-sans selection:bg-blue-500/30">
+      <SEO 
+        title={post.title} 
+        description={post.summary} 
+        ogType="article"
+        ogImage={post.image}
+        keywords={`${post.tags.join(', ')}, MANO blog, construction insights`}
+        breadcrumbData={[
+            { name: 'Home', item: 'https://mano.co.in/' },
+            { name: 'Blog', item: 'https://mano.co.in/blog' },
+            { name: post.title, item: `https://mano.co.in/blog/${id}` }
+        ]}
+      />
 
       {/* ── HERO IMAGE ─────────────────────────────────────────────── */}
       <div className="relative w-full overflow-hidden" style={{ height: isMobileOrTablet ? "55vw" : "50vh", maxHeight: "520px", minHeight: "220px" }}>
