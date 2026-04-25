@@ -243,27 +243,26 @@ const AboutUsMobile = () => {
                         </h2>
 
                         <h2 className="mt-10 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-4">CORE VALUES</h2>
-                        <div className="grid grid-cols-2 gap-3 w-full max-w-6xl mx-auto">
+                        <div className="grid grid-cols-1 gap-3 w-full max-w-6xl mx-auto">
                             {[
-                                { name: 'Discipline', icon: Target },
-                                { name: 'Punctuality', icon: Clock },
-                                { name: 'Accountability', icon: CheckCircle },
-                                { name: 'Integrity', icon: Shield },
-                                { name: 'Collaboration', icon: Users },
-                                { name: 'Responsibility', icon: UserCheck },
-                                { name: 'Feedback', icon: MessageSquare },
-                                { name: 'Innovation', icon: Lightbulb }
+                                { name: 'Stakeholder Focus', desc: 'We are committed to fostering strong values, ethical practices, and a clear vision that balances the interests of all stakeholders.', icon: Target },
+                                { name: 'Sustainability', desc: 'We actively promote social responsibility by contributing toward a pollution-free and sustainable environment.', icon: Leaf },
+                                { name: 'Integrity & Transparency', desc: 'Integrity is at the core of our character—guided by strong business ethics, transparency, and clearly defined standards of professional conduct.', icon: ShieldCheck },
+                                { name: 'Collective Ownership', desc: 'We believe in collective ownership, encouraging accountability, collaboration, and shared responsibility across all assigned projects.', icon: Users }
                             ].map((item, index) => (
                                 <div
                                     key={item.name}
-                                    className="group relative p-4 rounded-xl border border-white/10 backdrop-blur-xl bg-gradient-to-r from-transparent to-white/5 hover:to-blue-600/10 hover:border-blue-500/30 transition-all duration-300 flex flex-col items-center justify-center gap-2 shadow-lg overflow-hidden animated-white-border"
+                                    className="group relative p-4 rounded-xl border border-white/10 backdrop-blur-xl bg-gradient-to-r from-transparent to-white/5 hover:to-blue-600/10 hover:border-blue-500/30 transition-all duration-300 flex flex-col items-start gap-2 shadow-lg overflow-hidden animated-white-border text-left"
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                                     <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:scale-110 group-hover:border-blue-500/50 group-hover:bg-blue-600/20 transition-all duration-300 relative z-10">
                                         <item.icon className="w-5 h-5 text-gray-400 group-hover:text-blue-400 transition-colors" />
                                     </div>
-                                    <h3 className="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors relative z-10 text-center">{item.name}</h3>
+                                    <div className="relative z-10">
+                                        <h3 className="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors">{item.name}</h3>
+                                        <p className="text-gray-400 text-xs leading-relaxed font-light mt-1">{item.desc}</p>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -290,30 +289,19 @@ const AboutUsMobile = () => {
                                 <div className="flex-1 pt-1">
                                     <h3 className="text-xl font-bold mb-3 text-white">Vision</h3>
                                     <ul className="space-y-2">
-                                        <li className="flex gap-4 items-start group/item">
-                                            <div className="mt-1 w-5 h-5 rounded-full bg-blue-900/50 flex items-center justify-center border border-blue-500/50 group-hover/item:bg-blue-600 group-hover/item:border-blue-600 transition-colors">
-                                                <CheckCircle className="w-3 h-3 text-white" />
-                                            </div>
-                                            <span className="text-gray-300 text-sm leading-relaxed">
-                                                To be the major part of real estate sector with self-owned Real Estate projects & Industrial projects.
-                                            </span>
-                                        </li>
-                                        <li className="flex gap-4 items-start group/item">
-                                            <div className="mt-1 w-5 h-5 rounded-full bg-blue-900/50 flex items-center justify-center border border-blue-500/50 group-hover/item:bg-blue-600 group-hover/item:border-blue-600 transition-colors">
-                                                <CheckCircle className="w-3 h-3 text-white" />
-                                            </div>
-                                            <span className="text-gray-300 text-sm leading-relaxed">
-                                                To be known for its excellent, competent engineers who establish client trust by completing challenging tasks within time.
-                                            </span>
-                                        </li>
-                                        <li className="flex gap-4 items-start group/item">
-                                            <div className="mt-1 w-5 h-5 rounded-full bg-blue-900/50 flex items-center justify-center border border-blue-500/50 group-hover/item:bg-blue-600 group-hover/item:border-blue-600 transition-colors">
-                                                <CheckCircle className="w-3 h-3 text-white" />
-                                            </div>
-                                            <span className="text-gray-300 text-sm leading-relaxed">
-                                                Target of our company is to cover 6 Million Sq.ft. of construction work by 2025-26 FY & Turnover shall be 50 CR.
-                                            </span>
-                                        </li>
+                                        {[
+                                            "To become a significant force in the real estate sector through the development of self-owned real estate and industrial projects.",
+                                            "To be recognized for excellence through a team of highly competent engineers who earn client trust by delivering complex projects within timelines.",
+                                            "To position MANO as a trusted partner that contributes to the prosperity and diligence of associated organizations.",
+                                            "To achieve a milestone of 6 million sq. ft. of construction by FY 2025–26, with a projected turnover of ₹50 crore."
+                                        ].map((item, i) => (
+                                            <li key={i} className="flex gap-4 items-start group/item">
+                                                <div className="mt-1 w-5 h-5 rounded-full bg-blue-900/50 flex items-center justify-center border border-blue-500/50 group-hover/item:bg-blue-600 group-hover/item:border-blue-600 transition-colors">
+                                                    <CheckCircle className="w-3 h-3 text-white" />
+                                                </div>
+                                                <span className="text-gray-300 text-sm leading-relaxed">{item}</span>
+                                            </li>
+                                        ))}
                                     </ul>
                                 </div>
                             </div>
@@ -333,11 +321,11 @@ const AboutUsMobile = () => {
                                     <h3 className="text-xl font-bold mb-3 text-white">Mission</h3>
                                     <ul className="space-y-2">
                                         {[
-                                            "Develop lasting client relationship by providing exceptional stakeholder value in an environment of trust and respect.",
-                                            "Develop values, ethics, vision and expectations that balance the needs of all the stakeholders.",
-                                            "Utilization of new creation via youngsters & Tier 2/3 cities.",
-                                            "Social Responsibility / Pollution free Planet.",
-                                            "Collective ownership of the assigned project."
+                                            "To ensure timely and reliable payments to all staff, subcontractors, and suppliers, enabling seamless project execution.",
+                                            "To drive innovation by leveraging the creativity and potential of young talent.",
+                                            "To empower and upskill newcomers through training in emerging technologies, ensuring productive and future-ready outcomes.",
+                                            "To strictly adhere to Standard Operating Procedures (SOPs) to enhance efficiency and accelerate progress toward our goals.",
+                                            "To build long-lasting client relationships by delivering exceptional stakeholder value in an environment rooted in trust and mutual respect."
                                         ].map((item, i) => (
                                             <li key={i} className="flex gap-4 items-start group/item">
                                                 <div className="mt-1 w-5 h-5 rounded-full bg-blue-900/50 flex items-center justify-center border border-blue-500/50 group-hover/item:bg-blue-600 group-hover/item:border-blue-600 transition-colors">
