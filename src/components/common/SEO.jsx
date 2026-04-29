@@ -13,9 +13,9 @@ const SEO = ({
     breadcrumbData = null,
     navigationData = null
 }) => {
-    const siteName = 'MANO';
+    const siteName = 'MANO Projects Private Limited';
     const fullTitle = title ? `${title} | ${siteName}` : siteName;
-    const siteUrl = 'https://mano.co.in';
+    const siteUrl = 'https://www.mano.co.in';
     const fullUrl = canonical ? `${siteUrl}${canonical}` : siteUrl;
 
     // Default Breadcrumb Schema

@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { CLIENTS } from "../../data/clients";
 import ContactModal from "../ContactModal";
+import { useCompany } from "../../context/CompanyContext";
 
 
 const BACKGROUND_IMAGES = [
@@ -28,6 +29,7 @@ const StatItem = ({ value, label }) => (
 export default function LandingHero() {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isContactOpen, setIsContactOpen] = useState(false);
+    const { isEPC } = useCompany();
 
     // Rotate images every 1.2 seconds for fast dynamic feel
     useEffect(() => {
@@ -39,6 +41,12 @@ export default function LandingHero() {
 
     return (
         <div className="relative w-full text-white overflow-hidden font-sans">
+            {/* SEO-only H1 — visually hidden but crawlable by Google */}
+            <h1 className="sr-only">
+                {isEPC
+                    ? "Engineering Procurement and Construction (EPC) Services | MANO Projects Private Limited"
+                    : "Project Management Consultancy (PMC) Services | MANO Projects Private Limited"}
+            </h1>
             {/* 
         SCOPED ANIMATIONS 
       */}

@@ -10,7 +10,7 @@ export default function LandingPage() {
     const deviceType = useDeviceType();
     const { isEPC } = useCompany();
 
-    const title = isEPC ? "EPC Division - Engineering, Procurement, Construction" : "PMC Division - Project Management Consultancy";
+    const title = isEPC ? "MANO EPC Services | Engineering Procurement Construction India" : "MANO PMC Services | Project Management Consultancy India";
     const description = isEPC 
         ? "MANO EPC (PCPL) specializes in providing end-to-end Engineering, Procurement, and Construction solutions for industrial and infrastructure projects."
         : "MANO PMC (PPL) offers world-class Project Management Consultancy, Cost Consultancy, and Auditing services to ensure project success.";
