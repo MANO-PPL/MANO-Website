@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { CLIENTS } from "../../data/clients";
 import ContactModal from "../ContactModal";
+import { useCompany } from "../../context/CompanyContext";
 
 
 const BACKGROUND_IMAGES = [
@@ -28,6 +29,7 @@ const StatItem = ({ value, label }) => (
 export default function LandingHero() {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isContactOpen, setIsContactOpen] = useState(false);
+    const { isEPC } = useCompany();
 
     // Rotate images every 1.2 seconds for fast dynamic feel
     useEffect(() => {
@@ -39,6 +41,12 @@ export default function LandingHero() {
 
     return (
         <div className="relative w-full text-white overflow-hidden font-sans">
+            {/* SEO-only H1 — visually hidden but crawlable by Google */}
+            <h1 className="sr-only">
+                {isEPC
+                    ? "Engineering Procurement and Construction (EPC) Services | MANO Projects Private Limited"
+                    : "Project Management Consultancy (PMC) Services | MANO Projects Private Limited"}
+            </h1>
             {/* 
         SCOPED ANIMATIONS 
       */}
@@ -146,7 +154,7 @@ export default function LandingHero() {
                                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                                 className="absolute top-10 right-10 w-[60%] h-[70%] rounded-[2rem] overflow-hidden border border-white/5 opacity-50 z-0 grayscale"
                             >
-                                <img src={BACKGROUND_IMAGES[2]} alt="Detail" className="w-full h-full object-cover" />
+                                <img src={BACKGROUND_IMAGES[2]} alt="MANO Construction Project Detail" className="w-full h-full object-cover" />
                             </motion.div>
 
                             {/* Middle Layer - Architects */}
@@ -155,7 +163,7 @@ export default function LandingHero() {
                                 transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                                 className="absolute bottom-20 left-10 w-[55%] h-[45%] rounded-[2rem] overflow-hidden border border-white/10 shadow-xl z-10"
                             >
-                                <img src={BACKGROUND_IMAGES[1]} alt="Architects" className="w-full h-full object-cover" />
+                                <img src={BACKGROUND_IMAGES[1]} alt="MANO Project Management Team" className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 bg-blue-500/20 mix-blend-overlay" />
                             </motion.div>
 

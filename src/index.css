@@ -1,19 +1,27 @@
 @import "tailwindcss";
 /*Global CSS idhar likhhhhhh, bg, font, etc.. jo globally har page me use hoga, so that changing here will reflect on the entire web*/
 
-html,
-body,
-#root {
-    min-height: 100dvh;
-    width: 100%;
-    max-width: 100%;
+html {
+    min-height: 100%;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    overflow-y: auto;
 }
 
 body {
     background: #000;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+}
+
+#root {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100vh;
+    overflow: visible;
 }
 
 @theme {
@@ -143,3 +151,13 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.2);
 }
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+

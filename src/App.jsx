@@ -24,6 +24,7 @@ import EPC from './pages/Services/EPC';
 import BlogPage from "./pages/Blog";
 import BlogDetail from "./pages/Blog/BlogDetail";
 
+
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import ChatbotWidget from "./components/ChatbotWidget";
@@ -68,6 +69,9 @@ function App() {
           <Route path="blog" element={<BlogPage />} />
           <Route path="blog/:id" element={<BlogDetail />} />
         </Route>
+
+
+
 
         {/* Catch-all redirect to Gateway */}
         <Route path="*" element={<Navigate to="/" replace />} />
