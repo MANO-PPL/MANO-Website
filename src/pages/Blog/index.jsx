@@ -10,7 +10,7 @@ export default function BlogPage() {
     return (
         <>
             <SEO 
-                title="Industry Insights & Engineering Blog" 
+                title="MANO Blog | Construction & Engineering Industry Insights" 
                 description="Stay updated with the latest trends in construction, project management, and engineering innovations through the MANO blog."
                 keywords="construction blog, project management insights, engineering trends, MANO news"
                 breadcrumbData={[

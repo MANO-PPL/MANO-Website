@@ -11,7 +11,7 @@ export default function AboutUs() {
     return (
         <>
             <SEO 
-                title="About Us" 
+                title="About MANO | Project Management & EPC Company Profile" 
                 description="Learn about MANO's vision, mission, and the leadership team driving excellence in Project Management and EPC solutions since inception."
                 keywords="MANO about, construction leadership, project management vision, EPC company mission"
                 breadcrumbData={[

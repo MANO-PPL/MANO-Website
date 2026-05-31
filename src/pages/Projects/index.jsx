@@ -11,7 +11,7 @@ export default function Projects() {
     return (
         <>
             <SEO 
-                title="Our Projects" 
+                title="MANO Projects | Construction & Infrastructure Portfolio" 
                 description="Explore MANO's portfolio of successfully delivered projects in Project Management and EPC, showcasing our engineering expertise and commitment to quality."
                 keywords="MANO projects, construction portfolio, engineering case studies, infrastructure projects India"
                 breadcrumbData={[

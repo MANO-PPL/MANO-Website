@@ -3,7 +3,7 @@
   <!-- Core Gateway -->
   <url>
     <loc>https://www.mano.co.in/</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -11,81 +11,112 @@
   <!-- PMC Division Core -->
   <url>
     <loc>https://www.mano.co.in/pmc</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.mano.co.in/pmc/about-us</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.mano.co.in/pmc/services</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.mano.co.in/pmc/projects</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.mano.co.in/pmc/careers</loc>
+    <lastmod>2026-05-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.mano.co.in/pmc/blog</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- PMC Detailed Services -->
-  <url><loc>https://www.mano.co.in/pmc/services/project-management</loc><lastmod>2026-04-25</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.mano.co.in/pmc/services/project-planning</loc><lastmod>2026-04-25</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.mano.co.in/pmc/services/project-execution</loc><lastmod>2026-04-25</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.mano.co.in/pmc/services/cost-consultancy</loc><lastmod>2026-04-25</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.mano.co.in/pmc/services/contract-management</loc><lastmod>2026-04-25</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.mano.co.in/pmc/services/qa-audit</loc><lastmod>2026-04-25</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.mano.co.in/pmc/services/qs-billing-audit</loc><lastmod>2026-04-25</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.mano.co.in/pmc/services/ehs-audit</loc><lastmod>2026-04-25</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.mano.co.in/pmc/services/project-management</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.mano.co.in/pmc/services/project-planning</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.mano.co.in/pmc/services/project-execution</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.mano.co.in/pmc/services/cost-consultancy</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.mano.co.in/pmc/services/contract-management</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.mano.co.in/pmc/services/qa-audit</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.mano.co.in/pmc/services/qs-billing-audit</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.mano.co.in/pmc/services/ehs-audit</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.mano.co.in/pmc/services/epc</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+
+  <!-- PMC Blog Posts -->
+  <url><loc>https://www.mano.co.in/pmc/blog/1</loc><lastmod>2026-05-31</lastmod><priority>0.6</priority></url>
+  <url><loc>https://www.mano.co.in/pmc/blog/2</loc><lastmod>2026-05-31</lastmod><priority>0.6</priority></url>
+  <url><loc>https://www.mano.co.in/pmc/blog/3</loc><lastmod>2026-05-31</lastmod><priority>0.6</priority></url>
+  <url><loc>https://www.mano.co.in/pmc/blog/4</loc><lastmod>2026-05-31</lastmod><priority>0.6</priority></url>
+  <url><loc>https://www.mano.co.in/pmc/blog/5</loc><lastmod>2026-05-31</lastmod><priority>0.6</priority></url>
 
   <!-- EPC Division Core -->
   <url>
     <loc>https://www.mano.co.in/epc</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.mano.co.in/epc/about-us</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.mano.co.in/epc/services</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.mano.co.in/epc/projects</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.mano.co.in/epc/careers</loc>
+    <lastmod>2026-05-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.mano.co.in/epc/blog</loc>
-    <lastmod>2026-04-25</lastmod>
+    <lastmod>2026-05-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- Blog Posts (Dynamic Sample) -->
-  <url><loc>https://www.mano.co.in/blog/1</loc><priority>0.6</priority></url>
-  <url><loc>https://www.mano.co.in/blog/2</loc><priority>0.6</priority></url>
-  <url><loc>https://www.mano.co.in/blog/3</loc><priority>0.6</priority></url>
-  <url><loc>https://www.mano.co.in/blog/4</loc><priority>0.6</priority></url>
-  <url><loc>https://www.mano.co.in/blog/5</loc><priority>0.6</priority></url>
+  <!-- EPC Detailed Services -->
+  <url><loc>https://www.mano.co.in/epc/services/project-management</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.mano.co.in/epc/services/project-planning</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.mano.co.in/epc/services/project-execution</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.mano.co.in/epc/services/cost-consultancy</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.mano.co.in/epc/services/contract-management</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.mano.co.in/epc/services/qa-audit</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.mano.co.in/epc/services/qs-billing-audit</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.mano.co.in/epc/services/ehs-audit</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.mano.co.in/epc/services/epc</loc><lastmod>2026-05-31</lastmod><priority>0.7</priority></url>
+
+  <!-- EPC Blog Posts -->
+  <url><loc>https://www.mano.co.in/epc/blog/1</loc><lastmod>2026-05-31</lastmod><priority>0.6</priority></url>
+  <url><loc>https://www.mano.co.in/epc/blog/2</loc><lastmod>2026-05-31</lastmod><priority>0.6</priority></url>
+  <url><loc>https://www.mano.co.in/epc/blog/3</loc><lastmod>2026-05-31</lastmod><priority>0.6</priority></url>
+  <url><loc>https://www.mano.co.in/epc/blog/4</loc><lastmod>2026-05-31</lastmod><priority>0.6</priority></url>
+  <url><loc>https://www.mano.co.in/epc/blog/5</loc><lastmod>2026-05-31</lastmod><priority>0.6</priority></url>
 </urlset>

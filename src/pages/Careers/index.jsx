@@ -11,7 +11,7 @@ export default function Careers() {
     return (
         <>
             <SEO 
-                title="Careers" 
+                title="Careers at MANO | Job Openings & Opportunities" 
                 description="Join the MANO team and build your career with leaders in Project Management and EPC. Explore job opportunities and our work culture."
                 keywords="MANO careers, construction jobs India, engineering recruitment, build your career at MANO"
                 breadcrumbData={[

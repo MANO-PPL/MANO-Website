@@ -14,7 +14,9 @@ const SEO = ({
     navigationData = null
 }) => {
     const siteName = 'MANO Projects Private Limited';
-    const fullTitle = title ? `${title} | ${siteName}` : siteName;
+    const fullTitle = title 
+        ? (title.includes(siteName) || title.includes("MANO") ? title : `${title} | ${siteName}`)
+        : siteName;
     const siteUrl = 'https://www.mano.co.in';
     const fullUrl = canonical ? `${siteUrl}${canonical}` : siteUrl;
 

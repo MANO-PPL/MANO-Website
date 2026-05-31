@@ -1,4 +1,12 @@
+# Robots.txt for MANO Projects Private Limited (https://www.mano.co.in)
+# Allowed crawlers and search engine indexing configurations
+
+# Allow all search engines to crawl all sections of the public website
 User-agent: *
 Allow: /
 
+# Preferred domain host
+Host: www.mano.co.in
+
+# Sitemap location to aid crawlers in finding all pages
 Sitemap: https://www.mano.co.in/sitemap.xml

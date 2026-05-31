@@ -11,7 +11,7 @@ export default function Gateway() {
     return (
         <>
             <SEO 
-                title="MANO Projects Private Limited | Premier Project Management & EPC Consultants" 
+                title="MANO Projects | Premier Project Management & EPC Consultants" 
                 description="MANO Projects Private Limited - India's leading Project Management (PMC) and EPC (Engineering, Procurement, Construction) specialists."
                 keywords="MANO Projects Private Limited, MANO PPL, MANO Projects, MANO Consultants, PMC, EPC, construction consultants India"
                 schemaData={{

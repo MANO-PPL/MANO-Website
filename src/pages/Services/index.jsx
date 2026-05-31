@@ -11,7 +11,7 @@ export default function ServicesPage() {
     return (
         <>
             <SEO 
-                title="Engineering & Construction Services" 
+                title="MANO Services | PMC & EPC Construction Solutions" 
                 description="Explore MANO's wide range of services including Project Management Consultancy, Cost Consultancy, EPC solutions, and Specialized Engineering Audits."
                 keywords="construction services, engineering audits, project management India, EPC solutions, cost consultancy"
                 breadcrumbData={[
