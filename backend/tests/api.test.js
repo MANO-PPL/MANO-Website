@@ -1,4 +1,6 @@
 import { jest } from '@jest/globals';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Mock the DB module before importing the app
 jest.unstable_mockModule('../src/config/db.js', () => ({
