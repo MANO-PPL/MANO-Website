@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, Send, User, Mail, MessageSquare, Building2, Phone, Briefcase, ChevronDown, Loader2 } from 'lucide-react';
 import { useCompany } from '../context/CompanyContext';
 import { useToast } from './Toast';
+import { ENQUIRY_API_URL } from '../config';
 
 const ContactModalMobile = ({ isOpen, onClose, initialService = '' }) => {
     const { isEPC } = useCompany();
@@ -45,7 +46,7 @@ const ContactModalMobile = ({ isOpen, onClose, initialService = '' }) => {
         if (!validate()) return;
 
         setLoading(true);
-        const API_URL = "https://erp.mano.co.in/api/enquiry_api/enquiry";
+        const API_URL = ENQUIRY_API_URL;
 
         try {
             const response = await fetch(API_URL, {

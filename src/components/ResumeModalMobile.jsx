@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { X, Send, User, Mail, Briefcase, Upload, FileText, Loader2, CheckCircle2 } from 'lucide-react';
 import { useToast } from './Toast';
+import { RESUME_API_URL } from '../config';
 
 const ResumeModalMobile = ({ isOpen, onClose, jobRole = "" }) => {
     const [loading, setLoading] = useState(false);
@@ -70,7 +71,7 @@ const ResumeModalMobile = ({ isOpen, onClose, jobRole = "" }) => {
         if (!validate()) return;
 
         setLoading(true);
-        const API_URL = "https://erp.mano.co.in/api/resume-upload/upload";
+        const API_URL = RESUME_API_URL;
 
         try {
             const data = new FormData();

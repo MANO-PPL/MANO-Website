@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useCompany } from '../context/CompanyContext';
 import { Send, ChevronDown, Loader2 } from 'lucide-react';
 import { useToast } from './Toast';
+import { ENQUIRY_API_URL } from '../config';
 
 const ContactForm = () => {
     const { isEPC } = useCompany();
@@ -36,7 +37,7 @@ const ContactForm = () => {
         if (!validate()) return;
 
         setLoading(true);
-        const API_URL = "https://erp.mano.co.in/api/enquiry_api/enquiry";
+        const API_URL = ENQUIRY_API_URL;
 
         try {
             const response = await fetch(API_URL, {
