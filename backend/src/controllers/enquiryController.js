@@ -1,4 +1,4 @@
-import { query } from '../config/db.js';
+import { query } from '../config/database.js';
 
 export const submitEnquiry = async (req, res, next) => {
     try {
