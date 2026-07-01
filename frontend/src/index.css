@@ -1,0 +1,185 @@
+@import "tailwindcss";
+/*Global CSS idhar likhhhhhh, bg, font, etc.. jo globally har page me use hoga, so that changing here will reflect on the entire web*/
+
+html {
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+body {
+    background: #000;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+}
+
+#root {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100vh;
+    overflow: visible;
+}
+
+@theme {
+    --animate-fade-in-up: fade-in-up 0.8s ease-out forwards;
+    --animate-modal-zoom: modal-zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    --animate-slide-up: slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+    @keyframes fade-in-up {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes modal-zoom {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes slide-up {
+        from {
+            transform: translateY(100%);
+        }
+        to {
+            transform: translateY(0);
+        }
+    }
+}
+
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes rotate-gradient {
+    to {
+        --angle: 360deg;
+    }
+}
+
+.animated-white-border {
+    position: relative;
+    /* Ensure we don't clip the glowing border if we want it slightly outside? 
+       But mask approach keeps it INSIDE the border-box usually.
+       If we want it 'inset', it works fine with overflow-hidden. 
+    */
+}
+
+.animated-white-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    /* Ensure it stays on top of the card background/border */
+    pointer-events: none;
+    /* Let clicks pass through */
+    border-radius: inherit;
+    /* Match card roundedness */
+    padding: 1.5px;
+    /* Width of the animated border */
+
+    background: conic-gradient(from var(--angle), transparent 20%, white 50%, transparent 80%);
+
+    /* logic: create a mask that defines the border area */
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    animation: rotate-gradient 8s linear infinite;
+}
+
+.animated-white-border:hover::before {
+    opacity: 1;
+}
+
+.bg-blue-pattern {
+    background-color: #000000;
+    background-image:
+        radial-gradient(circle at 15% 50%, rgba(30, 41, 59, 0.4) 0%, transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(30, 58, 138, 0.2) 0%, transparent 25%);
+    background-attachment: fixed;
+}
+
+/* iOS/mobile landscape rendering fix: avoid fixed-background side bands */
+@media (max-width: 1024px) {
+    .bg-blue-pattern {
+        background-attachment: scroll;
+        background-size: cover;
+        background-position: center;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 5px;
+    border: 2px solid #000;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* For Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #333 #000;
+}
+
+/* Custom class for specific containers */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+
