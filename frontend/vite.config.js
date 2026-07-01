@@ -12,6 +12,8 @@ export default defineConfig({
     port: 5173,
   },
   build: {
+    outDir: '../dist',
+    emptyOutDir: true,
     assetsDir: 'static',
     // Inline small assets (< 8KB) as base64 to reduce HTTP requests
     assetsInlineLimit: 8192,
