@@ -1,0 +1,99 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-assets:
+    name: Build & Verify (CI)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      - name: Install Root Dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Install Backend Dependencies
+        run: |
+          cd backend
+          npm install --no-audit --no-fund
+
+      - name: Install Frontend Dependencies
+        run: |
+          cd frontend
+          npm install --no-audit --no-fund
+
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Upload Frontend Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/dist
+
+  deploy-to-ec2:
+    name: Deploy via Self-Hosted Runner
+    needs: build-assets
+    runs-on: self-hosted
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download Frontend Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/dist
+
+      - name: Sync Production Codebase
+        run: |
+          echo "📥 Updating production repository codebase..."
+          cd /home/ubuntu/MANO-Website || exit
+          git fetch origin main
+          git reset --hard origin/main
+
+      - name: Deploy Backend & Restart PM2
+        run: |
+          echo "⚙ Setting up Backend in production directory..."
+          cd /home/ubuntu/MANO-Website/backend
+          npm install --production --no-audit --no-fund
+          
+          # Restart backend process using PM2 (entry point is src/server.js)
+          if pm2 describe "MANO-WEBSITE-BACKEND" > /dev/null 2>&1; then
+            echo "🔄 Reloading backend with PM2..."
+            pm2 reload "MANO-WEBSITE-BACKEND" --update-env
+          else
+            echo "🚀 Starting new backend process under PM2..."
+            pm2 start src/server.js --name "MANO-WEBSITE-BACKEND" --update-env
+          fi
+
+      - name: Deploy Frontend to Web Target
+        run: |
+          echo "📁 Copying pre-built assets to production target..."
+          mkdir -p /home/ubuntu/MANO-Website/frontend/dist
+          cp -r $GITHUB_WORKSPACE/frontend/dist/* /home/ubuntu/MANO-Website/frontend/dist/
+          
+          # Note: If your Nginx is configured to serve from a different directory (like /var/www/html/ or /var/www/mano-website/),
+          # you can uncomment/add that copy command here:
+          # sudo cp -r $GITHUB_WORKSPACE/frontend/dist/* /var/www/html/
+          
+          echo "🎉 Deployment successfully completed!"
