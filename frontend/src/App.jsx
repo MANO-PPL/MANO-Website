@@ -49,6 +49,7 @@ function App() {
         <Route path="/" element={<Gateway />} />
 
         {/* Admin Portal Dashboard (isolated layout) */}
+        <Route path="/admin" element={<AdminPortal />} />
         <Route path="/admin/*" element={<AdminPortal />} />
 
         {/* Dynamic Brand Parameter: :brand will be "pcpl" or "ppl" */}
