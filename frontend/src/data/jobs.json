@@ -5,158 +5,112 @@
   },
   {
     "title": "BD-Sales Marketing",
+    "platform": "pmc",
     "details": {
       "Qualification": "Any Graduate",
-      "Experience (Yrs)": "1-4 years",
-      "Age": "25 years",
-      "Specialization": "Sales",
       "Location": "HO (Dadar)",
       "Gender": "Female",
-      "Notice Period": "Immediate Joining",
-      "Drawn / Exp. Salary": "25-40k"
+      "Notice Period": "Immediate Joining"
     }
   },
   {
     "title": "Sr.Billing Engineer",
+    "platform": "pmc",
     "details": {
       "Qualification": "BE/DCE CIVIL",
-      "Experience (Yrs)": "3-6 years",
-      "Age": "Above 25",
-      "Specialization": "QS, Billing",
       "Location": "HO (Dadar)",
       "Gender": "Male",
-      "Notice Period": "Immediate Joining",
-      "Drawn / Exp. Salary": "50-70K"
+      "Notice Period": "Immediate Joining"
     }
   },
   {
     "title": "QA/QC Engineer",
+    "platform": "pmc",
     "details": {
       "Qualification": "BE/B.Tech",
-      "Experience (Yrs)": "1-3 experience",
-      "Age": "Above 21",
-      "Specialization": "Engineer",
       "Location": "HO (Dadar)",
       "Gender": "Male",
-      "Notice Period": "15 Days",
-      "Drawn / Exp. Salary": "25000+"
+      "Notice Period": "15 Days"
     }
   },
   {
     "title": "Project Cordinator",
+    "platform": "pmc",
     "details": {
       "Qualification": "BE/B.Tech",
-      "Experience (Yrs)": "1-3 experience",
-      "Age": "Above 21",
-      "Specialization": "Engineer",
       "Location": "HO (Dadar)",
       "Gender": "Male",
-      "Notice Period": "15 Days",
-      "Drawn / Exp. Salary": "15000-20000"
+      "Notice Period": "15 Days"
     }
   },
   {
     "title": "Sr.Engineer",
+    "platform": "epc",
     "details": {
       "Qualification": "BE/B.Tech",
-      "Experience (Yrs)": "4-5 experience",
-      "Age": "Above 21",
-      "Specialization": "Engineer",
       "Location": "Indore",
       "Gender": "Male",
-      "Notice Period": "15 Days",
-      "Drawn / Exp. Salary": "30000+"
+      "Notice Period": "15 Days"
     }
   },
   {
     "title": "Interior Site Incharge",
+    "platform": "epc",
     "details": {
       "Qualification": "DCE/BE/B.tech",
-      "Experience (Yrs)": "3-5 Years",
-      "Age": "Above 25 Years",
-      "Specialization": "Interior Fitout",
       "Location": "Pan India",
       "Gender": "Male",
-      "Notice Period": "Immediate Joining",
-      "Drawn / Exp. Salary": "30k - 50k"
+      "Notice Period": "Immediate Joining"
     }
   },
   {
     "title": "JR.Engineer",
+    "platform": "epc",
     "details": {
       "Qualification": "DEE/BE/B.tech",
-      "Experience (Yrs)": "1-3 experience",
-      "Age": "Above 21",
-      "Specialization": "Civil Engineer",
       "Location": "Glowmax, Central Africa",
       "Gender": "Male",
-      "Notice Period": "15 Days",
-      "Drawn / Exp. Salary": "40000-50000+"
+      "Notice Period": "15 Days"
     }
   },
   {
     "title": "Interior Project manager",
+    "platform": "epc",
     "details": {
       "Qualification": "DEE/BE/B.tech",
-      "Experience (Yrs)": "8-12 experience",
-      "Age": "Above 30",
-      "Specialization": "Civil Engineer",
       "Location": "Pan India",
       "Gender": "Male",
-      "Notice Period": "15 Days",
-      "Drawn / Exp. Salary": "40000-80000+"
+      "Notice Period": "15 Days"
     }
   },
   {
     "title": "MEP Electrical engineer",
+    "platform": "epc",
     "details": {
       "Qualification": "DEE/BE/B.tech",
-      "Experience (Yrs)": "5-7 experience",
-      "Age": "Above 25",
-      "Specialization": "Civil Engineer",
       "Location": "Pan India",
       "Gender": "Male",
-      "Notice Period": "15 Days",
-      "Drawn / Exp. Salary": "40000-80000+"
-    }
-  },
-  {
-    "title": "Interior Project manager",
-    "details": {
-      "Qualification": "DEE/BE/B.tech",
-      "Experience (Yrs)": "8-12 experience",
-      "Age": "Above 30",
-      "Specialization": "Civil Engineer",
-      "Location": "Pan India",
-      "Gender": "Male",
-      "Notice Period": "15 Days",
-      "Drawn / Exp. Salary": "40000-100000+"
+      "Notice Period": "15 Days"
     }
   },
   {
     "title": "SR.Engineer",
+    "platform": "epc",
     "details": {
       "Qualification": "DEE/BE/B.tech",
-      "Experience (Yrs)": "8-12 experience",
-      "Age": "Above 30",
-      "Specialization": "Civil Engineer",
       "Location": "Pan India",
       "Gender": "Male",
-      "Notice Period": "15 Days",
-      "Drawn / Exp. Salary": "40000-100000+"
+      "Notice Period": "15 Days"
     }
   },
   {
     "title": "JR.Engineer",
+    "platform": "epc",
     "details": {
       "Qualification": "DEE/BE/B.tech",
-      "Experience (Yrs)": "3-10 experience",
-      "Age": "Above 30",
-      "Specialization": "Civil Engineer",
       "Location": "Pan India",
       "Gender": "Male",
-      "Notice Period": "15 Days",
-      "Drawn / Exp. Salary": "40000-80000+"
+      "Notice Period": "15 Days"
     }
   }
 ]

@@ -2,8 +2,10 @@ import React, { useState, useRef } from 'react';
 import { X, Send, User, Mail, Briefcase, Upload, FileText, Loader2, CheckCircle2 } from 'lucide-react';
 import { useToast } from './Toast';
 import { RESUME_API_URL } from '../config';
+import { useCompany } from '../context/CompanyContext';
 
 const ResumeModalDesktop = ({ isOpen, onClose, jobRole = "" }) => {
+    const { brand: activeBrand } = useCompany();
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [dragActive, setDragActive] = useState(false);
@@ -18,6 +20,16 @@ const ResumeModalDesktop = ({ isOpen, onClose, jobRole = "" }) => {
     });
 
     const [errors, setErrors] = useState({});
+
+    // Sync the jobRole prop to the state when the modal opens or changes
+    React.useEffect(() => {
+        if (isOpen) {
+            setFormData(prev => ({
+                ...prev,
+                job_role: jobRole || "General Application"
+            }));
+        }
+    }, [isOpen, jobRole]);
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -78,6 +90,7 @@ const ResumeModalDesktop = ({ isOpen, onClose, jobRole = "" }) => {
             data.append("name", formData.name);
             data.append("email", formData.email);
             data.append("job_role", formData.job_role || "General Application");
+            data.append("platform", (activeBrand || "pmc").toLowerCase());
             data.append("resume_file", formData.file);
 
             const response = await fetch(API_URL, {
