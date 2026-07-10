@@ -8,7 +8,8 @@ import {
 import PageHero from "../../components/HeroSections/PageHero";
 import RainbowButton from "../../components/RainbowButton";
 import ContactModal from "../../components/ContactModal";
-import { blogPosts, categories, CategoryBadge } from "./BlogPage";
+import { categories, CategoryBadge } from "./BlogPage";
+import { BLOGS_API_URL } from "../../config";
 
 // ─── Scroll Reveal ───────────────────────────────────────────────────────────
 const RevealOnScroll = ({ children }) => {
@@ -41,7 +42,7 @@ const MobileBlogCard = ({ post }) => (
             <div className="flex items-center gap-2 text-[10px] text-gray-500 mb-2">
                 <span className="flex items-center gap-1"><Calendar size={10} />{post.date}</span>
                 <span className="w-0.5 h-0.5 rounded-full bg-gray-700" />
-                <span className="flex items-center gap-1"><Clock size={10} />{post.readTime}</span>
+                <span className="flex items-center gap-1"><Clock size={10} />{post.read_time || post.readTime}</span>
             </div>
             <h2 className="text-base font-bold text-white mb-2 leading-snug group-hover:text-blue-300 transition-colors line-clamp-2">{post.title}</h2>
             <p className="text-gray-400 text-xs leading-relaxed mb-4 line-clamp-2 flex-1">{post.summary}</p>
@@ -67,13 +68,31 @@ export default function BlogPageMobile() {
     const [isContactOpen, setIsContactOpen] = useState(false);
     const [visibleCount, setVisibleCount] = useState(6);
 
-    const filteredPosts = blogPosts.filter(p => {
+    const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetch(BLOGS_API_URL)
+            .then(res => res.json())
+            .then(data => {
+                if (data.ok) {
+                    setPosts(data.data || []);
+                }
+            })
+            .catch(err => console.error("Error fetching mobile blogs:", err))
+            .finally(() => setLoading(false));
+    }, []);
+
+    const filteredPosts = posts.filter(p => {
         const matchCat = activeCategory === "All" || p.category === activeCategory;
-        const matchSearch = searchQuery === "" || p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.summary.toLowerCase().includes(searchQuery.toLowerCase()) || p.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+        const matchSearch = searchQuery === "" || 
+                            p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            p.summary.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            (p.tags || []).some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
         return matchCat && matchSearch;
     });
 
-    const featuredPosts = blogPosts.filter(p => p.featured);
+    const featuredPosts = posts.filter(p => p.featured);
     const showFeatured = activeCategory === "All" && searchQuery === "";
 
     return (
@@ -152,7 +171,12 @@ export default function BlogPageMobile() {
                     </div>
                 </RevealOnScroll>
 
-                {filteredPosts.length === 0 ? (
+                {loading ? (
+                    <div className="text-center py-16">
+                        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                        <p className="text-gray-400 text-xs">Loading insights...</p>
+                    </div>
+                ) : filteredPosts.length === 0 ? (
                     <div className="text-center py-16">
                         <div className="text-5xl mb-3">🔍</div>
                         <h3 className="text-lg font-bold text-white mb-1">No articles found</h3>

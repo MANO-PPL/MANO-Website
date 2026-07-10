@@ -8,6 +8,7 @@ import {
 import PageHero from "../../components/HeroSections/PageHero";
 import RainbowButton from "../../components/RainbowButton";
 import ContactModal from "../../components/ContactModal";
+import { BLOGS_API_URL } from "../../config";
 
 // ─── Scroll Reveal ───────────────────────────────────────────────────────────
 const RevealOnScroll = ({ children, delay = 0 }) => {
@@ -82,7 +83,7 @@ export const BlogCard = ({ post, large = false }) => (
       <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
         <span className="flex items-center gap-1"><Calendar size={12} />{post.date}</span>
         <span className="w-1 h-1 rounded-full bg-gray-700" />
-        <span className="flex items-center gap-1"><Clock size={12} />{post.readTime}</span>
+        <span className="flex items-center gap-1"><Clock size={12} />{post.read_time || post.readTime}</span>
       </div>
       <h2 className={`font-bold text-white mb-3 leading-tight group-hover:text-blue-300 transition-colors ${large ? "text-2xl md:text-3xl" : "text-lg"}`}>{post.title}</h2>
       <p className="text-gray-400 text-sm leading-relaxed mb-5 line-clamp-3 flex-1">{post.summary}</p>
@@ -93,7 +94,7 @@ export const BlogCard = ({ post, large = false }) => (
           </div>
           <div>
             <p className="text-xs font-semibold text-white">{post.author}</p>
-            <p className="text-xs text-gray-500">{post.authorRole}</p>
+            <p className="text-xs text-gray-500">{post.author_role || post.authorRole}</p>
           </div>
         </div>
         <div className="flex items-center text-blue-400 text-sm font-semibold group-hover:text-white transition-colors">
@@ -111,13 +112,31 @@ export default function BlogPageDesktop() {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(9);
 
-  const filteredPosts = blogPosts.filter(p => {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(BLOGS_API_URL)
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          setPosts(data.data || []);
+        }
+      })
+      .catch(err => console.error("Error fetching blogs:", err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const filteredPosts = posts.filter(p => {
     const matchCat = activeCategory === "All" || p.category === activeCategory;
-    const matchSearch = searchQuery === "" || p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.summary.toLowerCase().includes(searchQuery.toLowerCase()) || p.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchSearch = searchQuery === "" || 
+                        p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                        p.summary.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                        (p.tags || []).some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchCat && matchSearch;
   });
 
-  const featuredPosts = blogPosts.filter(p => p.featured);
+  const featuredPosts = posts.filter(p => p.featured);
   const showFeatured = activeCategory === "All" && searchQuery === "";
 
   return (
@@ -204,7 +223,12 @@ export default function BlogPageDesktop() {
             </div>
           </RevealOnScroll>
 
-          {filteredPosts.length === 0 ? (
+          {loading ? (
+            <div className="py-24 text-center">
+              <div className="w-12 h-12 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <p className="text-gray-400 text-sm">Loading insights and articles...</p>
+            </div>
+          ) : filteredPosts.length === 0 ? (
             <RevealOnScroll>
               <div className="text-center py-24">
                 <div className="text-6xl mb-4">🔍</div>

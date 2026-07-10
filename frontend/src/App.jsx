@@ -23,7 +23,7 @@ import ContractManagement from './pages/Services/ContractManagement';
 import EPC from './pages/Services/EPC';
 import BlogPage from "./pages/Blog";
 import BlogDetail from "./pages/Blog/BlogDetail";
-
+import AdminPortal from "./pages/Admin/AdminPortal";
 
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
@@ -47,6 +47,9 @@ function App() {
       <Routes>
         {/* Gateway as Root */}
         <Route path="/" element={<Gateway />} />
+
+        {/* Admin Portal Dashboard (isolated layout) */}
+        <Route path="/admin/*" element={<AdminPortal />} />
 
         {/* Dynamic Brand Parameter: :brand will be "pcpl" or "ppl" */}
         <Route path="/:brand" element={<BrandLayout />}>

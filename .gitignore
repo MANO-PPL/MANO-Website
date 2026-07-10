@@ -43,3 +43,6 @@ Centralized-AI-Server/**/chroma/
 Centralized-AI-Server/**/chroma_data/
 # Sentence Transformers model cache (large, auto-downloaded)
 Centralized-AI-Server/**/.cache/
+
+# Dynamic local backend port
+.active_port

@@ -4,7 +4,7 @@ import ChatbotWidgetDesktop from "./ChatbotWidgetDesktop";
 import ChatbotWidgetTablet from "./ChatbotWidgetTablet";
 import ChatbotWidgetMobile from "./ChatbotWidgetMobile";
 
-const API_URL = import.meta.env.VITE_RAG_API_URL || "http://localhost:5555";
+const API_URL = import.meta.env.VITE_RAG_API_URL || "/chat";
 const CHAT_API_URL = `${API_URL}/chat-corporate/chat`;
 
 const initialMessage = {
