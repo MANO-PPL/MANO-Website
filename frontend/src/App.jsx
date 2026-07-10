@@ -55,11 +55,17 @@ function App() {
         {/* Gateway as Root */}
         <Route path="/" element={<Gateway />} />
 
-        {/* Admin Portal Dashboard (isolated layout) */}
+        {/* Admin Portal — must be declared BEFORE /:brand to prevent wildcard interception */}
         <Route path="/mano-admin-portal-dashboard-secure" element={<AdminPortal />} />
         <Route path="/mano-admin-portal-dashboard-secure/*" element={<AdminPortal />} />
 
-        {/* Dynamic Brand Parameter: :brand will be "pcpl" or "ppl" */}
+        {/* Admin Portal URL aliases — common shortcut URLs redirect to the correct admin route */}
+        <Route path="/admin" element={<Navigate to="/mano-admin-portal-dashboard-secure" replace />} />
+        <Route path="/admin/*" element={<Navigate to="/mano-admin-portal-dashboard-secure" replace />} />
+        <Route path="/admin-portal-dashboard-secure" element={<Navigate to="/mano-admin-portal-dashboard-secure" replace />} />
+        <Route path="/admin-portal-dashboard-secure/*" element={<Navigate to="/mano-admin-portal-dashboard-secure" replace />} />
+
+        {/* Dynamic Brand Parameter: :brand will be "pmc" or "epc" */}
         <Route path="/:brand" element={<BrandLayout />}>
           <Route index element={<LandingPage />} />
           <Route path="about-us" element={<AboutUs />} />
@@ -80,9 +86,6 @@ function App() {
           <Route path="blog" element={<BlogPage />} />
           <Route path="blog/:id" element={<BlogDetail />} />
         </Route>
-
-
-
 
         {/* Catch-all redirect to Gateway */}
         <Route path="*" element={<Navigate to="/" replace />} />
