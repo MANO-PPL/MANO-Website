@@ -164,7 +164,7 @@ const AdminDashboard = ({ token, onLogout }) => {
         setCandidatesLoading(true);
         try {
             const url = platform 
-                ? `${API_BASE_URL}/api/admin/${platform}/resumes` 
+                ? `${API_BASE_URL}/api/mano-admin-portal-dashboard-secure/${platform}/resumes` 
                 : ADMIN_RESUMES_API_URL;
             const response = await fetch(url, { headers });
             const data = await response.json();

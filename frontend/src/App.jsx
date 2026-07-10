@@ -49,8 +49,8 @@ function App() {
         <Route path="/" element={<Gateway />} />
 
         {/* Admin Portal Dashboard (isolated layout) */}
-        <Route path="/admin" element={<AdminPortal />} />
-        <Route path="/admin/*" element={<AdminPortal />} />
+        <Route path="/mano-admin-portal-dashboard-secure" element={<AdminPortal />} />
+        <Route path="/mano-admin-portal-dashboard-secure/*" element={<AdminPortal />} />
 
         {/* Dynamic Brand Parameter: :brand will be "pcpl" or "ppl" */}
         <Route path="/:brand" element={<BrandLayout />}>

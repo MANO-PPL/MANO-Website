@@ -25,7 +25,7 @@ router.get('/blogs', getBlogs);
 router.get('/blogs/:id', getBlogById);
 
 // Admin Login Authentication
-router.post('/admin/login', async (req, res) => {
+router.post('/mano-admin-portal-dashboard-secure/login', async (req, res) => {
     try {
         const { username, password } = req.body;
         if (!username || !password) {
@@ -71,8 +71,8 @@ router.put('/blogs/:id', verifyAdminToken, uploadBlogImage.single('blog_image'),
 router.delete('/blogs/:id', verifyAdminToken, deleteBlog);
 
 // Protected Admin Actions: Candidate applications
-router.get('/admin/:platform/resumes', verifyAdminToken, getResumes);
-router.get('/admin/resumes', verifyAdminToken, getResumes);
-router.delete('/admin/resumes/:id', verifyAdminToken, deleteResume);
+router.get('/mano-admin-portal-dashboard-secure/:platform/resumes', verifyAdminToken, getResumes);
+router.get('/mano-admin-portal-dashboard-secure/resumes', verifyAdminToken, getResumes);
+router.delete('/mano-admin-portal-dashboard-secure/resumes/:id', verifyAdminToken, deleteResume);
 
 export default router;
