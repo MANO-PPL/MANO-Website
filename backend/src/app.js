@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import apiRoutes from './routes/api.js';
 import errorHandler from './middleware/errorHandler.js';
+import { isDbReady } from './config/database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,11 +20,16 @@ app.use(cors({
     origin: (origin, callback) => {
         // allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1) {
+        
+        // Dynamically allow any localhost or 127.0.0.1 origin on any port for local development
+        const isLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+        
+        if (isLocalhost || allowedOrigins.indexOf(origin) !== -1) {
+            return callback(null, true);
+        } else {
             const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
             return callback(new Error(msg), false);
         }
-        return callback(null, true);
     },
     credentials: true
 }));
@@ -31,8 +37,10 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve uploaded resumes statically
-app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
+// Serve uploaded resumes statically — __dirname = backend/src, so ../uploads = backend/uploads
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+
 
 // Register API routes
 app.use('/api', apiRoutes);
