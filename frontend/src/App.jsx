@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet, useParams } from "react-router-dom";
 
 import Gateway from "./pages/Gateway";
 import LandingPage from "./pages/LandingPage"
@@ -32,6 +32,13 @@ import { CompanyProvider } from "./context/CompanyContext";
 
 // Wrapper for Brand Routes
 const BrandLayout = () => {
+  const { brand } = useParams();
+  const validBrands = ["pmc", "epc", "pcpl", "ppl"];
+
+  if (brand && !validBrands.includes(brand.toLowerCase())) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
     <CompanyProvider>
       <Navbar />

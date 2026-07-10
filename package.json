@@ -7,6 +7,8 @@
     "backend": "npm start --prefix backend",
     "start": "concurrently \"npm run backend\" \"npm run frontend\"",
     "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "build": "npm run build --prefix frontend",
+    "preview": "concurrently \"npm run backend\" \"npm run preview --prefix frontend\"",
     "install:all": "npm install && npm install --prefix frontend && npm install --prefix backend"
   },
   "devDependencies": {

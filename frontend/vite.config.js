@@ -48,6 +48,23 @@ export default defineConfig({
   preview: {
     host: true,
     port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8001',
+        changeOrigin: true,
+        router: () => getBackendTarget(),
+      },
+      '/uploads': {
+        target: 'http://127.0.0.1:8001',
+        changeOrigin: true,
+        router: () => getBackendTarget(),
+      },
+      '/chat': {
+        target: 'http://127.0.0.1:8001',
+        changeOrigin: true,
+        router: () => getBackendTarget(),
+      },
+    },
   },
   build: {
     assetsDir: 'static',
