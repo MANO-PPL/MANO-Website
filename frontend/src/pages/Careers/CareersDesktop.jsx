@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import {
     Users, TrendingUp, ShieldCheck, Award, Briefcase, MapPin,
     Clock, ChevronRight, ArrowRight, BookOpen, UserPlus, FileText,
-    CheckCircle, Target, Zap, Layout, User, Sparkles
+    CheckCircle, Target, Zap, Layout, User, Sparkles, Share2
 } from 'lucide-react';
 import RevealOnScroll from '../../components/RevealOnScroll';
 import RainbowButton from '../../components/RainbowButton';
@@ -11,21 +11,42 @@ import CareersHero from '../../components/HeroSections/CareersHero';
 
 import jobData from '../../data/jobs.json';
 import ResumeModal from '../../components/ResumeModal';
+import { API_BASE_URL } from '../../config';
 
-const CareersDesktop = () => {
+const CareersDesktop = ({ jobs, brand }) => {
     const [openPosition, setOpenPosition] = useState(null);
     const [currentTestimonial, setCurrentTestimonial] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
     const [selectedJob, setSelectedJob] = useState("");
+    const [copiedJobId, setCopiedJobId] = useState(null);
 
     const handleApplyClick = (jobTitle = "") => {
         setSelectedJob(jobTitle);
         setIsResumeModalOpen(true);
     };
 
-    // Filter out header rows (where title is "Position")
-    const allPositions = jobData.filter(job => job.title !== "Position" && job.title);
+    const handleShareClick = (e, jobId) => {
+        e.stopPropagation();
+        const shareUrl = `${window.location.origin}${window.location.pathname}?jobId=${jobId}`;
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            setCopiedJobId(jobId);
+            setTimeout(() => setCopiedJobId(null), 2000);
+        });
+    };
+
+    // Use passed jobs, fall back to imported static jobData filtered by platform
+    const currentJobs = jobs !== null ? jobs : jobData;
+    const platformKey = (brand || 'PMC').toLowerCase();
+
+    // Filter out header rows (where title is "Position") and filter by platform for fallback data
+    const allPositions = currentJobs.filter(job => {
+        if (job.title === "Position" || !job.title) return false;
+        // If the job has a platform field (fallback JSON), filter by it
+        if (job.platform) return job.platform.toLowerCase().split(',').map(p => p.trim()).includes(platformKey);
+        // Jobs from the API are already pre-filtered by the backend
+        return true;
+    });
 
     // Extract unique locations
     const locations = ['All', ...new Set(allPositions.map(job => job.details.Location || "Pan India"))];
@@ -36,6 +57,26 @@ const CareersDesktop = () => {
         if (activeLocation === 'All') return true;
         return (job.details.Location || "Pan India") === activeLocation;
     });
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const jobIdParam = params.get('jobId');
+        if (jobIdParam && filteredPositions && filteredPositions.length > 0) {
+            const matchedIndex = filteredPositions.findIndex(j => String(j.id) === String(jobIdParam));
+            if (matchedIndex !== -1) {
+                const matchedJob = filteredPositions[matchedIndex];
+                setOpenPosition(matchedIndex);
+                
+                // Scroll smoothly to the matching job card
+                setTimeout(() => {
+                    const el = document.getElementById(`job-card-${matchedJob.id}`);
+                    if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 300);
+            }
+        }
+    }, [jobs, filteredPositions]);
 
     const testimonials = [
         {
@@ -236,7 +277,7 @@ const CareersDesktop = () => {
 
                             <div className="space-y-4 max-w-5xl mx-auto">
                                 {filteredPositions.map((job, index) => (
-                                    <div key={index} className="rounded-2xl border border-white/10 bg-black overflow-hidden transition-all duration-300 hover:border-blue-500/30 animated-white-border">
+                                    <div id={`job-card-${job.id}`} key={index} className="rounded-2xl border border-white/10 bg-black overflow-hidden transition-all duration-300 hover:border-blue-500/30 animated-white-border">
                                         <button
                                             onClick={() => togglePosition(index)}
                                             className="w-full flex items-center justify-between p-6 md:p-8 text-left hover:bg-white/5 transition-colors"
@@ -247,10 +288,6 @@ const CareersDesktop = () => {
                                                     <div className="flex items-center gap-1">
                                                         <MapPin size={14} className="text-blue-500" />
                                                         {job.details.Location || "Pan India"}
-                                                    </div>
-                                                    <div className="flex items-center gap-1">
-                                                        <Briefcase size={14} className="text-blue-500" />
-                                                        {job.details["Experience (Yrs)"] || "Experience N/A"}
                                                     </div>
                                                 </div>
                                             </div>
@@ -272,12 +309,30 @@ const CareersDesktop = () => {
                                                     ))}
                                                 </div>
 
-                                                <button
-                                                    onClick={() => handleApplyClick(job.title)}
-                                                    className="w-full sm:w-auto px-8 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors flex items-center justify-center gap-2"
-                                                >
-                                                    Apply for this Role <ArrowRight size={18} />
-                                                </button>
+                                                <div className="flex flex-col sm:flex-row gap-4">
+                                                    <button
+                                                        onClick={() => handleApplyClick(job.title)}
+                                                        className="w-full sm:w-auto px-8 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors flex items-center justify-center gap-2"
+                                                    >
+                                                        Apply for this Role <ArrowRight size={18} />
+                                                    </button>
+                                                    {job.jd_file_path && (
+                                                        <a
+                                                            href={job.jd_file_path.startsWith('http') ? job.jd_file_path : `${API_BASE_URL}/${job.jd_file_path}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="w-full sm:w-auto px-8 py-3 rounded-full border border-blue-500 hover:bg-blue-500/10 text-white font-semibold transition-colors flex items-center justify-center gap-2"
+                                                        >
+                                                            <FileText size={18} /> Download JD
+                                                        </a>
+                                                    )}
+                                                    <button
+                                                        onClick={(e) => handleShareClick(e, job.id)}
+                                                        className="w-full sm:w-auto px-8 py-3 rounded-full border border-gray-500 hover:bg-gray-500/10 text-white font-semibold transition-colors flex items-center justify-center gap-2"
+                                                    >
+                                                        <Share2 size={18} /> {copiedJobId === job.id ? "Link Copied!" : "Share Role"}
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
