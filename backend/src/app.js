@@ -40,16 +40,31 @@ app.use(express.urlencoded({ extended: true }));
 // Serve uploaded resumes statically — __dirname = backend/src, so ../uploads = backend/uploads
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-
+// Serve frontend static files if they exist
+const frontendDistPath = path.join(__dirname, '../../frontend/dist');
+app.use(express.static(frontendDistPath));
 
 // Register API routes
 app.use('/api', apiRoutes);
 
-// Catch-all 404 response
-app.use((req, res, next) => {
-    res.status(404).json({
-        ok: false,
-        message: `Route not found: ${req.originalUrl}`
+// Catch-all route to serve frontend index.html for client-side routing (SPA fallback)
+app.get('*', (req, res, next) => {
+    // If the request starts with /api, return 404 API style
+    if (req.originalUrl.startsWith('/api')) {
+        return res.status(404).json({
+            ok: false,
+            message: `API route not found: ${req.originalUrl}`
+        });
+    }
+    
+    // Otherwise serve index.html
+    res.sendFile(path.join(frontendDistPath, 'index.html'), (err) => {
+        if (err) {
+            res.status(404).json({
+                ok: false,
+                message: `Route not found: ${req.originalUrl}`
+            });
+        }
     });
 });
 
