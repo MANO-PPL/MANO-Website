@@ -1,14 +1,12 @@
 import { createContext, useContext, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
 
 const CompanyContext = createContext({ brand: 'PMC', isEPC: false, isPMC: true });
 
 export const useCompany = () => useContext(CompanyContext);
 
-export const CompanyProvider = ({ children }) => {
-    const { brand } = useParams();
-
-    // Compute brand synchronously from URL param — no useEffect delay
+// brand prop is now passed explicitly from the route definition (e.g. brand="pmc")
+// instead of being read from URL params, so it works with fixed /pmc and /epc routes.
+export const CompanyProvider = ({ children, brand }) => {
     const currentBrand = useMemo(() => {
         if (!brand) return 'PMC';
         const normalizedBrand = brand.toUpperCase();
