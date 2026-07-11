@@ -89,12 +89,18 @@ jobs:
 
       - name: Deploy Frontend to Web Target
         run: |
-          echo "📁 Copying pre-built assets to production target..."
-          mkdir -p /home/ubuntu/MANO-Website/frontend/dist
-          cp -r $GITHUB_WORKSPACE/frontend/dist/* /home/ubuntu/MANO-Website/frontend/dist/
+          echo "📁 Copying pre-built assets to Nginx target..."
+          # Ensure target directory exists
+          sudo mkdir -p /var/www/revamped-static
           
-          # Note: If your Nginx is configured to serve from a different directory (like /var/www/html/ or /var/www/mano-website/),
-          # you can uncomment/add that copy command here:
-          # sudo cp -r $GITHUB_WORKSPACE/frontend/dist/* /var/www/html/
+          # Copy all built assets to the revamped static root
+          sudo cp -r $GITHUB_WORKSPACE/frontend/dist/* /var/www/revamped-static/
+          
+          # Fix ownership and permissions so Nginx (www-data) can read the files (fixes 403 / 500 errors)
+          sudo chown -R www-data:www-data /var/www/revamped-static
+          sudo chmod -R 755 /var/www/revamped-static
+          
+          # Reload Nginx to apply changes
+          sudo systemctl reload nginx
           
           echo "🎉 Deployment successfully completed!"
