@@ -34,8 +34,13 @@ function getAvailablePort(startPort) {
 }
 
 const initialPort = parseInt(process.env.PORT || '8001', 10);
+const isProduction = process.env.NODE_ENV === 'production';
 
-getAvailablePort(initialPort)
+const getPortPromise = isProduction 
+    ? Promise.resolve(initialPort) 
+    : getAvailablePort(initialPort);
+
+getPortPromise
     .then((port) => {
         // Write the port to the active port file
         try {
