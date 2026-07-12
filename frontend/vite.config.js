@@ -33,6 +33,12 @@ export default defineConfig({
         changeOrigin: true,
         router: () => getBackendTarget(),
       },
+      '/projects.json': {
+        target: 'http://127.0.0.1:8001',
+        changeOrigin: true,
+        rewrite: (path) => '/api/projects',
+        router: () => getBackendTarget(),
+      },
       '/uploads': {
         target: 'http://127.0.0.1:8001',
         changeOrigin: true,
@@ -52,6 +58,12 @@ export default defineConfig({
       '/api': {
         target: 'http://127.0.0.1:8001',
         changeOrigin: true,
+        router: () => getBackendTarget(),
+      },
+      '/projects.json': {
+        target: 'http://127.0.0.1:8001',
+        changeOrigin: true,
+        rewrite: (path) => '/api/projects',
         router: () => getBackendTarget(),
       },
       '/uploads': {

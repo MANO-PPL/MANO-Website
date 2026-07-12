@@ -1,10 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-    Building, Briefcase, Factory, Hexagon, GraduationCap,
-    MapPin, CheckCircle, ArrowRight, ChevronRight, Layout, Minimize2, Activity,
-    ShieldCheck, DollarSign, FileText, Award, ArrowDown
+    CheckCircle, ArrowRight, ChevronRight, Layout, Award, ArrowDown
 } from 'lucide-react';
 import RevealOnScroll from '../../components/RevealOnScroll';
 import RainbowButton from '../../components/RainbowButton';
@@ -12,6 +10,7 @@ import ContactModal from '../../components/ContactModal';
 import LazyBgDiv from '../../components/LazyBgDiv';
 import { useNavigate } from 'react-router-dom';
 import { useCompany } from '../../context/CompanyContext';
+import { PROJECTS_API_URL } from '../../config';
 
 const ProjectsHeroMobile = () => {
     return (
@@ -65,10 +64,12 @@ const ProjectsHeroMobile = () => {
     );
 };
 
-const ImageSlider = ({ images, title, autoScrollTrigger }) => {
+const ImageSlider = ({ images, title }) => {
     const [currentIndex, setCurrentIndex] = React.useState(0);
     const [direction, setDirection] = React.useState(0); // -1 for left, 1 for right
     const touchStartX = React.useRef(null);
+    const containerRef = React.useRef(null);
+    const [isVisible, setIsVisible] = React.useState(false);
 
     const goToNext = React.useCallback(() => {
         setDirection(1);
@@ -80,11 +81,31 @@ const ImageSlider = ({ images, title, autoScrollTrigger }) => {
         setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
     }, [images.length]);
 
-    // Auto-slide effect based on parent trigger
     React.useEffect(() => {
-        if (!images || images.length <= 1) return;
-        goToNext();
-    }, [autoScrollTrigger, images, goToNext]);
+        if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+            setIsVisible(true);
+            return;
+        }
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsVisible(entry.isIntersecting);
+            },
+            { threshold: 0.05 }
+        );
+        if (containerRef.current) {
+            observer.observe(containerRef.current);
+        }
+        return () => observer.disconnect();
+    }, []);
+
+    // Independent smooth auto-scroll interval
+    React.useEffect(() => {
+        if (!images || images.length <= 1 || !isVisible) return;
+        const interval = setInterval(() => {
+            goToNext();
+        }, 4000);
+        return () => clearInterval(interval);
+    }, [images, isVisible, goToNext]);
 
     const nextSlide = (e) => {
         e.stopPropagation();
@@ -120,26 +141,24 @@ const ImageSlider = ({ images, title, autoScrollTrigger }) => {
 
     const variants = {
         enter: (direction) => ({
-            x: direction > 0 ? 1000 : -1000,
-            opacity: 0,
-            scale: 1.2
+            x: direction > 0 ? '100%' : '-100%',
+            opacity: 0
         }),
         center: {
             zIndex: 1,
             x: 0,
-            opacity: 1,
-            scale: 1
+            opacity: 1
         },
         exit: (direction) => ({
             zIndex: 0,
-            x: direction < 0 ? 1000 : -1000,
-            opacity: 0,
-            scale: 1.2
+            x: direction < 0 ? '100%' : '-100%',
+            opacity: 0
         })
     };
 
     return (
         <div
+            ref={containerRef}
             className="relative w-full h-full group overflow-hidden bg-black"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
@@ -155,12 +174,10 @@ const ImageSlider = ({ images, title, autoScrollTrigger }) => {
                     animate="center"
                     exit="exit"
                     transition={{
-                        x: { type: "tween", duration: 0.8, ease: "easeInOut" },
-                        opacity: { duration: 0.5 },
-                        scale: { duration: 5 } // Slow zoom effect
+                        x: { type: "tween", duration: 0.6, ease: "easeInOut" },
+                        opacity: { duration: 0.4 }
                     }}
                     className="absolute inset-0 w-full h-full object-cover"
-                    loading="lazy"
                     decoding="async"
                 />
             </AnimatePresence>
@@ -205,288 +222,39 @@ const ProjectsMobile = () => {
     const { brand, isEPC } = useCompany();
     const [activeCategory, setActiveCategory] = useState("All");
     const [isContactOpen, setIsContactOpen] = useState(false);
-    const [autoScrollTrigger, setAutoScrollTrigger] = useState(0);
+    const [projects, setProjects] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Global timer for synchronized carousel
+    // Fetch from API
     useEffect(() => {
-        const interval = setInterval(() => {
-            setAutoScrollTrigger(prev => prev + 1);
-        }, 3000);
-        return () => clearInterval(interval);
+        const fetchProjects = async () => {
+            try {
+                const res = await fetch(PROJECTS_API_URL);
+                const data = await res.json();
+                if (res.ok && data.ok) {
+                    setProjects(data.data || []);
+                }
+            } catch (err) {
+                console.error('Failed to fetch projects:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProjects();
     }, []);
 
-    const featuredProjects = [
-        {
-            id: 1,
-            title: "Hotel Moon Palace - Kinshasa",
-            location: "Kinshasa, Congo",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "Luxury hospitality development with premium amenities.",
-            images: [
-                `${import.meta.env.BASE_URL}Hotel Moon Kinshasa/001 (3).webp`,
-                `${import.meta.env.BASE_URL}Hotel Moon Kinshasa/002 (3).webp`,
-                `${import.meta.env.BASE_URL}Hotel Moon Kinshasa/003 (3).webp`,
-                `${import.meta.env.BASE_URL}Hotel Moon Kinshasa/006 (2).webp`
-            ]
-        },
-        {
-            id: 2,
-            title: "Triveni Crown",
-            location: "Kalyan",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "Landmark residential project with grand entrance gate.",
-            images: [
-                `${import.meta.env.BASE_URL}HD Picture TRIVENI Crown, Kalyan/MAIN GATE/1.option 01-crown gate 01.webp`,
-                `${import.meta.env.BASE_URL}HD Picture TRIVENI Crown, Kalyan/MAIN GATE/5.option 02-crown gate 03.webp`,
-                `${import.meta.env.BASE_URL}HD Picture TRIVENI Crown, Kalyan/MAIN GATE/6.option 02-crown gate 04.webp`
-            ]
-        },
-        {
-            id: 3,
-            title: "Ananda Residency - Paradigm Ambit Buildcon",
-            location: "Borivali (West), Mumbai",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "Massive 3,10,230 sq. ft. residential development completed successfully.",
-            images: [
-                `${import.meta.env.BASE_URL}projects_img/Ananda Residency - Paradigm Ambit Buildcon..webp`,
-                `${import.meta.env.BASE_URL}Ananda residency/Aerial.webp`,
-                `${import.meta.env.BASE_URL}Ananda residency/podium.webp`,
-                `${import.meta.env.BASE_URL}Ananda residency/pool.webp`,
-                `${import.meta.env.BASE_URL}Ananda residency/terrace 2.webp`
-            ]
-        },
-        {
-            id: 4,
-            title: "Westside – Tata Trent Ltd.",
-            location: "Gachibowli, Hyderabad",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "21,255 sq.ft. retail project delivered for Tata Trent.",
-            images: [
-                `${import.meta.env.BASE_URL}projects_img/Westside – Tata Trent Ltd.(1).webp`,
-                `${import.meta.env.BASE_URL}projects_img/Westside– Tata Trent Ltd..webp`
-            ]
-        },
-        {
-            id: 5,
-            title: "30 Juin",
-            location: "Congo",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "Premium residential and commercial development.",
-            images: [
-                `${import.meta.env.BASE_URL}30 Juin/Tranjio Hotel 03.webp`,
-                `${import.meta.env.BASE_URL}30 Juin/Tranjio Hotel 04.webp`,
-                `${import.meta.env.BASE_URL}30 Juin/Tranjio Hotel 06.webp`
-            ]
-        }
-    ];
+    // Derive featured and category lists from API data
+    const featuredProjects = projects.filter(p => p.featured);
+    const categoryProjects = projects;
 
-    const categoryProjects = [
-        // Residential
-        {
-            category: "Residential",
-            title: "Triveni Crown",
-            location: "Kalyan",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "Landmark residential project with grand entrance gate.",
-            images: [
-                `${import.meta.env.BASE_URL}HD Picture TRIVENI Crown, Kalyan/MAIN GATE/1.option 01-crown gate 01.webp`,
-                `${import.meta.env.BASE_URL}HD Picture TRIVENI Crown, Kalyan/MAIN GATE/5.option 02-crown gate 03.webp`,
-                `${import.meta.env.BASE_URL}HD Picture TRIVENI Crown, Kalyan/MAIN GATE/6.option 02-crown gate 04.webp`
-            ]
-        },
-        {
-            category: "Residential",
-            title: "Ananda Residency - Paradigm Ambit Buildcon",
-            location: "Borivali (West), Mumbai",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "Massive 3,10,230 sq. ft. residential development completed successfully.",
-            images: [
-                `${import.meta.env.BASE_URL}projects_img/Ananda Residency - Paradigm Ambit Buildcon..webp`,
-                `${import.meta.env.BASE_URL}Ananda residency/Aerial.webp`,
-                `${import.meta.env.BASE_URL}Ananda residency/podium.webp`,
-                `${import.meta.env.BASE_URL}Ananda residency/pool.webp`,
-                `${import.meta.env.BASE_URL}Ananda residency/terrace 2.webp`
-            ]
-        },
-        {
-            category: "Residential",
-            title: "Sati Darshan - Goyal Group",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "1,39,749 sq.ft. residential project in Malad, Mumbai.",
-            images: [`${import.meta.env.BASE_URL}projects_img/Sati Darshan - Goyal Group..webp`]
-        },
-        {
-            category: "Residential",
-            title: "Celestia - Shree Ram Samarth",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "1,00,000 sq.ft. residential development in Mulund, Mumbai.",
-            images: [`${import.meta.env.BASE_URL}projects_img/Celestia - Shree Ram Samarth..webp`]
-        },
-        {
-            category: "Residential",
-            title: "Shubharambh Residency",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "59,000 sq.ft. housing project in Solapur.",
-            images: [`${import.meta.env.BASE_URL}projects_img/Shubharambh Residency - Veer Housing Projects LLP..webp`]
-        },
-        {
-            category: "Residential",
-            title: "Golf Apartment",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "Luxury apartments with golf course views.",
-            images: [
-                `${import.meta.env.BASE_URL}Golf Apartment/Golf Appartment 1 .jpg.webp`,
-                `${import.meta.env.BASE_URL}Golf Apartment/Golf Appartment 2 .jpg.webp`
-            ]
-        },
-        {
-            category: "Residential",
-            title: "Triveni Classics",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "Classic residential architecture in Kalyan.",
-            images: [
-                `${import.meta.env.BASE_URL}HD Picture TRIVENI Classics, Kalyan/Triveni CLASSIC (NEW view) in progress.webp`,
-                `${import.meta.env.BASE_URL}HD Picture TRIVENI Classics, Kalyan/Triveni CLASSIC (Old view).webp`
-            ]
-        },
+    // Parse scope into array for backward compat with JSX
+    const parseScope = (scope) => {
+        if (!scope) return [];
+        if (Array.isArray(scope)) return scope;
+        return [scope];
+    };
 
-        // Commercial
-        {
-            category: "Commercial",
-            title: "Westside – Tata Trent Ltd.",
-            location: "Gachibowli, Hyderabad",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "21,255 sq.ft. retail project delivered for Tata Trent.",
-            images: [
-                `${import.meta.env.BASE_URL}projects_img/Westside – Tata Trent Ltd.(1).webp`,
-                `${import.meta.env.BASE_URL}projects_img/Westside– Tata Trent Ltd..webp`
-            ]
-        },
-        {
-            category: "Commercial",
-            title: "Zudio / Tata Trent Projects",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "Rollout management for multiple retail outlets.",
-            images: [
-                `${import.meta.env.BASE_URL}projects_img/Zudio – Tata Trent Ltd.(3).webp`,
-                `${import.meta.env.BASE_URL}projects_img/Zudio – Tata Trent Ltd.(4).webp`
-            ]
-        },
-        {
-            category: "Commercial",
-            title: "NIDIMO - Kamala Mill",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "Commercial interior works at Kamala Mills.",
-            images: [
-                `${import.meta.env.BASE_URL}NIDIMO - Kamala mill/2025-12-19 123025 1.webp`,
-                `${import.meta.env.BASE_URL}NIDIMO - Kamala mill/2025-12-19 123201 2.webp`,
-                `${import.meta.env.BASE_URL}NIDIMO - Kamala mill/2025-12-19 123143 3.webp`,
-                `${import.meta.env.BASE_URL}NIDIMO - Kamala mill/2025-12-19 123244 4.webp`
-            ]
-        },
-        {
-            category: "Commercial",
-            title: "NSCI Dome – Worli",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "5,150 sq.ft. institutional-scale project in Mumbai.",
-            images: [
-                `${import.meta.env.BASE_URL}projects_img/NSCI Dome – National Sports Club of India..webp`,
-                `${import.meta.env.BASE_URL}NSCI/16.webp`,
-                `${import.meta.env.BASE_URL}NSCI/21.webp`,
-                `${import.meta.env.BASE_URL}NSCI/25.webp`
-            ]
-        },
-        {
-            category: "Commercial",
-            title: "More Hyper Mart",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "Retail construction in Nashik, Maharashtra.",
-            images: [`${import.meta.env.BASE_URL}projects_img/More Hyper Mart -Aher Constructions Pvt. Ltd..webp`]
-        },
-        {
-            category: "Commercial",
-            title: "Expeditors – Studio DNA",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "Corporate office interior project.",
-            images: [
-                `${import.meta.env.BASE_URL}projects_img/Expeditors – Studio DNA .webp`,
-                `${import.meta.env.BASE_URL}projects_img/Expeditors – Studio DNA.webp`
-            ]
-        },
-        {
-            category: "Commercial",
-            title: "Maharail – Studio DNA",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "Office space development.",
-            images: [`${import.meta.env.BASE_URL}projects_img/Maharail – Studio DNA.webp`]
-        },
-
-        // Industrial
-        {
-            category: "Industrial",
-            title: "Prima Plastics Limited",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "1,69,000 Sft plastic manufacturing facility.",
-            images: [`${import.meta.env.BASE_URL}projects_img/Prima Plastics Limited..webp`]
-        },
-        {
-            category: "Industrial",
-            title: "Textile Factory",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "52,532 sq.ft. industrial facility in Tarapur.",
-            images: [`${import.meta.env.BASE_URL}projects_img/Textile Factory - Micro Interlinings Pvt. Ltd..webp`]
-        },
-        {
-            category: "Industrial",
-            title: "Gaiwadi Industrial Estate",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "Amazon Warehouse project management.",
-            images: [`${import.meta.env.BASE_URL}projects_img/Gaiwadi Industrial Estate - Amazon Warehouse..webp`]
-        },
-        {
-            category: "Industrial",
-            title: "JNPC Infra Development",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "Infrastructure development oversight.",
-            images: [`${import.meta.env.BASE_URL}projects_img/JNPC Infra Development– TUV Rheinland (India) Pvt Ltd..webp`]
-        },
-
-        // Hospitality
-        {
-            category: "Hospitality",
-            title: "Hotel Moon Palace - Kinshasa",
-            location: "Kinshasa, Congo",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "Luxury hospitality development with premium amenities.",
-            images: [
-                `${import.meta.env.BASE_URL}Hotel Moon Kinshasa/001 (3).webp`,
-                `${import.meta.env.BASE_URL}Hotel Moon Kinshasa/002 (3).webp`,
-                `${import.meta.env.BASE_URL}Hotel Moon Kinshasa/003 (3).webp`,
-                `${import.meta.env.BASE_URL}Hotel Moon Kinshasa/006 (2).webp`
-            ]
-        },
-        {
-            category: "Hospitality",
-            title: "30 Juin",
-            location: "Congo",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "Premium residential and commercial development.",
-            images: [
-                `${import.meta.env.BASE_URL}30 Juin/Tranjio Hotel 03.webp`,
-                `${import.meta.env.BASE_URL}30 Juin/Tranjio Hotel 04.webp`,
-                `${import.meta.env.BASE_URL}30 Juin/Tranjio Hotel 06.webp`
-            ]
-        },
-        {
-            category: "Hospitality",
-            title: "KAPCO Banquets & Catering",
-            scope: ["PMC - Project Management Consultants"],
-            highlight: "15,698 sq.ft. hospitality project in New Delhi.",
-            images: [`${import.meta.env.BASE_URL}projects_img/KAPCO Banquets & Catering Pvt. Ltd..webp`]
-        }
-    ];
-
-    const categories = ["All", "Residential", "Commercial", "Industrial", "Hospitality"];
+    const categories = ["All", ...new Set(projects.map(p => p.category).filter(Boolean))];
 
     return (
         <div className="min-h-screen bg-blue-pattern text-white font-sans selection:bg-blue-500/30">
@@ -497,7 +265,7 @@ const ProjectsMobile = () => {
             <div id="featured-projects"></div>
 
             {/* 2. FEATURED PROJECTS SHOWCASE */}
-            <section id="featured-projects" className="py-12 sm:py-24 px-4 sm:px-6 relative overflow-hidden">
+            <section id="featured-projects" className="py-16 sm:py-24 px-6 relative overflow-hidden">
                 <div className="absolute top-1/2 right-0 w-96 h-96 bg-blue-500/10 blur-[120px] rounded-full pointer-events-none"></div>
                 <div className="max-w-7xl mx-auto">
                     <RevealOnScroll>
@@ -513,8 +281,11 @@ const ProjectsMobile = () => {
                                 <div className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-5 sm:gap-16 items-center`}>
                                     <div className="w-full lg:w-1/2 group">
                                         <div className="relative aspect-[16/10] sm:aspect-[16/9] rounded-[1.3rem] sm:rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl animated-white-border">
-                                            <ImageSlider images={project.images} title={project.title} autoScrollTrigger={autoScrollTrigger} />
-                                            {/* <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div> */}
+                                            {project.images && project.images.length > 0 ? (
+                                                <ImageSlider images={project.images} title={project.title} />
+                                            ) : (
+                                                <div className="w-full h-full bg-gray-900 flex items-center justify-center"><Layout className="text-gray-700 w-12 h-12" /></div>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="w-full lg:w-1/2 space-y-4 sm:space-y-8">
@@ -527,7 +298,7 @@ const ProjectsMobile = () => {
                                                 <div className="p-1.5 rounded-lg bg-white/5 text-blue-400"><Layout size={18} /></div>
                                                 <div>
                                                     <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Scope of Work</div>
-                                                    <div className="text-gray-300 font-medium text-sm sm:text-base">{Array.isArray(project.scope) ? project.scope.join(", ") : project.scope}</div>
+                                                    <div className="text-gray-300 font-medium text-sm sm:text-base">{parseScope(project.scope).join(", ") || project.scope}</div>
                                                 </div>
                                             </div>
                                             <div className="flex items-start gap-3">
@@ -578,15 +349,19 @@ const ProjectsMobile = () => {
                             .filter(p => activeCategory === "All" || p.category === activeCategory)
                             .map((project, index) => (
                                 <div key={index} className="group p-4 sm:p-6 rounded-2xl bg-[#0a0a0a] border border-white/5 hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1 animated-white-border">
-                                    <div className="relative h-52 sm:h-64 rounded-xl overflow-hidden mb-4 sm:mb-6">
+                                        <div className="relative h-52 sm:h-64 rounded-xl overflow-hidden mb-4 sm:mb-6">
                                         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-                                        <img
-                                            src={project.images[0]}
-                                            alt={project.title}
-                                            loading="lazy"
-                                            decoding="async"
-                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                        />
+                                        {project.images?.length > 0 ? (
+                                            <img
+                                                src={project.images[0]}
+                                                alt={project.title}
+                                                loading="lazy"
+                                                decoding="async"
+                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full bg-gray-900 flex items-center justify-center"><Layout className="text-gray-700 w-12 h-12" /></div>
+                                        )}
                                         <span className="absolute top-3 right-3 px-2.5 py-1 bg-black/50 backdrop-blur-md rounded-full text-[10px] font-bold text-white border border-white/10">
                                             {project.category}
                                         </span>
@@ -597,7 +372,7 @@ const ProjectsMobile = () => {
                                     </h3>
 
                                     <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-6">
-                                        {project.scope.map((item, idx) => (
+                                        {parseScope(project.scope).map((item, idx) => (
                                             <div key={idx} className="flex items-center text-[11px] sm:text-xs text-gray-400 bg-white/5 px-2 py-1 rounded">
                                                 <CheckCircle size={10} className="text-blue-500 mr-1" />
                                                 {item}
