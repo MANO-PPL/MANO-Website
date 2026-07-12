@@ -9,6 +9,7 @@ import ContactForm from '../../components/ContactForm';
 import DigitalERPSection from '../../components/DigitalERPSection';
 import LazyBgDiv from '../../components/LazyBgDiv';
 import OptimizedImage from '../../components/OptimizedImage';
+import { S3_BASE_URL } from '../../config.js';
 
 
 const TestimonialsColumn = (props) => {
@@ -131,18 +132,22 @@ export default function LandingPageTablet() {
     return window.innerWidth < 640;
   });
 
-  const projects = [
-    { name: 'Hotel Moon Palace', images: [`${import.meta.env.BASE_URL}Hotel Moon Kinshasa/001 (3).webp`] },
-    { name: 'Triveni Crown', images: [`${import.meta.env.BASE_URL}HD Picture TRIVENI Crown, Kalyan/MAIN GATE/1.option 01-crown gate 01.webp`] },
-    { name: 'Ananda Residency', images: [`${import.meta.env.BASE_URL}Ananda residency/Aerial.webp`] },
-    { name: '30 Juin', images: [`${import.meta.env.BASE_URL}30 Juin/Tranjio Hotel 03.webp`] },
-    { name: 'Ariana Residency', images: [`${import.meta.env.BASE_URL}Ariana Residency - HD Pictures/Ariana Night View.webp`] },
-    { name: 'Triveni Classics', images: [`${import.meta.env.BASE_URL}HD Picture TRIVENI Classics, Kalyan/Triveni CLASSIC (NEW view) in progress.webp`] },
-    { name: 'NSCI Dome', images: [`${import.meta.env.BASE_URL}NSCI/20.webp`] },
-    { name: 'NIDIMO Kamala Mill', images: [`${import.meta.env.BASE_URL}NIDIMO - Kamala mill/2025-12-19 123025 1.webp`] },
-    { name: 'Golf Apartment', images: [`${import.meta.env.BASE_URL}Golf Apartment/Golf Appartment 1 .jpg.webp`] },
-    { name: 'Vista Meadows', images: [`${import.meta.env.BASE_URL}Vista Meadows - Vikhroli/WhatsApp Image 2026-02-09 at 2.16.56 PM.webp`] },
+  const rawProjects = [
+    { name: 'Hotel Moon Palace', images: ["/api/projects/images?key=projects/Hotel%20Moon%20Palace%20-%20Kinshasa/001%20(3).webp"] },
+    { name: 'Triveni Crown', images: ["/api/projects/images?key=projects/Triveni%20Crown/1.option%2001-crown%20gate%2001.webp"] },
+    { name: 'Ananda Residency', images: ["/api/projects/images?key=projects/Ananda%20Residency%20-%20Paradigm%20Ambit%20Buildcon/Aerial.webp"] },
+    { name: '30 Juin', images: ["/api/projects/images?key=projects/30%20Juin/Tranjio%20Hotel%2003.webp"] },
+    { name: 'Ariana Residency', images: ["/api/projects/images?key=projects/Ariana%20Residency/Ariana%20Night%20View.webp"] },
+    { name: 'Triveni Classics', images: ["/api/projects/images?key=projects/Triveni%20Classics/Triveni%20CLASSIC%20(NEW%20view)%20in%20progress.webp"] },
+    { name: 'NSCI Dome', images: ["/api/projects/images?key=projects/NSCI%20Dome%20%E2%80%93%20Worli/16.webp"] },
+    { name: 'NIDIMO Kamala Mill', images: ["/api/projects/images?key=projects/NIDIMO%20-%20Kamala%20Mill/2025-12-19%20123025%201.webp"] },
+    { name: 'Golf Apartment', images: ["/api/projects/images?key=projects/Golf%20Apartment/Golf%20Appartment%201%20.jpg.webp"] },
+    { name: 'Vista Meadows', images: ["/api/projects/images?key=projects/Vista%20Meadows/WhatsApp%20Image%202026-02-09%20at%202.16.56%20PM.webp"] },
   ];
+  const projects = rawProjects.map(p => ({
+    ...p,
+    images: p.images.map(img => img.replace('/api/projects/images?key=', `${S3_BASE_URL}/`))
+  }));
 
   const handleMouseMove = (e) => {
     const section = e.currentTarget;
@@ -237,7 +242,11 @@ export default function LandingPageTablet() {
       const rounded = Math.round(currentIndexRef.current) % projects.length;
       // keep in bounds positive
       const idx = ((rounded % projects.length) + projects.length) % projects.length;
-      setCurrentProjectIndex(idx);
+      
+      setCurrentProjectIndex((prev) => {
+        if (prev !== idx) return idx;
+        return prev;
+      });
       rafId = requestAnimationFrame(step);
     };
     rafId = requestAnimationFrame(step);
@@ -248,7 +257,7 @@ export default function LandingPageTablet() {
   useEffect(() => {
     const interval = setInterval(() => {
       targetIndexRef.current += 1;
-    }, 1500);
+    }, 5000); // 5 seconds interval to prevent continuous layout rendering lag
     return () => clearInterval(interval);
   }, []);
 
@@ -529,6 +538,9 @@ export default function LandingPageTablet() {
                 const translateX_Right1 = isMobile ? '25%' : '-10%';
                 const translateX_Right2 = isMobile ? '75%' : '60%';
                 const showOnMobile = isCenter || isLeft1 || isRight1;
+
+                const shouldRender = isMobile ? showOnMobile : (isCenter || isLeft1 || isLeft2 || isRight1 || isRight2);
+                if (!shouldRender) return null;
 
                 let transform = 'translateX(-50%) scale(0.6) translateZ(-160px)';
                 let zIndex = 1;

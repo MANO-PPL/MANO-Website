@@ -18,7 +18,7 @@ const GatewayTablet = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % BACKGROUND_IMAGES.length);
-    }, 1000);
+    }, 5000); // 5 seconds interval for smoother transition performance
     return () => clearInterval(interval);
   }, []);
 
