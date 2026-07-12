@@ -74,11 +74,13 @@ export default function Gateway() {
                     ]
                 })}
             </script>
-            {deviceType === 'mobile' && <GatewayMobile />}
-            {deviceType === 'tablet' && <GatewayTablet />}
-            {deviceType === 'desktop' && <GatewayDesktop />}
-            {/* Fallback to desktop if device type is unknown */}
-            {!['mobile', 'tablet', 'desktop'].includes(deviceType) && <GatewayDesktop />}
+            <div style={{ zoom: 0.8, height: '125vh', width: '125vw' }} className="bg-black overflow-hidden relative">
+                {deviceType === 'mobile' && <GatewayMobile />}
+                {deviceType === 'tablet' && <GatewayTablet />}
+                {deviceType === 'desktop' && <GatewayDesktop />}
+                {/* Fallback to desktop if device type is unknown */}
+                {!['mobile', 'tablet', 'desktop'].includes(deviceType) && <GatewayDesktop />}
+            </div>
         </>
     );
 }

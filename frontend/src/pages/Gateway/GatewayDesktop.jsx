@@ -23,7 +23,7 @@ const GatewayDesktop = () => {
   }, []);
 
   return (
-    <div className="h-screen w-full bg-black text-white flex flex-col items-center justify-center relative overflow-hidden font-sans selection:bg-blue-500/30">
+    <div className="h-full w-full bg-black text-white flex flex-col items-center justify-center relative overflow-hidden font-sans selection:bg-blue-500/30">
       <AnimatePresence mode="popLayout">
         <motion.div
           key={currentImageIndex}

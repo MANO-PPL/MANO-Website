@@ -23,7 +23,7 @@ const GatewayMobile = () => {
   }, []);
 
   return (
-    <div className="min-h-screen w-full bg-black text-white flex flex-col items-center justify-start relative overflow-hidden font-sans selection:bg-blue-500/30 px-3 sm:px-4 py-6 sm:py-8">
+    <div className="min-h-full w-full bg-black text-white flex flex-col items-center justify-start relative overflow-hidden font-sans selection:bg-blue-500/30 px-3 sm:px-4 py-6 sm:py-8">
       <AnimatePresence mode="popLayout">
         <motion.div
           key={currentImageIndex}
