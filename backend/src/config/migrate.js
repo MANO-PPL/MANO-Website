@@ -24,6 +24,30 @@ const db = knex({
 
 async function run() {
   try {
+    console.log("Checking if 'resumes' table has 'mobile' column...");
+    const hasMobile = await db.schema.hasColumn('resumes', 'mobile');
+    if (!hasMobile) {
+      console.log("Adding 'mobile' column to 'resumes' table...");
+      await db.schema.alterTable('resumes', (table) => {
+        table.string('mobile', 50).nullable();
+      });
+      console.log("Column 'mobile' added successfully to 'resumes' table.");
+    } else {
+      console.log("'mobile' column already exists in 'resumes' table.");
+    }
+
+    console.log("Checking if 'resumes' table has 'remarks' column...");
+    const hasRemarks = await db.schema.hasColumn('resumes', 'remarks');
+    if (!hasRemarks) {
+      console.log("Adding 'remarks' column to 'resumes' table...");
+      await db.schema.alterTable('resumes', (table) => {
+        table.text('remarks').nullable();
+      });
+      console.log("Column 'remarks' added successfully to 'resumes' table.");
+    } else {
+      console.log("'remarks' column already exists in 'resumes' table.");
+    }
+
     console.log("Checking if 'jobs' table has 'status' column...");
     const hasStatus = await db.schema.hasColumn('jobs', 'status');
     if (!hasStatus) {

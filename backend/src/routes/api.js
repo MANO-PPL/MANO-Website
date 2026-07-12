@@ -1,6 +1,6 @@
 import express from 'express';
 import { submitEnquiry } from '../controllers/enquiryController.js';
-import { submitResume, getResumes, deleteResume, viewResume } from '../controllers/resumeController.js';
+import { submitResume, getResumes, deleteResume, viewResume, updateResumeRemarks } from '../controllers/resumeController.js';
 import { getJobs, createJob, updateJob, toggleJobStatus, deleteJob, viewJD } from '../controllers/jobsController.js';
 import { verifyAdminToken } from '../middleware/auth.js';
 import upload, { uploadJD, uploadBlogImage, uploadProjectImages } from '../middleware/multer.js';
@@ -86,6 +86,7 @@ router.delete('/projects/:id', verifyAdminToken, deleteProject);
 // Protected Admin Actions: Candidate applications
 router.get('/mano-admin-portal-dashboard-secure/:platform/resumes', verifyAdminToken, getResumes);
 router.get('/mano-admin-portal-dashboard-secure/resumes', verifyAdminToken, getResumes);
+router.put('/mano-admin-portal-dashboard-secure/resumes/:id/remarks', verifyAdminToken, updateResumeRemarks);
 router.delete('/mano-admin-portal-dashboard-secure/resumes/:id', verifyAdminToken, deleteResume);
 
 export default router;

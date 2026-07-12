@@ -4,7 +4,7 @@ import {
     Filter, X, Download, Calendar, Mail, MapPin, Award, 
     Clock, DollarSign, UserCheck, Shield, ChevronRight, Check,
     FileText, Tag, User as UserIcon, BookOpen, ChevronDown, Upload, Image, AlertTriangle,
-    FolderOpen, Star, Globe, Eye, ToggleLeft, ToggleRight
+    FolderOpen, Star, Globe, Eye, ToggleLeft, ToggleRight, Phone
 } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import { 
@@ -125,6 +125,8 @@ const AdminDashboard = ({ token, onLogout }) => {
     const [viewingJob, setViewingJob] = useState(null);
     const [viewingCandidate, setViewingCandidate] = useState(null);
     const [viewingBlog, setViewingBlog] = useState(null);
+    const [remarksText, setRemarksText] = useState('');
+    const [savingRemarks, setSavingRemarks] = useState(false);
     const [deleteConfirmJob, setDeleteConfirmJob] = useState(null);
     const [isDeletingJob, setIsDeletingJob] = useState(false);
     const [isSavingJob, setIsSavingJob] = useState(false);
@@ -193,6 +195,42 @@ const AdminDashboard = ({ token, onLogout }) => {
     };
 
     const ADMIN_PROJECTS_BASE_URL = `${API_BASE_URL}/api/projects`;
+
+    useEffect(() => {
+        if (viewingCandidate) {
+            setRemarksText(viewingCandidate.remarks || '');
+        } else {
+            setRemarksText('');
+        }
+    }, [viewingCandidate]);
+
+    const handleSaveRemarks = async () => {
+        if (!viewingCandidate) return;
+        setSavingRemarks(true);
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/mano-admin-portal-dashboard-secure/resumes/${viewingCandidate.id}/remarks`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-admin-token': token
+                },
+                body: JSON.stringify({ remarks: remarksText })
+            });
+            const data = await response.json();
+            if (response.ok && data.ok) {
+                toast.success('Remarks updated successfully');
+                setCandidates(prev => prev.map(c => c.id === viewingCandidate.id ? { ...c, remarks: remarksText } : c));
+                setViewingCandidate(prev => prev ? { ...prev, remarks: remarksText } : null);
+            } else {
+                toast.error(data.message || 'Failed to update remarks.');
+            }
+        } catch (error) {
+            console.error('Update remarks error:', error);
+            toast.error('Unable to connect to candidate server.');
+        } finally {
+            setSavingRemarks(false);
+        }
+    };
 
     // Load Data
     const fetchCandidates = async (platform) => {
@@ -1119,15 +1157,17 @@ const AdminDashboard = ({ token, onLogout }) => {
                                             <p className="text-[10px] text-[#484f58]">Try adjusting your filters or search keywords</p>
                                         </div>
                                     ) : (
-                                        <div className="overflow-x-auto border border-[#30363d] rounded-xl">
+                        <div className="overflow-x-auto border border-[#30363d] rounded-xl">
                                             <table className="w-full text-left border-collapse">
                                                 <thead>
                                                     <tr className="bg-[#161b22] text-[#8b949e] border-b border-[#30363d] text-[10px] font-bold uppercase tracking-wider">
                                                         <th className="px-6 py-4">Name & Email</th>
+                                                        <th className="px-6 py-4">Mobile Number</th>
                                                         <th className="px-6 py-4">Platform</th>
                                                         <th className="px-6 py-4">Applied Role</th>
                                                         <th className="px-6 py-4">Date Applied</th>
-                                                        <th className="px-6 py-4">Resume File</th>
+                                                        <th className="px-6 py-4 max-w-[150px] truncate">Resume File</th>
+                                                        <th className="px-6 py-4 max-w-[250px]">Remarks</th>
                                                         <th className="px-6 py-4 text-right">Actions</th>
                                                     </tr>
                                                 </thead>
@@ -1148,12 +1188,26 @@ const AdminDashboard = ({ token, onLogout }) => {
                                                                 </div>
                                                             </td>
                                                             <td className="px-6 py-4">
+                                                                {c.mobile ? (
+                                                                    <a 
+                                                                        href={`tel:${c.mobile}`} 
+                                                                        onClick={(e) => e.stopPropagation()} 
+                                                                        className="hover:text-[#58a6ff] flex items-center gap-1.5 text-[#c9d1d9] font-medium"
+                                                                    >
+                                                                        <Phone size={12} className="text-[#8b949e]" />
+                                                                        {c.mobile}
+                                                                    </a>
+                                                                ) : (
+                                                                    <span className="text-[#484f58] font-light">-</span>
+                                                                )}
+                                                            </td>
+                                                            <td className="px-6 py-4">
                                                                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${c.platform?.toLowerCase() === 'epc' ? 'bg-purple-900/30 border border-purple-800/50 text-purple-400' : 'bg-blue-900/30 border border-blue-800/50 text-blue-400'}`}>
                                                                     {c.platform || 'pmc'}
                                                                 </span>
                                                             </td>
                                                             <td className="px-6 py-4">
-                                                                <span className={`px-2 py-1 rounded text-[10px] font-bold tracking-wide border ${
+                                                                <span className={`px-2 py-1 rounded text-[10px] font-bold tracking-wide border inline-block whitespace-nowrap ${
                                                                      c.job_role === 'General Application'
                                                                          ? 'bg-[#d29922]/15 border-[#d29922]/30 text-[#d29922]'
                                                                          : 'bg-[#1f6feb]/15 border-[#388bfd]/30 text-[#58a6ff]'
@@ -1171,17 +1225,28 @@ const AdminDashboard = ({ token, onLogout }) => {
                                                                     })}
                                                                 </p>
                                                             </td>
-                                                            <td className="px-6 py-4">
+                                                            <td className="px-6 py-4 max-w-[150px]">
                                                                 <a
                                                                     href={getResumeLink(c.file_path)}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
                                                                     onClick={(e) => e.stopPropagation()}
-                                                                    className="inline-flex items-center gap-1.5 text-[#58a6ff] hover:underline font-semibold"
+                                                                    className="inline-flex items-center gap-1.5 text-[#58a6ff] hover:underline font-semibold max-w-full"
                                                                 >
-                                                                    <Download size={12} />
-                                                                    {c.file_name || 'Download Resume'}
+                                                                    <Download size={12} className="flex-shrink-0" />
+                                                                    <span className="truncate" title={c.file_name || 'Download Resume'}>
+                                                                        {c.file_name || 'Download Resume'}
+                                                                    </span>
                                                                 </a>
+                                                            </td>
+                                                            <td className="px-6 py-4 max-w-[250px]">
+                                                                {c.remarks ? (
+                                                                    <div className="text-[#c9d1d9] line-clamp-3 whitespace-normal break-words" title={c.remarks}>
+                                                                        {c.remarks}
+                                                                    </div>
+                                                                ) : (
+                                                                    <span className="text-[#484f58] font-light">-</span>
+                                                                )}
                                                             </td>
                                                             <td className="px-6 py-4 text-right">
                                                                 <button
@@ -2755,6 +2820,19 @@ const AdminDashboard = ({ token, onLogout }) => {
                                 </span>
                             </div>
 
+                            {/* Contact Mobile */}
+                            {viewingCandidate.mobile && (
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-[10px] font-bold text-[#8b949e] uppercase tracking-widest">Contact Mobile</span>
+                                    <span className="text-[#e6edf3] font-medium text-sm flex items-center gap-2">
+                                        <Phone size={13} className="text-[#58a6ff] flex-shrink-0" />
+                                        <a href={`tel:${viewingCandidate.mobile}`} className="hover:text-[#58a6ff] transition-colors">
+                                            {viewingCandidate.mobile}
+                                        </a>
+                                    </span>
+                                </div>
+                            )}
+
                             {/* Resume / CV */}
                             <div className="flex flex-col gap-1.5">
                                 <span className="text-[10px] font-bold text-[#8b949e] uppercase tracking-widest">Resume / CV</span>
@@ -2775,6 +2853,25 @@ const AdminDashboard = ({ token, onLogout }) => {
                                     </div>
                                     <ChevronRight size={13} className="text-[#8b949e] group-hover/resume:text-[#58a6ff] flex-shrink-0 transition-colors" />
                                 </a>
+                            </div>
+
+                            {/* Candidate Remarks (Editable) */}
+                            <div className="flex flex-col gap-2 pt-4 border-t border-[#30363d]">
+                                <span className="text-[10px] font-bold text-[#8b949e] uppercase tracking-widest">Candidate Remarks</span>
+                                <textarea
+                                    className="w-full h-24 bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-3 text-xs text-[#e6edf3] placeholder-[#484f58] focus:outline-none resize-none transition-colors"
+                                    placeholder="Add admin remarks / comments about this candidate (2-3 lines)..."
+                                    value={remarksText}
+                                    onChange={(e) => setRemarksText(e.target.value)}
+                                    maxLength={1000}
+                                />
+                                <button
+                                    onClick={handleSaveRemarks}
+                                    disabled={savingRemarks || remarksText === (viewingCandidate.remarks || '')}
+                                    className="self-end px-3 py-1.5 text-[11px] font-bold bg-[#238636] hover:bg-[#2ea043] disabled:bg-[#238636]/50 text-white rounded-md transition-colors flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
+                                >
+                                    {savingRemarks ? 'Saving...' : 'Save Remarks'}
+                                </button>
                             </div>
 
                         </div>
