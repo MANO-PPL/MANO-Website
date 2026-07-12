@@ -92,4 +92,27 @@ export const uploadBlogImage = multer({
     limits: { fileSize: 10 * 1024 * 1024 } // 10MB
 });
 
+// ─── Project Images Storage ───────────────────────────────────────────────────
+const projectImageStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const dir = path.join(__dirname, '../../uploads/projects');
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        cb(null, dir);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const ext = path.extname(file.originalname);
+        const baseName = path.basename(file.originalname, ext).replace(/\s+/g, '_');
+        cb(null, `${uniqueSuffix}-${baseName}${ext}`);
+    }
+});
+
+export const uploadProjectImages = multer({
+    storage: projectImageStorage,
+    fileFilter: blogImageFilter, // same image-only filter
+    limits: { fileSize: 15 * 1024 * 1024, files: 20 } // 15MB per file, max 20 files
+});
+
 export default upload;

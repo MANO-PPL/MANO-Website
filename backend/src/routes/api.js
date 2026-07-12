@@ -3,9 +3,10 @@ import { submitEnquiry } from '../controllers/enquiryController.js';
 import { submitResume, getResumes, deleteResume, viewResume } from '../controllers/resumeController.js';
 import { getJobs, createJob, updateJob, toggleJobStatus, deleteJob, viewJD } from '../controllers/jobsController.js';
 import { verifyAdminToken } from '../middleware/auth.js';
-import upload, { uploadJD, uploadBlogImage } from '../middleware/multer.js';
+import upload, { uploadJD, uploadBlogImage, uploadProjectImages } from '../middleware/multer.js';
 import { ManoWebDB, verifyPassword } from '../config/database.js';
 import { getBlogs, getBlogById, createBlog, updateBlog, deleteBlog } from '../controllers/blogsController.js';
+import { getProjects, getAllProjectsAdmin, getProjectById, createProject, updateProject, deleteProject, getProjectImage } from '../controllers/projectsController.js';
 
 const router = express.Router();
 
@@ -69,6 +70,18 @@ router.delete('/jobs/:id', verifyAdminToken, deleteJob);
 router.post('/blogs', verifyAdminToken, uploadBlogImage.single('blog_image'), createBlog);
 router.put('/blogs/:id', verifyAdminToken, uploadBlogImage.single('blog_image'), updateBlog);
 router.delete('/blogs/:id', verifyAdminToken, deleteBlog);
+
+// Public Projects endpoints
+router.get('/projects', getProjects);
+router.get('/projects/images', getProjectImage);
+router.get('/projects/:id', getProjectById);
+
+
+// Protected Admin Actions: Projects CRUD
+router.get('/projects-admin/all', verifyAdminToken, getAllProjectsAdmin);
+router.post('/projects', verifyAdminToken, uploadProjectImages.array('project_images', 20), createProject);
+router.put('/projects/:id', verifyAdminToken, uploadProjectImages.array('project_images', 20), updateProject);
+router.delete('/projects/:id', verifyAdminToken, deleteProject);
 
 // Protected Admin Actions: Candidate applications
 router.get('/mano-admin-portal-dashboard-secure/:platform/resumes', verifyAdminToken, getResumes);

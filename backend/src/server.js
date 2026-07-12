@@ -70,9 +70,15 @@ getAvailablePort(initialPort)
 
         // Bootstrap database tables in parallel
         bootstrap()
-            .then((dbConnected) => {
+            .then(async (dbConnected) => {
                 if (dbConnected) {
                     console.log('Database tables bootstrapped successfully.');
+                    try {
+                        const { syncProjectsToS3 } = await import('./controllers/projectsController.js');
+                        await syncProjectsToS3();
+                    } catch (syncErr) {
+                        console.error('Startup S3 projects sync failed:', syncErr);
+                    }
                 } else {
                     console.log('Database not connected. Server running in offline mode.');
                 }

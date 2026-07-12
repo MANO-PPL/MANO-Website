@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
     Users, Briefcase, LogOut, Plus, Trash2, Edit2, Search, 
     Filter, X, Download, Calendar, Mail, MapPin, Award, 
     Clock, DollarSign, UserCheck, Shield, ChevronRight, Check,
-    FileText, Tag, User as UserIcon, BookOpen, ChevronDown, Upload, Image, AlertTriangle
+    FileText, Tag, User as UserIcon, BookOpen, ChevronDown, Upload, Image, AlertTriangle,
+    FolderOpen, Star, Globe, Eye, ToggleLeft, ToggleRight
 } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import { 
     API_BASE_URL, 
     ADMIN_RESUMES_API_URL, 
     ADMIN_JOBS_API_URL,
-    BLOGS_API_URL 
+    BLOGS_API_URL,
+    PROJECTS_API_URL,
+    PROJECTS_ADMIN_API_URL
 } from '../../config';
 
 // ─── Custom Select Component (GitHub Dark Styled) ─────────────────────────────
@@ -126,6 +129,36 @@ const AdminDashboard = ({ token, onLogout }) => {
     const [isDeletingJob, setIsDeletingJob] = useState(false);
     const [isSavingJob, setIsSavingJob] = useState(false);
     const [isSavingBlog, setIsSavingBlog] = useState(false);
+    // Candidate & Blog delete modals
+    const [deleteConfirmCandidate, setDeleteConfirmCandidate] = useState(null);
+    const [isDeletingCandidate, setIsDeletingCandidate] = useState(false);
+    const [deleteConfirmBlog, setDeleteConfirmBlog] = useState(null);
+    const [isDeletingBlog, setIsDeletingBlog] = useState(false);
+    // Projects state
+    const [projects, setProjects] = useState([]);
+    const [projectsLoading, setProjectsLoading] = useState(false);
+    const [projectSearch, setProjectSearch] = useState('');
+    const [projectCategoryFilter, setProjectCategoryFilter] = useState('All');
+    const [projectStatusFilter, setProjectStatusFilter] = useState('All');
+    const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+    const [currentEditingProject, setCurrentEditingProject] = useState(null);
+    const [deleteConfirmProject, setDeleteConfirmProject] = useState(null);
+    const [isDeletingProject, setIsDeletingProject] = useState(false);
+    const [isSavingProject, setIsSavingProject] = useState(false);
+    const [projectForm, setProjectForm] = useState({
+        title: '',
+        location: '',
+        category: 'Commercial',
+        scope: 'PMC - Project Management Consultants',
+        highlight: '',
+        featured: false,
+        status: 'active',
+        display_order: 0,
+        existingImages: [],   // URLs already stored
+        newImageFiles: [],    // File objects to upload
+        removedImages: []     // URLs to delete
+    });
+    const projectImageInputRef = useRef(null);
 
     // Form States
     const [jobForm, setJobForm] = useState({
@@ -158,6 +191,8 @@ const AdminDashboard = ({ token, onLogout }) => {
         'Content-Type': 'application/json',
         'x-admin-token': token
     };
+
+    const ADMIN_PROJECTS_BASE_URL = `${API_BASE_URL}/api/projects`;
 
     // Load Data
     const fetchCandidates = async (platform) => {
@@ -221,6 +256,24 @@ const AdminDashboard = ({ token, onLogout }) => {
         }
     };
 
+    const fetchProjects = async () => {
+        setProjectsLoading(true);
+        try {
+            const response = await fetch(PROJECTS_ADMIN_API_URL, { headers });
+            const data = await response.json();
+            if (response.ok && data.ok) {
+                setProjects(data.data || []);
+            } else {
+                toast.error(data.message || 'Failed to load projects.');
+            }
+        } catch (error) {
+            console.error('Fetch projects error:', error);
+            toast.error('Unable to connect to projects server.');
+        } finally {
+            setProjectsLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (token) {
             const currentPlatform = activeTab === 'pmc-careers' ? 'pmc' : activeTab === 'epc-careers' ? 'epc' : null;
@@ -229,31 +282,39 @@ const AdminDashboard = ({ token, onLogout }) => {
                 fetchCandidates(currentPlatform);
             } else if (activeTab === 'blogs') {
                 fetchBlogs();
+            } else if (activeTab === 'projects') {
+                fetchProjects();
             }
         }
     }, [activeTab, token]);
 
-    // Handle Candidates delete
-    const handleDeleteCandidate = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this application? This will also remove the resume file.')) {
-            return;
-        }
+    // Handle Candidates delete — open confirmation modal
+    const handleDeleteCandidate = (candidate) => {
+        setDeleteConfirmCandidate(candidate);
+    };
 
+    const confirmDeleteCandidate = async () => {
+        if (!deleteConfirmCandidate) return;
+        setIsDeletingCandidate(true);
         try {
-            const response = await fetch(`${ADMIN_RESUMES_API_URL}/${id}`, {
+            const response = await fetch(`${ADMIN_RESUMES_API_URL}/${deleteConfirmCandidate.id}`, {
                 method: 'DELETE',
                 headers
             });
             const data = await response.json();
             if (response.ok && data.ok) {
                 toast.success('Application deleted successfully.');
-                setCandidates(candidates.filter(c => c.id !== id));
+                setCandidates(candidates.filter(c => c.id !== deleteConfirmCandidate.id));
+                if (viewingCandidate?.id === deleteConfirmCandidate.id) setViewingCandidate(null);
+                setDeleteConfirmCandidate(null);
             } else {
                 toast.error(data.message || 'Failed to delete application.');
             }
         } catch (error) {
             console.error('Delete error:', error);
             toast.error('Server error deleting candidate.');
+        } finally {
+            setIsDeletingCandidate(false);
         }
     };
 
@@ -555,26 +616,33 @@ const AdminDashboard = ({ token, onLogout }) => {
         }
     };
 
-    const handleDeleteBlog = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this blog post? It will disappear from the live website immediately.')) {
-            return;
-        }
+    // Blog delete — open confirmation modal
+    const handleDeleteBlog = (blog) => {
+        setDeleteConfirmBlog(blog);
+    };
 
+    const confirmDeleteBlog = async () => {
+        if (!deleteConfirmBlog) return;
+        setIsDeletingBlog(true);
         try {
-            const response = await fetch(`${BLOGS_API_URL}/${id}`, {
+            const response = await fetch(`${BLOGS_API_URL}/${deleteConfirmBlog.id}`, {
                 method: 'DELETE',
                 headers
             });
             const data = await response.json();
             if (response.ok && data.ok) {
                 toast.success('Blog post deleted successfully.');
-                setBlogs(blogs.filter(b => b.id !== id));
+                setBlogs(blogs.filter(b => b.id !== deleteConfirmBlog.id));
+                if (viewingBlog?.id === deleteConfirmBlog.id) setViewingBlog(null);
+                setDeleteConfirmBlog(null);
             } else {
                 toast.error(data.message || 'Failed to delete blog.');
             }
         } catch (error) {
             console.error('Delete blog error:', error);
             toast.error('Server error deleting blog.');
+        } finally {
+            setIsDeletingBlog(false);
         }
     };
 
@@ -600,7 +668,164 @@ const AdminDashboard = ({ token, onLogout }) => {
         setBlogForm({ ...blogForm, sections: updated });
     };
 
-    // Calculate dynamic stats based on current platform context
+    // ─── Projects Handlers ────────────────────────────────────────────────────
+    const resetProjectForm = () => {
+        setIsProjectModalOpen(false);
+        setCurrentEditingProject(null);
+        setProjectForm({
+            title: '', location: '', category: 'Commercial',
+            scope: 'PMC - Project Management Consultants',
+            highlight: '', featured: false, status: 'active',
+            display_order: 0, existingImages: [], newImageFiles: [], removedImages: []
+        });
+    };
+
+    const openCreateProjectModal = () => {
+        resetProjectForm();
+        setIsProjectModalOpen(true);
+    };
+
+    const openEditProjectModal = (project) => {
+        setCurrentEditingProject(project);
+        setProjectForm({
+            title: project.title || '',
+            location: project.location || '',
+            category: project.category || 'Commercial',
+            scope: project.scope || 'PMC - Project Management Consultants',
+            highlight: project.highlight || '',
+            featured: !!project.featured,
+            status: project.status || 'active',
+            display_order: project.display_order || 0,
+            existingImages: project.images || [],
+            newImageFiles: [],
+            removedImages: []
+        });
+        setIsProjectModalOpen(true);
+    };
+
+    const handleProjectImageAdd = (e) => {
+        const files = Array.from(e.target.files);
+        setProjectForm(prev => ({ ...prev, newImageFiles: [...prev.newImageFiles, ...files] }));
+        if (projectImageInputRef.current) projectImageInputRef.current.value = '';
+    };
+
+    const removeNewProjectImage = (index) => {
+        setProjectForm(prev => {
+            const updated = [...prev.newImageFiles];
+            updated.splice(index, 1);
+            return { ...prev, newImageFiles: updated };
+        });
+    };
+
+    const removeExistingProjectImage = (url) => {
+        setProjectForm(prev => ({
+            ...prev,
+            existingImages: prev.existingImages.filter(img => img !== url),
+            removedImages: [...prev.removedImages, url]
+        }));
+    };
+
+    const handleProjectSubmit = async (e) => {
+        e.preventDefault();
+        if (!projectForm.title.trim()) {
+            toast.warn('Project title is required.');
+            return;
+        }
+        const isEditing = !!currentEditingProject;
+        const url = isEditing
+            ? `${ADMIN_PROJECTS_BASE_URL}/${currentEditingProject.id}`
+            : ADMIN_PROJECTS_BASE_URL;
+        const method = isEditing ? 'PUT' : 'POST';
+
+        const formData = new FormData();
+        formData.append('title', projectForm.title.trim());
+        formData.append('location', projectForm.location.trim());
+        formData.append('category', projectForm.category);
+        formData.append('scope', projectForm.scope.trim());
+        formData.append('highlight', projectForm.highlight.trim());
+        formData.append('featured', projectForm.featured ? 'true' : 'false');
+        formData.append('status', projectForm.status);
+        formData.append('display_order', projectForm.display_order);
+        formData.append('existing_images', JSON.stringify(projectForm.existingImages));
+        if (projectForm.removedImages.length > 0) {
+            formData.append('remove_images', JSON.stringify(projectForm.removedImages));
+        }
+        projectForm.newImageFiles.forEach(file => {
+            formData.append('project_images', file);
+        });
+
+        setIsSavingProject(true);
+        try {
+            const response = await fetch(url, {
+                method,
+                headers: { 'x-admin-token': token },
+                body: formData
+            });
+            const data = await response.json();
+            if (response.ok && data.ok) {
+                toast.success(isEditing ? 'Project updated!' : 'Project created!');
+                resetProjectForm();
+                fetchProjects();
+            } else {
+                toast.error(data.message || 'Failed to save project.');
+            }
+        } catch (error) {
+            console.error('Save project error:', error);
+            toast.error('Server error saving project.');
+        } finally {
+            setIsSavingProject(false);
+        }
+    };
+
+    const confirmDeleteProject = async () => {
+        if (!deleteConfirmProject) return;
+        setIsDeletingProject(true);
+        try {
+            const response = await fetch(`${ADMIN_PROJECTS_BASE_URL}/${deleteConfirmProject.id}`, {
+                method: 'DELETE',
+                headers
+            });
+            const data = await response.json();
+            if (response.ok && data.ok) {
+                setProjects(projects.filter(p => p.id !== deleteConfirmProject.id));
+                setDeleteConfirmProject(null);
+                toast.success(`"${deleteConfirmProject.title}" deleted.`);
+            } else {
+                toast.error(data.message || 'Failed to delete project.');
+            }
+        } catch (error) {
+            console.error('Delete project error:', error);
+            toast.error('Server error deleting project.');
+        } finally {
+            setIsDeletingProject(false);
+        }
+    };
+
+    const handleToggleProjectStatus = async (project) => {
+        const newStatus = project.status === 'active' ? 'inactive' : 'active';
+        try {
+            const formData = new FormData();
+            formData.append('status', newStatus);
+            formData.append('existing_images', JSON.stringify(project.images || []));
+            const response = await fetch(`${ADMIN_PROJECTS_BASE_URL}/${project.id}`, {
+                method: 'PUT',
+                headers: { 'x-admin-token': token },
+                body: formData
+            });
+            const data = await response.json();
+            if (response.ok && data.ok) {
+                setProjects(projects.map(p => p.id === project.id ? { ...p, status: newStatus } : p));
+                toast.success(`Project "${project.title}" set to ${newStatus}.`);
+            } else {
+                toast.error(data.message || 'Failed to update project status.');
+            }
+        } catch (error) {
+            console.error('Toggle project status error:', error);
+            toast.error('Server error updating project status.');
+        }
+    };
+
+
     const currentPlatform = activeTab === 'pmc-careers' ? 'pmc' : activeTab === 'epc-careers' ? 'epc' : null;
 
     const stats = {
@@ -640,6 +865,30 @@ const AdminDashboard = ({ token, onLogout }) => {
         const matchesCategory = blogCategoryFilter === 'All' || b.category === blogCategoryFilter;
         return matchesSearch && matchesCategory;
     });
+
+    const filteredProjects = projects.filter(p => {
+        const matchesSearch = (p.title || '').toLowerCase().includes(projectSearch.toLowerCase()) ||
+                             (p.location || '').toLowerCase().includes(projectSearch.toLowerCase()) ||
+                             (p.scope || '').toLowerCase().includes(projectSearch.toLowerCase());
+        const matchesStatus = projectStatusFilter === 'All' || p.status === projectStatusFilter;
+        return matchesSearch && matchesStatus;
+    });
+
+    const projectCategoryOptions = [
+        { label: 'All Categories', value: 'All' },
+        { label: 'Commercial', value: 'Commercial' },
+        { label: 'Residential', value: 'Residential' },
+        { label: 'Hospitality', value: 'Hospitality' },
+        { label: 'Industrial', value: 'Industrial' },
+        { label: 'International', value: 'International' },
+        { label: 'Infrastructure', value: 'Infrastructure' }
+    ];
+
+    const projectStatusOptions = [
+        { label: 'All Statuses', value: 'All' },
+        { label: 'Active', value: 'active' },
+        { label: 'Inactive', value: 'inactive' }
+    ];
 
     // Unique values for dropdown filters
     const candidateRoles = ['All', ...new Set(candidates.map(c => c.job_role))];
@@ -699,6 +948,14 @@ const AdminDashboard = ({ token, onLogout }) => {
                                 <FileText size={16} />
                                 <span>Blog Posts</span>
                             </button>
+
+                            <button
+                                onClick={() => setActiveTab('projects')}
+                                className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center gap-3 cursor-pointer ${activeTab === 'projects' ? 'bg-[#1f6feb] text-white' : 'text-[#8b949e] hover:text-[#e6edf3] hover:bg-[#21262d]'}`}
+                            >
+                                <FolderOpen size={16} />
+                                <span>Projects</span>
+                            </button>
                         </nav>
                     </div>
 
@@ -735,6 +992,7 @@ const AdminDashboard = ({ token, onLogout }) => {
                             {activeTab === 'pmc-careers' && 'PMC Careers Portal'}
                             {activeTab === 'epc-careers' && 'EPC Careers Portal'}
                             {activeTab === 'blogs' && 'Blog Posts'}
+                            {activeTab === 'projects' && 'Projects'}
                         </span>
                     </div>
 
@@ -775,6 +1033,12 @@ const AdminDashboard = ({ token, onLogout }) => {
                             className={`flex-1 text-center py-2 rounded-lg text-xs font-bold cursor-pointer transition-all ${activeTab === 'blogs' ? 'bg-[#1f6feb] text-white' : 'text-[#8b949e]'}`}
                         >
                             Blogs ({blogs.length})
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('projects')}
+                            className={`flex-1 text-center py-2 rounded-lg text-xs font-bold cursor-pointer transition-all ${activeTab === 'projects' ? 'bg-[#1f6feb] text-white' : 'text-[#8b949e]'}`}
+                        >
+                            Projects ({projects.length})
                         </button>
                     </div>
 
@@ -921,7 +1185,7 @@ const AdminDashboard = ({ token, onLogout }) => {
                                                             </td>
                                                             <td className="px-6 py-4 text-right">
                                                                 <button
-                                                                    onClick={(e) => { e.stopPropagation(); handleDeleteCandidate(c.id); }}
+                                                                    onClick={(e) => { e.stopPropagation(); handleDeleteCandidate(c); }}
                                                                     className="text-[#8b949e] hover:text-[#f85149] p-1.5 bg-[#21262d] hover:bg-[#da3633]/20 border border-[#30363d] hover:border-[#f85149] rounded-md transition-all cursor-pointer"
                                                                     title="Delete Candidate Record"
                                                                 >
@@ -1145,7 +1409,7 @@ const AdminDashboard = ({ token, onLogout }) => {
                                                                         <Edit2 size={13} />
                                                                     </button>
                                                                     <button
-                                                                        onClick={(e) => { e.stopPropagation(); handleDeleteBlog(blog.id); }}
+                                                                        onClick={(e) => { e.stopPropagation(); handleDeleteBlog(blog); }}
                                                                         className="text-[#c9d1d9] hover:text-[#f85149] p-1.5 bg-[#21262d] border border-[#30363d] hover:border-[#f85149] rounded-md transition-all cursor-pointer"
                                                                         title="Delete Blog Post"
                                                                     >
@@ -1172,6 +1436,447 @@ const AdminDashboard = ({ token, onLogout }) => {
                                                     </div>
                                                 </div>
                                             ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {activeTab === 'projects' && (
+                                <div className="space-y-8">
+                                    {/* Action Bar */}
+                                    <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-[#161b22] border border-[#30363d] p-4 rounded-xl">
+                                        <div className="flex flex-wrap gap-3 items-center w-full sm:w-auto">
+                                            {/* Search Input */}
+                                            <div className="relative flex-1 sm:flex-none sm:w-64">
+                                                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8b949e]" />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Search projects..."
+                                                    value={projectSearch}
+                                                    onChange={(e) => setProjectSearch(e.target.value)}
+                                                    className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg pl-9 pr-4 py-2 text-xs text-[#e6edf3] outline-none placeholder-[#484f58] transition-all"
+                                                />
+                                                {projectSearch && (
+                                                    <button onClick={() => setProjectSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8b949e] hover:text-[#e6edf3]">
+                                                        <X size={12} />
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                            {/* Status Filter */}
+                                            <CustomSelect
+                                                value={projectStatusFilter}
+                                                onChange={setProjectStatusFilter}
+                                                options={projectStatusOptions}
+                                                className="w-32 sm:w-36"
+                                            />
+                                        </div>
+
+                                        <button
+                                            onClick={openCreateProjectModal}
+                                            className="w-full sm:w-auto bg-[#238636] hover:bg-[#2ea043] text-white py-2 px-4 rounded-lg text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 border border-[#3fb950]/30 shadow-md shadow-[#238636]/10"
+                                        >
+                                            <Plus size={14} />
+                                            Add Project
+                                        </button>
+                                    </div>
+
+                                    {/* Projects Grid / Content */}
+                                    {projectsLoading ? (
+                                        <div className="flex flex-col items-center justify-center py-20 gap-4">
+                                            <div className="w-8 h-8 border-2 border-[#58a6ff] border-t-transparent rounded-full animate-spin" />
+                                            <p className="text-xs text-[#8b949e]">Loading portfolio projects...</p>
+                                        </div>
+                                    ) : filteredProjects.length === 0 ? (
+                                        <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-16 text-center space-y-4">
+                                            <div className="w-12 h-12 rounded-full bg-[#30363d]/50 flex items-center justify-center text-[#8b949e] mx-auto">
+                                                <FolderOpen size={22} />
+                                            </div>
+                                            <div className="space-y-1 max-w-sm mx-auto">
+                                                <h3 className="text-sm font-bold text-[#e6edf3]">No Projects Found</h3>
+                                                <p className="text-xs text-[#8b949e]">
+                                                    {projectSearch || projectStatusFilter !== 'All'
+                                                        ? 'No projects match your current filters. Try resetting search or select options.'
+                                                        : 'Get started by publishing the first project masterpiece in the admin workspace.'}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-10">
+                                            {/* SECTION 1: FEATURED MASTERPIECES */}
+                                            <div className="space-y-4">
+                                                <div className="flex items-center justify-between border-b border-[#30363d] pb-3">
+                                                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                                                        <Star size={16} className="text-amber-400 fill-amber-400" />
+                                                        Featured Masterpieces (Hero Slideshows)
+                                                    </h3>
+                                                    <span className="text-[10px] bg-amber-900/30 border border-amber-800/80 text-amber-400 font-bold px-2 py-0.5 rounded-full">
+                                                        {filteredProjects.filter(p => p.featured).length} Projects
+                                                    </span>
+                                                </div>
+                                                {filteredProjects.filter(p => p.featured).length === 0 ? (
+                                                    <p className="text-xs text-[#8b949e] italic py-4">No featured projects found matching current filters.</p>
+                                                ) : (
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                        {filteredProjects
+                                                            .filter(p => p.featured)
+                                                            .sort((a, b) => (Number(a.display_order) || 0) - (Number(b.display_order) || 0))
+                                                            .map((project) => (
+                                                                <div key={project.id} className="bg-[#161b22] border border-[#30363d] hover:border-[#8b949e]/30 rounded-xl overflow-hidden shadow-lg transition-all duration-300 flex flex-col group">
+                                                                    {/* Image Box */}
+                                                                    <div className="relative aspect-[16/10] bg-[#0d1117] border-b border-[#30363d] overflow-hidden flex items-center justify-center">
+                                                                        {project.images && project.images.length > 0 ? (
+                                                                            <img
+                                                                                src={project.images[0]}
+                                                                                alt={project.title}
+                                                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                                            />
+                                                                        ) : (
+                                                                            <div className="text-center text-[#484f58]">
+                                                                                <Image size={32} className="mx-auto mb-2 opacity-55" />
+                                                                                <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">No Image Uploaded</span>
+                                                                            </div>
+                                                                        )}
+
+                                                                        {/* Top Labels */}
+                                                                        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 items-center">
+                                                                            <span className="bg-[#161b22]/90 border border-[#30363d] text-[#e6edf3] text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                                                                                {project.category}
+                                                                            </span>
+                                                                            <span className="bg-amber-900/90 border border-amber-800 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-0.5 shadow">
+                                                                                <Star size={9} className="fill-amber-400" /> Featured
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* Details Box */}
+                                                                    <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                                                                        <div className="space-y-2">
+                                                                            <h3 className="text-sm font-bold text-[#e6edf3] line-clamp-1 group-hover:text-[#58a6ff] transition-colors">
+                                                                                {project.title}
+                                                                            </h3>
+
+                                                                            {project.location && (
+                                                                                <div className="flex items-center gap-1.5 text-xs text-[#8b949e]">
+                                                                                    <MapPin size={12} className="text-[#58a6ff]" />
+                                                                                    <span>{project.location}</span>
+                                                                                </div>
+                                                                            )}
+
+                                                                            <div className="flex items-start gap-1.5 text-xs text-[#8b949e]">
+                                                                                <Award size={12} className="text-[#58a6ff] flex-shrink-0 mt-0.5" />
+                                                                                <span className="line-clamp-1">{project.scope}</span>
+                                                                            </div>
+
+                                                                            {project.highlight && (
+                                                                                <p className="text-xs text-[#8b949e] italic line-clamp-2 leading-relaxed bg-[#0d1117]/50 border border-[#30363d]/50 p-2.5 rounded-lg">
+                                                                                    "{project.highlight}"
+                                                                                </p>
+                                                                            )}
+                                                                        </div>
+
+                                                                        {/* Inline Controls */}
+                                                                        <div className="space-y-2 bg-[#0d1117]/45 p-3 rounded-lg border border-[#30363d]/40 text-xs">
+                                                                            <div className="flex items-center justify-between">
+                                                                                <span className="text-[#8b949e] font-medium">Status:</span>
+                                                                                <div className="flex items-center gap-2">
+                                                                                    <span className={`text-[10px] font-bold uppercase ${project.status === 'active' ? 'text-[#3fb950]' : 'text-[#f85149]'}`}>
+                                                                                        {project.status === 'active' ? 'Active' : 'Inactive'}
+                                                                                    </span>
+                                                                                    <ToggleSwitch
+                                                                                        checked={project.status === 'active'}
+                                                                                        onChange={() => handleToggleProjectStatus(project)}
+                                                                                    />
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className="flex items-center justify-between">
+                                                                                <span className="text-[#8b949e] font-medium">Featured:</span>
+                                                                                <div className="flex items-center gap-2">
+                                                                                    <span className="text-[10px] font-bold uppercase text-amber-400">Featured</span>
+                                                                                    <ToggleSwitch
+                                                                                        checked={true}
+                                                                                        onChange={async () => {
+                                                                                            setProjects(prev => prev.map(p => p.id === project.id ? { ...p, featured: false } : p));
+                                                                                            try {
+                                                                                                const formData = new FormData();
+                                                                                                formData.append('featured', 'false');
+                                                                                                formData.append('existing_images', JSON.stringify(project.images || []));
+                                                                                                const response = await fetch(`${ADMIN_PROJECTS_BASE_URL}/${project.id}`, {
+                                                                                                    method: 'PUT',
+                                                                                                    headers: { 'x-admin-token': token },
+                                                                                                    body: formData
+                                                                                                });
+                                                                                                const data = await response.json();
+                                                                                                if (!response.ok || !data.ok) {
+                                                                                                    toast.error(data.message || 'Failed to update featured status.');
+                                                                                                }
+                                                                                            } catch (err) {
+                                                                                                console.error(err);
+                                                                                                toast.error('Error updating featured status.');
+                                                                                            }
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className="flex items-center justify-between">
+                                                                                <span className="text-[#8b949e] font-medium">Display Order:</span>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={project.display_order || 0}
+                                                                                    onChange={async (e) => {
+                                                                                        const val = parseInt(e.target.value) || 0;
+                                                                                        setProjects(prev => prev.map(p => p.id === project.id ? { ...p, display_order: val } : p));
+                                                                                        try {
+                                                                                            const formData = new FormData();
+                                                                                            formData.append('display_order', val.toString());
+                                                                                            formData.append('existing_images', JSON.stringify(project.images || []));
+                                                                                            const response = await fetch(`${ADMIN_PROJECTS_BASE_URL}/${project.id}`, {
+                                                                                                method: 'PUT',
+                                                                                                headers: { 'x-admin-token': token },
+                                                                                                body: formData
+                                                                                            });
+                                                                                            const data = await response.json();
+                                                                                            if (!response.ok || !data.ok) {
+                                                                                                toast.error(data.message || 'Failed to update order.');
+                                                                                            }
+                                                                                        } catch (err) {
+                                                                                            console.error(err);
+                                                                                            toast.error('Error updating order.');
+                                                                                        }
+                                                                                    }}
+                                                                                    className="w-16 bg-[#161b22] text-[#e6edf3] border border-[#30363d] focus:border-[#58a6ff] rounded text-[11px] text-center outline-none py-0.5"
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+
+                                                                        {/* Actions Panel */}
+                                                                        <div className="flex items-center justify-between border-t border-[#30363d]/60 pt-4 mt-auto">
+                                                                            <span className="text-[10px] text-[#484f58] font-bold uppercase tracking-wider">
+                                                                                {project.images?.length || 0} Images
+                                                                            </span>
+                                                                            <div className="flex gap-2">
+                                                                                <button
+                                                                                    onClick={() => openEditProjectModal(project)}
+                                                                                    className="text-[#c9d1d9] hover:text-[#58a6ff] p-2 bg-[#21262d] border border-[#30363d] hover:border-[#58a6ff] rounded-md transition-all cursor-pointer flex items-center gap-1.5 text-xs"
+                                                                                    title="Edit Project"
+                                                                                >
+                                                                                    <Edit2 size={12} />
+                                                                                    Edit
+                                                                                </button>
+                                                                                <button
+                                                                                    onClick={() => setDeleteConfirmProject(project)}
+                                                                                    className="text-[#c9d1d9] hover:text-[#f85149] p-2 bg-[#21262d] border border-[#30363d] hover:border-[#f85149] rounded-md transition-all cursor-pointer flex items-center gap-1.5 text-xs"
+                                                                                    title="Delete Project"
+                                                                                >
+                                                                                    <Trash2 size={12} />
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* SECTION 2: PORTFOLIO BY CATEGORY */}
+                                            <div className="space-y-4 border-t border-[#30363d] pt-8">
+                                                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#30363d] pb-3 gap-3">
+                                                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                                                        <FolderOpen size={16} className="text-[#58a6ff]" />
+                                                        Portfolio Projects by Category
+                                                    </h3>
+                                                    {/* Category Tabs */}
+                                                    <div className="flex flex-wrap gap-1.5">
+                                                        {['All', 'Commercial', 'Residential', 'Hospitality', 'Industrial', 'International', 'Infrastructure'].map((cat) => (
+                                                            <button
+                                                                key={cat}
+                                                                onClick={() => setProjectCategoryFilter(cat)}
+                                                                className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
+                                                                    projectCategoryFilter === cat
+                                                                        ? 'bg-[#1f6feb] border-[#388bfd] text-white shadow-md'
+                                                                        : 'bg-[#161b22] border-[#30363d] text-[#8b949e] hover:bg-[#21262d] hover:text-[#e6edf3]'
+                                                                }`}
+                                                            >
+                                                                {cat}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {filteredProjects.filter(p => projectCategoryFilter === 'All' ? true : p.category === projectCategoryFilter).length === 0 ? (
+                                                    <p className="text-xs text-[#8b949e] italic py-4">No projects found in this category matching current filters.</p>
+                                                ) : (
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                        {filteredProjects
+                                                            .filter(p => projectCategoryFilter === 'All' ? true : p.category === projectCategoryFilter)
+                                                            .sort((a, b) => (Number(a.display_order) || 0) - (Number(b.display_order) || 0))
+                                                            .map((project) => (
+                                                                <div key={project.id} className="bg-[#161b22] border border-[#30363d] hover:border-[#8b949e]/30 rounded-xl overflow-hidden shadow-lg transition-all duration-300 flex flex-col group">
+                                                                    {/* Image Box */}
+                                                                    <div className="relative aspect-[16/10] bg-[#0d1117] border-b border-[#30363d] overflow-hidden flex items-center justify-center">
+                                                                        {project.images && project.images.length > 0 ? (
+                                                                            <img
+                                                                                src={project.images[0]}
+                                                                                alt={project.title}
+                                                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                                            />
+                                                                        ) : (
+                                                                            <div className="text-center text-[#484f58]">
+                                                                                <Image size={32} className="mx-auto mb-2 opacity-55" />
+                                                                                <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">No Image Uploaded</span>
+                                                                            </div>
+                                                                        )}
+
+                                                                        {/* Top Labels */}
+                                                                        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 items-center">
+                                                                            <span className="bg-[#161b22]/90 border border-[#30363d] text-[#e6edf3] text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                                                                                {project.category}
+                                                                            </span>
+                                                                            {project.featured && (
+                                                                                <span className="bg-amber-900/90 border border-amber-800 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-0.5 shadow">
+                                                                                    <Star size={9} className="fill-amber-400" /> Featured
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* Details Box */}
+                                                                    <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                                                                        <div className="space-y-2">
+                                                                            <h3 className="text-sm font-bold text-[#e6edf3] line-clamp-1 group-hover:text-[#58a6ff] transition-colors">
+                                                                                {project.title}
+                                                                            </h3>
+
+                                                                            {project.location && (
+                                                                                <div className="flex items-center gap-1.5 text-xs text-[#8b949e]">
+                                                                                    <MapPin size={12} className="text-[#58a6ff]" />
+                                                                                    <span>{project.location}</span>
+                                                                                </div>
+                                                                            )}
+
+                                                                            <div className="flex items-start gap-1.5 text-xs text-[#8b949e]">
+                                                                                <Award size={12} className="text-[#58a6ff] flex-shrink-0 mt-0.5" />
+                                                                                <span className="line-clamp-1">{project.scope}</span>
+                                                                            </div>
+
+                                                                            {project.highlight && (
+                                                                                <p className="text-xs text-[#8b949e] italic line-clamp-2 leading-relaxed bg-[#0d1117]/50 border border-[#30363d]/50 p-2.5 rounded-lg">
+                                                                                    "{project.highlight}"
+                                                                                </p>
+                                                                            )}
+                                                                        </div>
+
+                                                                        {/* Inline Controls */}
+                                                                        <div className="space-y-2 bg-[#0d1117]/45 p-3 rounded-lg border border-[#30363d]/40 text-xs">
+                                                                            <div className="flex items-center justify-between">
+                                                                                <span className="text-[#8b949e] font-medium">Status:</span>
+                                                                                <div className="flex items-center gap-2">
+                                                                                    <span className={`text-[10px] font-bold uppercase ${project.status === 'active' ? 'text-[#3fb950]' : 'text-[#f85149]'}`}>
+                                                                                        {project.status === 'active' ? 'Active' : 'Inactive'}
+                                                                                    </span>
+                                                                                    <ToggleSwitch
+                                                                                        checked={project.status === 'active'}
+                                                                                        onChange={() => handleToggleProjectStatus(project)}
+                                                                                    />
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className="flex items-center justify-between">
+                                                                                <span className="text-[#8b949e] font-medium">Featured:</span>
+                                                                                <div className="flex items-center gap-2">
+                                                                                    <span className={`text-[10px] font-bold uppercase ${project.featured ? 'text-amber-400' : 'text-[#8b949e]'}`}>
+                                                                                        {project.featured ? 'Featured' : 'Standard'}
+                                                                                    </span>
+                                                                                    <ToggleSwitch
+                                                                                        checked={Boolean(project.featured)}
+                                                                                        onChange={async () => {
+                                                                                            const newFeatured = !project.featured;
+                                                                                            setProjects(prev => prev.map(p => p.id === project.id ? { ...p, featured: newFeatured } : p));
+                                                                                            try {
+                                                                                                const formData = new FormData();
+                                                                                                formData.append('featured', newFeatured ? 'true' : 'false');
+                                                                                                formData.append('existing_images', JSON.stringify(project.images || []));
+                                                                                                const response = await fetch(`${ADMIN_PROJECTS_BASE_URL}/${project.id}`, {
+                                                                                                    method: 'PUT',
+                                                                                                    headers: { 'x-admin-token': token },
+                                                                                                    body: formData
+                                                                                                });
+                                                                                                const data = await response.json();
+                                                                                                if (!response.ok || !data.ok) {
+                                                                                                    toast.error(data.message || 'Failed to update featured status.');
+                                                                                                }
+                                                                                            } catch (err) {
+                                                                                                console.error(err);
+                                                                                                toast.error('Error updating featured status.');
+                                                                                            }
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className="flex items-center justify-between">
+                                                                                <span className="text-[#8b949e] font-medium">Display Order:</span>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    value={project.display_order || 0}
+                                                                                    onChange={async (e) => {
+                                                                                        const val = parseInt(e.target.value) || 0;
+                                                                                        setProjects(prev => prev.map(p => p.id === project.id ? { ...p, display_order: val } : p));
+                                                                                        try {
+                                                                                            const formData = new FormData();
+                                                                                            formData.append('display_order', val.toString());
+                                                                                            formData.append('existing_images', JSON.stringify(project.images || []));
+                                                                                            const response = await fetch(`${ADMIN_PROJECTS_BASE_URL}/${project.id}`, {
+                                                                                                method: 'PUT',
+                                                                                                headers: { 'x-admin-token': token },
+                                                                                                body: formData
+                                                                                            });
+                                                                                            const data = await response.json();
+                                                                                            if (!response.ok || !data.ok) {
+                                                                                                toast.error(data.message || 'Failed to update order.');
+                                                                                            }
+                                                                                        } catch (err) {
+                                                                                            console.error(err);
+                                                                                            toast.error('Error updating order.');
+                                                                                        }
+                                                                                    }}
+                                                                                    className="w-16 bg-[#161b22] text-[#e6edf3] border border-[#30363d] focus:border-[#58a6ff] rounded text-[11px] text-center outline-none py-0.5"
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+
+                                                                        {/* Actions Panel */}
+                                                                        <div className="flex items-center justify-between border-t border-[#30363d]/60 pt-4 mt-auto">
+                                                                            <span className="text-[10px] text-[#484f58] font-bold uppercase tracking-wider">
+                                                                                {project.images?.length || 0} Images
+                                                                            </span>
+                                                                            <div className="flex gap-2">
+                                                                                <button
+                                                                                    onClick={() => openEditProjectModal(project)}
+                                                                                    className="text-[#c9d1d9] hover:text-[#58a6ff] p-2 bg-[#21262d] border border-[#30363d] hover:border-[#58a6ff] rounded-md transition-all cursor-pointer flex items-center gap-1.5 text-xs"
+                                                                                    title="Edit Project"
+                                                                                >
+                                                                                    <Edit2 size={12} />
+                                                                                    Edit
+                                                                                </button>
+                                                                                <button
+                                                                                    onClick={() => setDeleteConfirmProject(project)}
+                                                                                    className="text-[#c9d1d9] hover:text-[#f85149] p-2 bg-[#21262d] border border-[#30363d] hover:border-[#f85149] rounded-md transition-all cursor-pointer flex items-center gap-1.5 text-xs"
+                                                                                    title="Delete Project"
+                                                                                >
+                                                                                    <Trash2 size={12} />
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -1645,6 +2350,202 @@ const AdminDashboard = ({ token, onLogout }) => {
                 </div>
             )}
 
+            {/* CREATE / EDIT PROJECT MODAL - Slides from Right Sidebar Drawer */}
+            {isProjectModalOpen && (
+                <div className="fixed inset-0 z-50 flex justify-end">
+                    <div className="absolute inset-0 bg-[#040d21]/70 backdrop-blur-sm" onClick={resetProjectForm} />
+                    <div className="relative bg-[#161b22] border-l border-[#30363d] w-full max-w-xl h-full flex flex-col shadow-2xl overflow-hidden animate-slide-in-right">
+                        <div className="p-6 border-b border-[#30363d] flex items-center justify-between">
+                            <h3 className="text-lg font-bold text-[#e6edf3]">
+                                {currentEditingProject ? 'Edit Project Masterpiece' : 'Publish New Project'}
+                            </h3>
+                            <button onClick={resetProjectForm} className="text-[#8b949e] hover:text-[#e6edf3] transition-colors cursor-pointer">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <form onSubmit={handleProjectSubmit} autoComplete="off" className="flex-1 overflow-y-auto p-6 space-y-4">
+                            <div className="space-y-4">
+                                {/* Title */}
+                                <div>
+                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Project Title *</label>
+                                    <input
+                                        type="text" required value={projectForm.title}
+                                        onChange={(e) => setProjectForm({ ...projectForm, title: e.target.value })}
+                                        placeholder="e.g. Hotel Moon Palace"
+                                        className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
+                                    />
+                                </div>
+
+                                {/* Location + Category */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Location</label>
+                                        <input
+                                            type="text" value={projectForm.location}
+                                            onChange={(e) => setProjectForm({ ...projectForm, location: e.target.value })}
+                                            placeholder="e.g. Kinshasa, Congo"
+                                            className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Category *</label>
+                                        <CustomSelect
+                                            value={projectForm.category}
+                                            onChange={(val) => setProjectForm({ ...projectForm, category: val })}
+                                            options={[
+                                                { label: 'Commercial', value: 'Commercial' },
+                                                { label: 'Residential', value: 'Residential' },
+                                                { label: 'Hospitality', value: 'Hospitality' },
+                                                { label: 'Industrial', value: 'Industrial' },
+                                                { label: 'International', value: 'International' },
+                                                { label: 'Infrastructure', value: 'Infrastructure' }
+                                            ]}
+                                            className="w-full"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Scope of Work */}
+                                <div>
+                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Scope of Work</label>
+                                    <input
+                                        type="text" value={projectForm.scope}
+                                        onChange={(e) => setProjectForm({ ...projectForm, scope: e.target.value })}
+                                        placeholder="e.g. PMC - Project Management Consultants"
+                                        className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
+                                    />
+                                </div>
+
+                                {/* Highlight/Description */}
+                                <div>
+                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Highlight/Description</label>
+                                    <textarea
+                                        rows={3} value={projectForm.highlight}
+                                        onChange={(e) => setProjectForm({ ...projectForm, highlight: e.target.value })}
+                                        placeholder="Briefly summarize project details, scale or impact..."
+                                        className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
+                                    />
+                                </div>
+
+                                {/* Display Order + Status + Featured */}
+                                <div className="grid grid-cols-3 gap-4 items-center">
+                                    <div>
+                                        <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Display Order</label>
+                                        <input
+                                            type="number" value={projectForm.display_order}
+                                            onChange={(e) => setProjectForm({ ...projectForm, display_order: e.target.value })}
+                                            placeholder="0"
+                                            className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Status</label>
+                                        <CustomSelect
+                                            value={projectForm.status}
+                                            onChange={(val) => setProjectForm({ ...projectForm, status: val })}
+                                            options={[
+                                                { label: 'Active', value: 'active' },
+                                                { label: 'Inactive', value: 'inactive' }
+                                            ]}
+                                            className="w-full"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col items-center">
+                                        <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-2">Featured Project</label>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <span className={`text-[10px] font-bold uppercase ${projectForm.featured ? 'text-amber-400' : 'text-gray-500'}`}>
+                                                {projectForm.featured ? "Featured" : "Standard"}
+                                            </span>
+                                            <ToggleSwitch
+                                                checked={projectForm.featured}
+                                                onChange={() => setProjectForm({ ...projectForm, featured: !projectForm.featured })}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Multiple Image Upload */}
+                                <div className="border-t border-[#30363d] pt-4 mt-2">
+                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-2.5">Project Gallery Images (Max 20)</label>
+                                    
+                                    {/* Upload box */}
+                                    <div className="relative border border-dashed border-[#30363d] hover:border-[#58a6ff] rounded-xl p-6 bg-[#0d1117] flex flex-col items-center justify-center text-center cursor-pointer transition-all">
+                                        <input
+                                            ref={projectImageInputRef}
+                                            type="file"
+                                            multiple
+                                            accept="image/*"
+                                            onChange={handleProjectImageAdd}
+                                            className="absolute inset-0 opacity-0 cursor-pointer"
+                                        />
+                                        <Upload size={20} className="text-[#8b949e] mb-2" />
+                                        <p className="text-xs text-[#e6edf3] font-semibold mb-0.5">Click to choose image files</p>
+                                        <p className="text-[10px] text-[#8b949e]">Select multiple files (PNG, JPG, WEBP, GIF up to 15MB each)</p>
+                                    </div>
+
+                                    {/* Image previews list */}
+                                    {(projectForm.existingImages.length > 0 || projectForm.newImageFiles.length > 0) && (
+                                        <div className="mt-4 bg-[#0d1117] border border-[#30363d] rounded-xl p-4">
+                                            <span className="block text-[10px] font-bold text-[#8b949e] uppercase tracking-wider mb-3">
+                                                Image Gallery Previews ({projectForm.existingImages.length + projectForm.newImageFiles.length} Selected)
+                                            </span>
+                                            <div className="grid grid-cols-4 gap-3">
+                                                {/* Existing images */}
+                                                {projectForm.existingImages.map((imgUrl, idx) => (
+                                                    <div key={`exist-${idx}`} className="relative aspect-square rounded-lg border border-[#30363d] overflow-hidden group">
+                                                        <img src={imgUrl} alt={`Existing ${idx}`} className="w-full h-full object-cover" />
+                                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeExistingProjectImage(imgUrl)}
+                                                                className="bg-[#da3633] hover:bg-[#f85149] text-white p-1.5 rounded-md text-xs font-semibold cursor-pointer transition-all"
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+
+                                                {/* New files */}
+                                                {projectForm.newImageFiles.map((file, idx) => (
+                                                    <div key={`new-${idx}`} className="relative aspect-square rounded-lg border border-[#30363d] overflow-hidden group">
+                                                        <img src={URL.createObjectURL(file)} alt={`New ${idx}`} className="w-full h-full object-cover" />
+                                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeNewProjectImage(idx)}
+                                                                className="bg-[#da3633] hover:bg-[#f85149] text-white p-1.5 rounded-md text-xs font-semibold cursor-pointer transition-all"
+                                                            >
+                                                                Clear
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="pt-4 border-t border-[#30363d] flex justify-end gap-3">
+                                <button
+                                    type="button" onClick={resetProjectForm}
+                                    className="bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] text-[#c9d1d9] py-2 px-4 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="bg-[#238636] hover:bg-[#2ea44f] border border-[#30363d]/50 text-white py-2 px-5 rounded-lg text-xs font-bold shadow-lg cursor-pointer transition-colors"
+                                >
+                                    Publish Project
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
             {/* VIEW JOB DETAILS RIGHT-SLIDING DRAWER */}
             {viewingJob && (
                 <div className="fixed inset-0 z-50 flex justify-end">
@@ -1891,8 +2792,7 @@ const AdminDashboard = ({ token, onLogout }) => {
                             </a>
                             <button
                                 onClick={() => {
-                                    handleDeleteCandidate(viewingCandidate.id);
-                                    setViewingCandidate(null);
+                                    handleDeleteCandidate(viewingCandidate);
                                 }}
                                 className="bg-[#21262d] hover:bg-[#da3633]/20 hover:text-[#f85149] hover:border-[#f85149] border border-[#30363d] text-[#8b949e] py-2.5 px-4 rounded-lg text-xs font-semibold flex items-center gap-2 cursor-pointer transition-all"
                             >
@@ -2152,6 +3052,261 @@ const AdminDashboard = ({ token, onLogout }) => {
                                 className="bg-[#da3633] hover:bg-[#f85149] disabled:opacity-70 disabled:cursor-not-allowed text-white py-2 px-5 rounded-lg text-xs font-bold cursor-pointer transition-colors flex items-center gap-2"
                             >
                                 {isDeletingJob ? (
+                                    <>
+                                        <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                                        Deleting...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Trash2 size={13} />
+                                        Yes, Delete It
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* SAVING PROJECT OVERLAY */}
+            {isSavingProject && (
+                <div className="fixed inset-0 bg-[#040d21]/70 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center animate-in fade-in duration-300">
+                    <div className="bg-[#161b22]/90 border border-[#30363d] rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl flex flex-col items-center gap-6 text-center backdrop-blur-xl">
+                        <div className="relative w-16 h-16 flex items-center justify-center">
+                            <div className="absolute inset-0 rounded-full border-4 border-[#30363d]"></div>
+                            <div className="absolute inset-0 rounded-full border-4 border-t-[#58a6ff] border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
+                            <FolderOpen className="w-6 h-6 text-[#58a6ff] animate-pulse" />
+                        </div>
+                        <div className="space-y-2">
+                            <h3 className="text-base font-semibold text-[#e6edf3]">
+                                {currentEditingProject ? 'Updating Project...' : 'Publishing Project...'}
+                            </h3>
+                            <p className="text-xs text-[#8b949e] leading-relaxed max-w-[240px]">
+                                Please wait while we upload the project details and gallery to the database.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* DELETE CANDIDATE CONFIRMATION MODAL */}
+            {deleteConfirmCandidate && (
+                <div className="fixed inset-0 bg-[#040d21]/80 backdrop-blur-sm z-[9999] flex items-center justify-center animate-in fade-in duration-200 p-4">
+                    <div className="bg-[#161b22] border border-[#30363d] rounded-2xl max-w-md w-full shadow-2xl overflow-hidden animate-zoom-in">
+                        <div className="h-1 w-full bg-gradient-to-r from-[#da3633] to-[#f85149]" />
+                        <div className="px-6 pt-5 pb-4 flex items-start justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-[#da3633]/15 border border-[#da3633]/30 flex items-center justify-center flex-shrink-0">
+                                    <Trash2 size={18} className="text-[#f85149]" />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-bold text-[#f85149]">Delete Application</h3>
+                                    <p className="text-[10px] text-[#8b949e] mt-0.5">This action cannot be undone</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => !isDeletingCandidate && setDeleteConfirmCandidate(null)}
+                                className="text-[#8b949e] hover:text-[#e6edf3] transition-colors cursor-pointer flex-shrink-0 mt-0.5"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div className="px-6 pb-5 space-y-4">
+                            <div className="bg-[#0d1117] border border-[#30363d] rounded-xl p-4 space-y-2 text-xs">
+                                <div>
+                                    <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Candidate Name</span>
+                                    <span className="font-bold text-[#e6edf3] text-sm">{deleteConfirmCandidate.name}</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4 pt-1">
+                                    <div>
+                                        <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Email Address</span>
+                                        <span className="text-[#c9d1d9] truncate block">{deleteConfirmCandidate.email}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Applied Role</span>
+                                        <span className="text-[#c9d1d9] truncate block">{deleteConfirmCandidate.job_role}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="bg-[#da3633]/8 border border-[#da3633]/25 rounded-xl px-4 py-3 flex items-start gap-3">
+                                <AlertTriangle size={15} className="text-[#f85149] flex-shrink-0 mt-0.5" />
+                                <p className="text-[11px] text-[#8b949e] leading-relaxed">
+                                    This will <span className="text-[#f85149] font-semibold">permanently remove</span> this application from the dashboard database and delete their resume file from storage.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="px-6 py-4 bg-[#0d1117]/60 border-t border-[#30363d] flex justify-end gap-3">
+                            <button
+                                type="button"
+                                disabled={isDeletingCandidate}
+                                onClick={() => setDeleteConfirmCandidate(null)}
+                                className="bg-[#21262d] hover:bg-[#30363d] disabled:opacity-50 border border-[#30363d] text-[#c9d1d9] py-2 px-5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                disabled={isDeletingCandidate}
+                                onClick={confirmDeleteCandidate}
+                                className="bg-[#da3633] hover:bg-[#f85149] disabled:opacity-70 disabled:cursor-not-allowed text-white py-2 px-5 rounded-lg text-xs font-bold cursor-pointer transition-colors flex items-center gap-2"
+                            >
+                                {isDeletingCandidate ? (
+                                    <>
+                                        <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                                        Deleting...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Trash2 size={13} />
+                                        Yes, Delete It
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* DELETE BLOG CONFIRMATION MODAL */}
+            {deleteConfirmBlog && (
+                <div className="fixed inset-0 bg-[#040d21]/80 backdrop-blur-sm z-[9999] flex items-center justify-center animate-in fade-in duration-200 p-4">
+                    <div className="bg-[#161b22] border border-[#30363d] rounded-2xl max-w-md w-full shadow-2xl overflow-hidden animate-zoom-in">
+                        <div className="h-1 w-full bg-gradient-to-r from-[#da3633] to-[#f85149]" />
+                        <div className="px-6 pt-5 pb-4 flex items-start justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-[#da3633]/15 border border-[#da3633]/30 flex items-center justify-center flex-shrink-0">
+                                    <Trash2 size={18} className="text-[#f85149]" />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-bold text-[#f85149]">Delete Blog Post</h3>
+                                    <p className="text-[10px] text-[#8b949e] mt-0.5">This action cannot be undone</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => !isDeletingBlog && setDeleteConfirmBlog(null)}
+                                className="text-[#8b949e] hover:text-[#e6edf3] transition-colors cursor-pointer flex-shrink-0 mt-0.5"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div className="px-6 pb-5 space-y-4">
+                            <div className="bg-[#0d1117] border border-[#30363d] rounded-xl p-4 space-y-2 text-xs">
+                                <div>
+                                    <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Blog Title</span>
+                                    <span className="font-bold text-[#e6edf3] text-sm leading-snug block">{deleteConfirmBlog.title}</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4 pt-1">
+                                    <div>
+                                        <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Author</span>
+                                        <span className="text-[#c9d1d9] truncate block">{deleteConfirmBlog.author}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Category</span>
+                                        <span className="text-[#c9d1d9] truncate block">{deleteConfirmBlog.category}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="bg-[#da3633]/8 border border-[#da3633]/25 rounded-xl px-4 py-3 flex items-start gap-3">
+                                <AlertTriangle size={15} className="text-[#f85149] flex-shrink-0 mt-0.5" />
+                                <p className="text-[11px] text-[#8b949e] leading-relaxed">
+                                    This will <span className="text-[#f85149] font-semibold">permanently remove</span> this article from the live website and delete the thumbnail image.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="px-6 py-4 bg-[#0d1117]/60 border-t border-[#30363d] flex justify-end gap-3">
+                            <button
+                                type="button"
+                                disabled={isDeletingBlog}
+                                onClick={() => setDeleteConfirmBlog(null)}
+                                className="bg-[#21262d] hover:bg-[#30363d] disabled:opacity-50 border border-[#30363d] text-[#c9d1d9] py-2 px-5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                disabled={isDeletingBlog}
+                                onClick={confirmDeleteBlog}
+                                className="bg-[#da3633] hover:bg-[#f85149] disabled:opacity-70 disabled:cursor-not-allowed text-white py-2 px-5 rounded-lg text-xs font-bold cursor-pointer transition-colors flex items-center gap-2"
+                            >
+                                {isDeletingBlog ? (
+                                    <>
+                                        <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                                        Deleting...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Trash2 size={13} />
+                                        Yes, Delete It
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* DELETE PROJECT CONFIRMATION MODAL */}
+            {deleteConfirmProject && (
+                <div className="fixed inset-0 bg-[#040d21]/80 backdrop-blur-sm z-[9999] flex items-center justify-center animate-in fade-in duration-200 p-4">
+                    <div className="bg-[#161b22] border border-[#30363d] rounded-2xl max-w-md w-full shadow-2xl overflow-hidden animate-zoom-in">
+                        <div className="h-1 w-full bg-gradient-to-r from-[#da3633] to-[#f85149]" />
+                        <div className="px-6 pt-5 pb-4 flex items-start justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-[#da3633]/15 border border-[#da3633]/30 flex items-center justify-center flex-shrink-0">
+                                    <Trash2 size={18} className="text-[#f85149]" />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-bold text-[#f85149]">Delete Project</h3>
+                                    <p className="text-[10px] text-[#8b949e] mt-0.5">This action cannot be undone</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => !isDeletingProject && setDeleteConfirmProject(null)}
+                                className="text-[#8b949e] hover:text-[#e6edf3] transition-colors cursor-pointer flex-shrink-0 mt-0.5"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div className="px-6 pb-5 space-y-4">
+                            <div className="bg-[#0d1117] border border-[#30363d] rounded-xl p-4 space-y-2 text-xs">
+                                <div>
+                                    <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Project Title</span>
+                                    <span className="font-bold text-[#e6edf3] text-sm leading-snug block">{deleteConfirmProject.title}</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4 pt-1">
+                                    <div>
+                                        <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Category</span>
+                                        <span className="text-[#c9d1d9] truncate block">{deleteConfirmProject.category}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Location</span>
+                                        <span className="text-[#c9d1d9] truncate block">{deleteConfirmProject.location || 'N/A'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="bg-[#da3633]/8 border border-[#da3633]/25 rounded-xl px-4 py-3 flex items-start gap-3">
+                                <AlertTriangle size={15} className="text-[#f85149] flex-shrink-0 mt-0.5" />
+                                <p className="text-[11px] text-[#8b949e] leading-relaxed">
+                                    This will <span className="text-[#f85149] font-semibold">permanently remove</span> this project and delete its entire image gallery from the database and servers.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="px-6 py-4 bg-[#0d1117]/60 border-t border-[#30363d] flex justify-end gap-3">
+                            <button
+                                type="button"
+                                disabled={isDeletingProject}
+                                onClick={() => setDeleteConfirmProject(null)}
+                                className="bg-[#21262d] hover:bg-[#30363d] disabled:opacity-50 border border-[#30363d] text-[#c9d1d9] py-2 px-5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                disabled={isDeletingProject}
+                                onClick={confirmDeleteProject}
+                                className="bg-[#da3633] hover:bg-[#f85149] disabled:opacity-70 disabled:cursor-not-allowed text-white py-2 px-5 rounded-lg text-xs font-bold cursor-pointer transition-colors flex items-center gap-2"
+                            >
+                                {isDeletingProject ? (
                                     <>
                                         <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
                                         Deleting...

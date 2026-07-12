@@ -65,6 +65,7 @@ export const uploadFileToS3 = async (file, folder = 'careers/resume') => {
             Key: fileName,
             Body: fileStream,
             ContentType: file.mimetype,
+            CacheControl: 'public, max-age=31536000, immutable',
         };
 
         await s3Client.send(new PutObjectCommand(uploadParams));
@@ -87,6 +88,44 @@ export const uploadFileToS3 = async (file, folder = 'careers/resume') => {
         return isJD 
             ? `uploads/careers/jds/${filename}`
             : `uploads/resumes/${filename}`;
+    }
+};
+
+/**
+ * Uploads a raw JSON string to S3 (e.g. for projects.json).
+ */
+export const uploadJSONToS3 = async (key, jsonString) => {
+    if (!s3Client) {
+        // Local fallback: write to a local file in uploads
+        try {
+            const localPath = path.join(process.cwd(), 'uploads', key);
+            const dir = path.dirname(localPath);
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+            }
+            fs.writeFileSync(localPath, jsonString, 'utf8');
+            console.log(`📂 Wrote local JSON file fallback: ${localPath}`);
+            return `/uploads/${key}`;
+        } catch (err) {
+            console.error('Failed to write local JSON fallback:', err);
+            return null;
+        }
+    }
+
+    try {
+        const uploadParams = {
+            Bucket: bucketName,
+            Key: key,
+            Body: jsonString,
+            ContentType: 'application/json',
+            CacheControl: 'max-age=60' // Cache for 1 minute
+        };
+
+        await s3Client.send(new PutObjectCommand(uploadParams));
+        return `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
+    } catch (err) {
+        console.error(`S3 JSON Upload failed for key ${key}:`, err);
+        return null;
     }
 };
 
