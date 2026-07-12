@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -40,6 +40,11 @@ const BrandLayout = ({ brand }) => (
 );
 
 function App() {
+  const location = useLocation();
+  const isAdminPath = location.pathname.startsWith('/mano-admin-portal-dashboard-secure') ||
+                      location.pathname.startsWith('/admin') ||
+                      location.pathname.startsWith('/admin-portal-dashboard-secure');
+
   return (
     <>
       <Routes>
@@ -99,7 +104,7 @@ function App() {
         {/* Catch-all redirect to Gateway */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      <ChatbotWidget />
+      {!isAdminPath && <ChatbotWidget />}
     </>
   );
 }
