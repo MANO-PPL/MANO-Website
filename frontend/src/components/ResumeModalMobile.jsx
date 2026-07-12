@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { X, Send, User, Mail, Briefcase, Upload, FileText, Loader2, CheckCircle2 } from 'lucide-react';
+import { X, Send, User, Mail, Briefcase, Upload, FileText, Loader2, CheckCircle2, Phone } from 'lucide-react';
 import { useToast } from './Toast';
 import { RESUME_API_URL } from '../config';
 import { useCompany } from '../context/CompanyContext';
@@ -15,6 +15,7 @@ const ResumeModalMobile = ({ isOpen, onClose, jobRole = "" }) => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        mobile: '',
         job_role: jobRole,
         file: null
     });
@@ -71,8 +72,11 @@ const ResumeModalMobile = ({ isOpen, onClose, jobRole = "" }) => {
     const validate = () => {
         const newErrors = {};
         if (!formData.name.trim()) newErrors.name = 'Full name is required';
-        if (!formData.email.trim()) newErrors.email = 'Email address is required';
-        else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Enter a valid email address';
+        if (formData.email.trim() && !/\S+@\S+\.\S+/.test(formData.email)) {
+            newErrors.email = 'Enter a valid email address';
+        }
+        if (!formData.mobile.trim()) newErrors.mobile = 'Mobile number is required';
+        else if (!/^\+?[0-9\s-]{10,15}$/.test(formData.mobile)) newErrors.mobile = 'Enter a valid mobile number';
         if (!formData.file) newErrors.file = 'Please upload your resume';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -89,6 +93,7 @@ const ResumeModalMobile = ({ isOpen, onClose, jobRole = "" }) => {
             const data = new FormData();
             data.append("name", formData.name);
             data.append("email", formData.email);
+            data.append("mobile", formData.mobile);
             data.append("job_role", formData.job_role || "General Application");
             data.append("platform", (activeBrand || "pmc").toLowerCase());
             data.append("resume_file", formData.file);
@@ -105,7 +110,7 @@ const ResumeModalMobile = ({ isOpen, onClose, jobRole = "" }) => {
                 setTimeout(() => {
                     onClose();
                     setSubmitted(false);
-                    setFormData({ name: '', email: '', job_role: '', file: null });
+                    setFormData({ name: '', email: '', mobile: '', job_role: '', file: null });
                 }, 3000);
             } else {
                 showToast("Failed to upload resume: " + (result.message || "Unknown error"), 'error');
@@ -180,13 +185,27 @@ const ResumeModalMobile = ({ isOpen, onClose, jobRole = "" }) => {
                                         <Mail className="absolute left-3.5 top-3 w-4.5 h-4.5 text-gray-500 group-focus-within:text-blue-400 transition-colors" />
                                         <input
                                             type="email"
-                                            placeholder="Email Address *"
+                                            placeholder="Email Address (Optional)"
                                             className={`w-full pl-10 pr-4 py-3 text-sm rounded-xl bg-white/5 border ${errors.email ? 'border-red-500/70' : 'border-white/10'} text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 hover:border-blue-500/30 transition-all`}
                                             value={formData.email}
                                             onChange={(e) => { setFormData({ ...formData, email: e.target.value }); if (errors.email) setErrors(prev => ({ ...prev, email: '' })); }}
                                         />
                                     </div>
                                     {errors.email && <p className="mt-1 ml-1 text-xs text-red-400">{errors.email}</p>}
+                                </div>
+
+                                <div>
+                                    <div className="relative group">
+                                        <Phone className="absolute left-3.5 top-3 w-4.5 h-4.5 text-gray-500 group-focus-within:text-blue-400 transition-colors" />
+                                        <input
+                                            type="tel"
+                                            placeholder="Mobile Number *"
+                                            className={`w-full pl-10 pr-4 py-3 text-sm rounded-xl bg-white/5 border ${errors.mobile ? 'border-red-500/70' : 'border-white/10'} text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 hover:border-blue-500/30 transition-all`}
+                                            value={formData.mobile}
+                                            onChange={(e) => { setFormData({ ...formData, mobile: e.target.value }); if (errors.mobile) setErrors(prev => ({ ...prev, mobile: '' })); }}
+                                        />
+                                    </div>
+                                    {errors.mobile && <p className="mt-1 ml-1 text-xs text-red-400">{errors.mobile}</p>}
                                 </div>
 
                                 {/* File Upload Zone */}

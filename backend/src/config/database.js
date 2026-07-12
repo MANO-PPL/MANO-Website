@@ -252,6 +252,8 @@ const performBootstrap = async () => {
           table.increments('id').primary();
           table.string('name', 255).notNullable();
           table.string('email', 255).notNullable();
+          table.string('mobile', 50).nullable();
+          table.text('remarks').nullable();
           table.string('job_role', 255).notNullable();
           table.integer('job_id').unsigned().nullable(); // Handled as foreign key below
           table.string('file_name', 255).notNullable();
@@ -260,6 +262,15 @@ const performBootstrap = async () => {
           table.timestamp('created_at').defaultTo(adminDB.fn.now());
         });
         console.log("Table 'resumes' created successfully.");
+      }
+
+      // Ensure email column on resumes table is nullable
+      try {
+        await adminDB.schema.alterTable('resumes', (table) => {
+          table.string('email', 255).nullable().alter();
+        });
+      } catch (err) {
+        console.warn("Could not alter resumes.email column to nullable:", err.message);
       }
 
       // Ensure platform, job_id, email columns and constraints on resumes table
@@ -280,6 +291,22 @@ const performBootstrap = async () => {
         } catch (e) {
           // Ignore
         }
+      }
+
+      const hasResumesMobile = await adminDB.schema.hasColumn('resumes', 'mobile');
+      if (!hasResumesMobile) {
+        await adminDB.schema.alterTable('resumes', (table) => {
+          table.string('mobile', 50).nullable();
+        });
+        console.log("Added column 'mobile' to table 'resumes'.");
+      }
+
+      const hasResumesRemarks = await adminDB.schema.hasColumn('resumes', 'remarks');
+      if (!hasResumesRemarks) {
+        await adminDB.schema.alterTable('resumes', (table) => {
+          table.text('remarks').nullable();
+        });
+        console.log("Added column 'remarks' to table 'resumes'.");
       }
 
       const hasResumesJobId = await adminDB.schema.hasColumn('resumes', 'job_id');
@@ -626,8 +653,8 @@ const performBootstrap = async () => {
             scope: "PMC - Project Management Consultants",
             highlight: "Luxury apartments with golf course views.",
             images: JSON.stringify([
-              `${BASE_URL}Golf Apartment/Golf Appartment 1 .webp.webp`,
-              `${BASE_URL}Golf Apartment/Golf Appartment 2 .webp.webp`
+              `${BASE_URL}Golf Apartment/Golf Appartment 1 .jpg.webp`,
+              `${BASE_URL}Golf Apartment/Golf Appartment 2 .jpg.webp`
             ]),
             featured: 0, display_order: 9
           },

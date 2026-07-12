@@ -2,20 +2,28 @@ import { query } from '../config/database.js';
 import { uploadFileToS3, deleteFileFromS3, getS3ObjectStream } from '../services/uploadService.js';
 import path from 'path';
 import fs from 'fs';
+import { sendApplicationEmail } from '../services/emailService.js';
 
 export const submitResume = async (req, res, next) => {
     try {
-        const { name, email, job_role, job_id, platform } = req.body;
+        const { name, email, job_role, job_id, platform, mobile } = req.body;
 
         // Basic server-side validations
         if (!name || !name.trim()) {
             return res.status(400).json({ ok: false, message: 'Full name is required' });
         }
-        if (!email || !email.trim()) {
-            return res.status(400).json({ ok: false, message: 'Email address is required' });
+        let cleanEmail = null;
+        if (email && email.trim()) {
+            cleanEmail = email.trim().toLowerCase();
+            if (!/\S+@\S+\.\S+/.test(cleanEmail)) {
+                return res.status(400).json({ ok: false, message: 'A valid email address is required' });
+            }
         }
-        if (!/\S+@\S+\.\S+/.test(email)) {
-            return res.status(400).json({ ok: false, message: 'A valid email address is required' });
+        if (!mobile || !mobile.trim()) {
+            return res.status(400).json({ ok: false, message: 'Mobile number is required' });
+        }
+        if (!/^\+?[0-9\s-]{10,15}$/.test(mobile.trim())) {
+            return res.status(400).json({ ok: false, message: 'A valid mobile number is required' });
         }
         if (!req.file) {
             return res.status(400).json({ ok: false, message: 'Resume file is required' });
@@ -57,19 +65,31 @@ export const submitResume = async (req, res, next) => {
         const filePath = await uploadFileToS3(req.file, `${finalPlatform}/resume`);
 
         const insertQuery = `
-            INSERT INTO resumes (name, email, job_role, job_id, file_name, file_path, platform)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            INSERT INTO resumes (name, email, mobile, job_role, job_id, file_name, file_path, platform)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         `;
 
         await query(insertQuery, [
             name.trim(),
-            email.trim().toLowerCase(),
+            cleanEmail,
+            mobile.trim(),
             role,
             finalJobId,
             fileName,
             filePath,
             finalPlatform
         ]);
+
+        // Trigger email notification to admin asynchronously
+        sendApplicationEmail({
+            name: name.trim(),
+            email: cleanEmail,
+            mobile: mobile.trim(),
+            role,
+            platform: finalPlatform,
+            fileName,
+            filePath
+        });
 
         return res.status(200).json({
             ok: true,
@@ -85,7 +105,7 @@ export const getResumes = async (req, res, next) => {
     try {
         const platform = req.params.platform || req.query.platform;
         let selectQuery = `
-            SELECT r.id, r.name, r.email, r.file_name, r.file_path, r.platform, r.created_at, r.job_id,
+            SELECT r.id, r.name, r.email, r.mobile, r.remarks, r.file_name, r.file_path, r.platform, r.created_at, r.job_id,
                    COALESCE(j.title, r.job_role) AS job_role
             FROM resumes r
             LEFT JOIN jobs j ON r.job_id = j.id
@@ -229,6 +249,21 @@ export const viewResume = async (req, res, next) => {
         }
 
         return res.status(404).json({ ok: false, message: 'Resume file not found' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Admin: Update candidate remarks
+export const updateResumeRemarks = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { remarks } = req.body;
+
+        const updateQuery = `UPDATE resumes SET remarks = $1 WHERE id = $2`;
+        await query(updateQuery, [remarks ? remarks.trim() : '', id]);
+
+        return res.status(200).json({ ok: true, message: 'Remarks updated successfully' });
     } catch (error) {
         next(error);
     }
