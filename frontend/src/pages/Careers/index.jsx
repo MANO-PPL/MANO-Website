@@ -12,10 +12,12 @@ export default function Careers() {
     const deviceType = useDeviceType();
     const { brand } = useCompany();
     const [jobs, setJobs] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchJobs = async () => {
             try {
+                setLoading(true);
                 const response = await fetch(`${JOBS_API_URL}?platform=${(brand || 'pmc').toLowerCase()}`);
                 if (response.ok) {
                     const data = await response.json();
@@ -25,6 +27,8 @@ export default function Careers() {
                 }
             } catch (err) {
                 console.error("Failed to load jobs dynamically, using fallback data:", err);
+            } finally {
+                setLoading(false);
             }
         };
         fetchJobs();
@@ -41,10 +45,10 @@ export default function Careers() {
                     { name: 'Careers', item: 'https://mano.co.in/careers' }
                 ]}
             />
-            {deviceType === 'mobile' && <CareersMobile jobs={jobs} brand={brand} />}
-            {deviceType === 'tablet' && <CareersTablet jobs={jobs} brand={brand} />}
-            {deviceType === 'desktop' && <CareersDesktop jobs={jobs} brand={brand} />}
-            {!['mobile', 'tablet', 'desktop'].includes(deviceType) && <CareersDesktop jobs={jobs} brand={brand} />}
+            {deviceType === 'mobile' && <CareersMobile jobs={jobs} brand={brand} loading={loading} />}
+            {deviceType === 'tablet' && <CareersTablet jobs={jobs} brand={brand} loading={loading} />}
+            {deviceType === 'desktop' && <CareersDesktop jobs={jobs} brand={brand} loading={loading} />}
+            {!['mobile', 'tablet', 'desktop'].includes(deviceType) && <CareersDesktop jobs={jobs} brand={brand} loading={loading} />}
         </>
     );
 }

@@ -66,7 +66,7 @@ const CareersHeroMobile = () => {
     );
 };
 
-const CareersMobile = ({ jobs, brand }) => {
+const CareersMobile = ({ jobs, brand, loading }) => {
     const [openPosition, setOpenPosition] = useState(null);
     const [currentTestimonial, setCurrentTestimonial] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -187,33 +187,21 @@ const CareersMobile = ({ jobs, brand }) => {
     ];
 
     useEffect(() => {
-        const handleInteraction = () => {
+        const show = () => {
             setIsLoaded(true);
-            removeListeners();
+            cleanup();
         };
-
-        const removeListeners = () => {
-            window.removeEventListener('scroll', handleInteraction);
-            window.removeEventListener('wheel', handleInteraction);
-            window.removeEventListener('touchmove', handleInteraction);
-            window.removeEventListener('keydown', handleInteraction);
-        };
-
-        window.addEventListener('scroll', handleInteraction);
-        window.addEventListener('wheel', handleInteraction);
-        window.addEventListener('touchmove', handleInteraction);
-        window.addEventListener('keydown', handleInteraction);
-
-        // Fallback timer
-        const timer = setTimeout(() => {
-            setIsLoaded(true);
-            removeListeners();
-        }, 1500);
-
-        return () => {
-            removeListeners();
+        const cleanup = () => {
             clearTimeout(timer);
+            window.removeEventListener('wheel', show);
+            window.removeEventListener('touchmove', show);
+            window.removeEventListener('keydown', show);
         };
+        window.addEventListener('wheel', show, { passive: true });
+        window.addEventListener('touchmove', show, { passive: true });
+        window.addEventListener('keydown', show);
+        const timer = setTimeout(show, 800);
+        return cleanup;
     }, []);
 
     const togglePosition = (index) => {
@@ -250,15 +238,24 @@ const CareersMobile = ({ jobs, brand }) => {
     };
 
     return (
-        <div className="min-h-screen bg-blue-pattern text-white font-sans selection:bg-blue-500/30 overflow-x-hidden overscroll-x-none">
+        <div className="min-h-screen bg-blue-pattern text-white font-sans selection:bg-blue-500/30">
 
             {/* 1. HERO SECTION */}
             <CareersHeroMobile />
 
             <div id="values-strip"></div>
 
-            {isLoaded && (
-                <>
+            <div
+                className="transition-all duration-700 ease-out"
+                style={{
+                    opacity: isLoaded ? 1 : 0,
+                    transform: isLoaded ? 'translateY(0)' : 'translateY(32px)',
+                    pointerEvents: isLoaded ? 'auto' : 'none',
+                    height: isLoaded ? 'auto' : '0px',
+                    overflow: isLoaded ? 'visible' : 'hidden',
+                }}
+            >
+            <>
                     {/* 2. WHY WORK WITH US - VALUE STRIP */}
                     <section className="py-10 sm:py-16 border-y border-white/5 bg-white/5 backdrop-blur-sm">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -360,67 +357,85 @@ const CareersMobile = ({ jobs, brand }) => {
                             </RevealOnScroll>
 
                             <div className="space-y-3 sm:space-y-4 max-w-5xl mx-auto">
-                                {filteredPositions.map((job, index) => (
-                                    <div id={`job-card-${job.id}`} key={index} className="rounded-2xl border border-white/10 bg-black overflow-hidden transition-all duration-300 hover:border-blue-500/30 animated-white-border">
-                                        <button
-                                            onClick={() => togglePosition(index)}
-                                            className="w-full flex items-center justify-between p-4 sm:p-6 md:p-8 text-left hover:bg-white/5 transition-colors"
-                                        >
-                                            <div>
-                                                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2">{job.title}</h3>
-                                                <div className="flex flex-wrap gap-4 text-sm text-gray-400">
-                                                    <div className="flex items-center gap-1">
-                                                        <MapPin size={14} className="text-blue-500" />
-                                                        {job.details.Location || "Pan India"}
+                                {loading ? (
+                                    <div className="space-y-3">
+                                        {[1, 2, 3].map(i => (
+                                            <div key={i} className="rounded-2xl border border-white/5 bg-[#0a0a0a] h-20 animate-pulse flex items-center justify-between p-5">
+                                                <div className="space-y-2 w-1/2">
+                                                    <div className="h-5 bg-white/10 rounded w-3/4 animate-pulse"></div>
+                                                    <div className="h-3.5 bg-white/5 rounded w-1/4 animate-pulse"></div>
+                                                </div>
+                                                <div className="w-8 h-8 rounded-full bg-white/5 animate-pulse"></div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : filteredPositions.length === 0 ? (
+                                    <div className="text-center py-12 text-gray-500">
+                                        No open positions matching your criteria.
+                                    </div>
+                                ) : (
+                                    filteredPositions.map((job, index) => (
+                                        <div id={`job-card-${job.id}`} key={index} className="rounded-2xl border border-white/10 bg-black overflow-hidden transition-all duration-300 hover:border-blue-500/30 animated-white-border">
+                                            <button
+                                                onClick={() => togglePosition(index)}
+                                                className="w-full flex items-center justify-between p-4 sm:p-6 md:p-8 text-left hover:bg-white/5 transition-colors"
+                                            >
+                                                <div>
+                                                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2">{job.title}</h3>
+                                                    <div className="flex flex-wrap gap-4 text-sm text-gray-400">
+                                                        <div className="flex items-center gap-1">
+                                                            <MapPin size={14} className="text-blue-500" />
+                                                            {job.details.Location || "Pan India"}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/5 flex items-center justify-center transition-transform duration-300 ${openPosition === index ? 'rotate-90 bg-blue-500 text-white' : 'text-gray-400'}`}>
+                                                    <ChevronRight size={18} />
+                                                </div>
+                                            </button>
+
+                                            <div className={`transition-[max-height] duration-500 ease-in-out overflow-hidden ${openPosition === index ? 'max-h-[800px]' : 'max-h-0'}`}>
+                                                <div className="p-4 sm:p-8 pt-0 border-t border-white/5">
+                                                    <h4 className="text-blue-400 font-semibold mb-4 mt-6 uppercase tracking-wider text-sm">Job Details</h4>
+
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mb-8 text-sm sm:text-base">
+                                                        {Object.entries(job.details).map(([key, value], idx) => (
+                                                            <div key={idx} className="flex flex-col">
+                                                                <span className="text-xs text-gray-500 uppercase tracking-wide mb-1">{key}</span>
+                                                                <span className="text-gray-200 font-medium">{value}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+
+                                                    <div className="flex flex-col sm:flex-row gap-4">
+                                                        <button
+                                                            onClick={() => handleApplyClick(job.title)}
+                                                            className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors flex items-center justify-center gap-2"
+                                                        >
+                                                            Apply for this Role <ArrowRight size={18} />
+                                                        </button>
+                                                        {job.jd_file_path && (
+                                                            <a
+                                                                href={job.jd_file_path.startsWith('http') ? job.jd_file_path : `${API_BASE_URL}/${job.jd_file_path}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="w-full sm:w-auto px-6 py-2.5 rounded-full border border-blue-500 hover:bg-blue-500/10 text-white font-semibold transition-colors flex items-center justify-center gap-2"
+                                                            >
+                                                                <FileText size={18} /> Download JD
+                                                            </a>
+                                                        )}
+                                                        <button
+                                                            onClick={(e) => handleShareClick(e, job.id)}
+                                                            className="w-full sm:w-auto px-6 py-2.5 rounded-full border border-gray-500 hover:bg-gray-500/10 text-white font-semibold transition-colors flex items-center justify-center gap-2"
+                                                        >
+                                                            <Share2 size={18} /> {copiedJobId === job.id ? "Link Copied!" : "Share Role"}
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/5 flex items-center justify-center transition-transform duration-300 ${openPosition === index ? 'rotate-90 bg-blue-500 text-white' : 'text-gray-400'}`}>
-                                                <ChevronRight size={18} />
-                                            </div>
-                                        </button>
-
-                                        <div className={`transition-[max-height] duration-500 ease-in-out overflow-hidden ${openPosition === index ? 'max-h-[800px]' : 'max-h-0'}`}>
-                                            <div className="p-4 sm:p-8 pt-0 border-t border-white/5">
-                                                <h4 className="text-blue-400 font-semibold mb-4 mt-6 uppercase tracking-wider text-sm">Job Details</h4>
-
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mb-8 text-sm sm:text-base">
-                                                    {Object.entries(job.details).map(([key, value], idx) => (
-                                                        <div key={idx} className="flex flex-col">
-                                                            <span className="text-xs text-gray-500 uppercase tracking-wide mb-1">{key}</span>
-                                                            <span className="text-gray-200 font-medium">{value}</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-
-                                                <div className="flex flex-col sm:flex-row gap-4">
-                                                    <button
-                                                        onClick={() => handleApplyClick(job.title)}
-                                                        className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors flex items-center justify-center gap-2"
-                                                    >
-                                                        Apply for this Role <ArrowRight size={18} />
-                                                    </button>
-                                                    {job.jd_file_path && (
-                                                        <a
-                                                            href={job.jd_file_path.startsWith('http') ? job.jd_file_path : `${API_BASE_URL}/${job.jd_file_path}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="w-full sm:w-auto px-6 py-2.5 rounded-full border border-blue-500 hover:bg-blue-500/10 text-white font-semibold transition-colors flex items-center justify-center gap-2"
-                                                        >
-                                                            <FileText size={18} /> Download JD
-                                                        </a>
-                                                    )}
-                                                    <button
-                                                        onClick={(e) => handleShareClick(e, job.id)}
-                                                        className="w-full sm:w-auto px-6 py-2.5 rounded-full border border-gray-500 hover:bg-gray-500/10 text-white font-semibold transition-colors flex items-center justify-center gap-2"
-                                                    >
-                                                        <Share2 size={18} /> {copiedJobId === job.id ? "Link Copied!" : "Share Role"}
-                                                    </button>
-                                                </div>
-                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))
+                                )}
                             </div>
                         </div>
                     </section>
@@ -531,7 +546,7 @@ const CareersMobile = ({ jobs, brand }) => {
                         </div>
                     </section>
                 </>
-            )}
+            </div>
 
             <ResumeModal
                 isOpen={isResumeModalOpen}

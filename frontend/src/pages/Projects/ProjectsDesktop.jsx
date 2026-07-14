@@ -133,6 +133,29 @@ const ProjectsDesktop = () => {
     const [isContactOpen, setIsContactOpen] = useState(false);
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
+    useEffect(() => {
+        const show = () => {
+            setIsLoaded(true);
+            cleanup();
+        };
+        const cleanup = () => {
+            clearTimeout(timer);
+            window.removeEventListener('wheel', show);
+            window.removeEventListener('touchmove', show);
+            window.removeEventListener('keydown', show);
+        };
+        window.addEventListener('wheel', show, { passive: true });
+        window.addEventListener('touchmove', show, { passive: true });
+        window.addEventListener('keydown', show);
+        const timer = setTimeout(show, 800);
+        return cleanup;
+    }, []);
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -167,6 +190,14 @@ const ProjectsDesktop = () => {
             <ProjectsHero />
             <div id="featured-projects"></div>
 
+            <div
+                className="transition-all duration-700 ease-out"
+                style={{
+                    opacity: isLoaded ? 1 : 0,
+                    transform: isLoaded ? 'translateY(0)' : 'translateY(32px)',
+                    pointerEvents: isLoaded ? 'auto' : 'none',
+                }}
+            >
             {/* Featured Projects */}
             <section id="featured-projects" className="py-16 sm:py-24 px-6 relative overflow-hidden">
                 <div className="absolute top-1/2 right-0 w-96 h-96 bg-blue-500/10 blur-[120px] rounded-full pointer-events-none"></div>
@@ -297,6 +328,7 @@ const ProjectsDesktop = () => {
                 </div>
             </section>
             <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
+            </div>
         </div>
     );
 };

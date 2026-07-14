@@ -275,45 +275,52 @@ const ProjectsMobile = () => {
                         </div>
                     </RevealOnScroll>
 
-                    <div className="space-y-10 sm:space-y-32">
-                        {featuredProjects.map((project, index) => (
-                            <RevealOnScroll key={index}>
-                                <div className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-5 sm:gap-16 items-center`}>
-                                    <div className="w-full lg:w-1/2 group">
-                                        <div className="relative aspect-[16/10] sm:aspect-[16/9] rounded-[1.3rem] sm:rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl animated-white-border">
-                                            {project.images && project.images.length > 0 ? (
-                                                <ImageSlider images={project.images} title={project.title} />
-                                            ) : (
-                                                <div className="w-full h-full bg-gray-900 flex items-center justify-center"><Layout className="text-gray-700 w-12 h-12" /></div>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="w-full lg:w-1/2 space-y-4 sm:space-y-8">
-                                        <div className="inline-flex px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs sm:text-sm font-semibold">
-                                            {project.location}
-                                        </div>
-                                        <h3 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">{project.title}</h3>
-                                        <div className="space-y-3">
-                                            <div className="flex items-start gap-3">
-                                                <div className="p-1.5 rounded-lg bg-white/5 text-blue-400"><Layout size={18} /></div>
-                                                <div>
-                                                    <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Scope of Work</div>
-                                                    <div className="text-gray-300 font-medium text-sm sm:text-base">{parseScope(project.scope).join(", ") || project.scope}</div>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-start gap-3">
-                                                <div className="p-1.5 rounded-lg bg-white/5 text-blue-400"><Award size={18} /></div>
-                                                <div>
-                                                    <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Impact</div>
-                                                    <div className="text-gray-300 font-medium text-sm sm:text-base">{project.highlight}</div>
-                                                </div>
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-20 gap-3">
+                            <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                            <p className="text-gray-500 text-xs">Loading projects...</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-10 sm:space-y-32">
+                            {featuredProjects.map((project, index) => (
+                                <RevealOnScroll key={index}>
+                                    <div className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-5 sm:gap-16 items-center`}>
+                                        <div className="w-full lg:w-1/2 group">
+                                            <div className="relative aspect-[16/10] sm:aspect-[16/9] rounded-[1.3rem] sm:rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl animated-white-border">
+                                                {project.images && project.images.length > 0 ? (
+                                                    <ImageSlider images={project.images} title={project.title} />
+                                                ) : (
+                                                    <div className="w-full h-full bg-gray-900 flex items-center justify-center"><Layout className="text-gray-700 w-12 h-12" /></div>
+                                                )}
                                             </div>
                                         </div>
+                                        <div className="w-full lg:w-1/2 space-y-4 sm:space-y-8">
+                                            <div className="inline-flex px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs sm:text-sm font-semibold">
+                                                {project.location}
+                                            </div>
+                                            <h3 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">{project.title}</h3>
+                                            <div className="space-y-3">
+                                                <div className="flex items-start gap-3">
+                                                    <div className="p-1.5 rounded-lg bg-white/5 text-blue-400"><Layout size={18} /></div>
+                                                    <div>
+                                                        <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Scope of Work</div>
+                                                        <div className="text-gray-300 font-medium text-sm sm:text-base">{parseScope(project.scope).join(", ") || project.scope}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-start gap-3">
+                                                    <div className="p-1.5 rounded-lg bg-white/5 text-blue-400"><Award size={18} /></div>
+                                                    <div>
+                                                        <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Impact</div>
+                                                        <div className="text-gray-300 font-medium text-sm sm:text-base">{project.highlight}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </RevealOnScroll>
-                        ))}
-                    </div>
+                                </RevealOnScroll>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </section>
 
@@ -344,48 +351,54 @@ const ProjectsMobile = () => {
                     </div>
 
                     {/* Projects Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-8">
-                        {categoryProjects
-                            .filter(p => activeCategory === "All" || p.category === activeCategory)
-                            .map((project, index) => (
-                                <div key={index} className="group p-4 sm:p-6 rounded-2xl bg-[#0a0a0a] border border-white/5 hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1 animated-white-border">
-                                        <div className="relative h-52 sm:h-64 rounded-xl overflow-hidden mb-4 sm:mb-6">
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-                                        {project.images?.length > 0 ? (
-                                            <img
-                                                src={project.images[0]}
-                                                alt={project.title}
-                                                loading="lazy"
-                                                decoding="async"
-                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full bg-gray-900 flex items-center justify-center"><Layout className="text-gray-700 w-12 h-12" /></div>
-                                        )}
-                                        <span className="absolute top-3 right-3 px-2.5 py-1 bg-black/50 backdrop-blur-md rounded-full text-[10px] font-bold text-white border border-white/10">
-                                            {project.category}
-                                        </span>
+                    {loading ? (
+                        <div className="space-y-4">
+                            {[1, 2, 3].map(i => <div key={i} className="rounded-2xl bg-[#0a0a0a] border border-white/5 h-64 animate-pulse" />)}
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-8">
+                            {categoryProjects
+                                .filter(p => activeCategory === "All" || p.category === activeCategory)
+                                .map((project, index) => (
+                                    <div key={index} className="group p-4 sm:p-6 rounded-2xl bg-[#0a0a0a] border border-white/5 hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1 animated-white-border">
+                                            <div className="relative h-52 sm:h-64 rounded-xl overflow-hidden mb-4 sm:mb-6">
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
+                                            {project.images?.length > 0 ? (
+                                                <img
+                                                    src={project.images[0]}
+                                                    alt={project.title}
+                                                    loading="lazy"
+                                                    decoding="async"
+                                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-gray-900 flex items-center justify-center"><Layout className="text-gray-700 w-12 h-12" /></div>
+                                            )}
+                                            <span className="absolute top-3 right-3 px-2.5 py-1 bg-black/50 backdrop-blur-md rounded-full text-[10px] font-bold text-white border border-white/10">
+                                                {project.category}
+                                            </span>
+                                        </div>
+
+                                        <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 group-hover:text-blue-400 transition-colors">
+                                            {project.title}
+                                        </h3>
+
+                                        <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-6">
+                                            {parseScope(project.scope).map((item, idx) => (
+                                                <div key={idx} className="flex items-center text-[11px] sm:text-xs text-gray-400 bg-white/5 px-2 py-1 rounded">
+                                                    <CheckCircle size={10} className="text-blue-500 mr-1" />
+                                                    {item}
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <p className="text-sm text-gray-400 italic">
+                                            "{project.highlight}"
+                                        </p>
                                     </div>
-
-                                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 group-hover:text-blue-400 transition-colors">
-                                        {project.title}
-                                    </h3>
-
-                                    <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-6">
-                                        {parseScope(project.scope).map((item, idx) => (
-                                            <div key={idx} className="flex items-center text-[11px] sm:text-xs text-gray-400 bg-white/5 px-2 py-1 rounded">
-                                                <CheckCircle size={10} className="text-blue-500 mr-1" />
-                                                {item}
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    <p className="text-sm text-gray-400 italic">
-                                        "{project.highlight}"
-                                    </p>
-                                </div>
-                            ))}
-                    </div>
+                                ))}
+                        </div>
+                    )}
                 </div>
             </section>
 

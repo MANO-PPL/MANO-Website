@@ -80,7 +80,7 @@ export default function BlogPageTablet() {
     const showFeatured = activeCategory === "All" && searchQuery === "";
 
     return (
-        <div className="min-h-screen bg-blue-pattern text-white overflow-x-hidden font-sans">
+        <div className="min-h-screen bg-blue-pattern text-white font-sans">
 
             {/* ── HERO ─────────────────────────────────────────────────────── */}
             <PageHero

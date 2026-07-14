@@ -64,7 +64,6 @@ const MobileBlogCard = ({ post }) => (
 // ─── Mobile Blog Page ─────────────────────────────────────────────────────────
 export default function BlogPageMobile() {
     const [activeCategory, setActiveCategory] = useState("All");
-    const [searchQuery, setSearchQuery] = useState("");
     const [isContactOpen, setIsContactOpen] = useState(false);
     const [visibleCount, setVisibleCount] = useState(6);
 
@@ -84,19 +83,14 @@ export default function BlogPageMobile() {
     }, []);
 
     const filteredPosts = posts.filter(p => {
-        const matchCat = activeCategory === "All" || p.category === activeCategory;
-        const matchSearch = searchQuery === "" || 
-                            p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            p.summary.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            (p.tags || []).some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
-        return matchCat && matchSearch;
+        return activeCategory === "All" || p.category === activeCategory;
     });
 
     const featuredPosts = posts.filter(p => p.featured);
-    const showFeatured = activeCategory === "All" && searchQuery === "";
+    const showFeatured = activeCategory === "All";
 
     return (
-        <div className="min-h-screen bg-blue-pattern text-white overflow-x-hidden font-sans">
+        <div className="min-h-screen bg-blue-pattern text-white font-sans">
 
             {/* ── HERO ─────────────────────────────────────────────────────── */}
             <PageHero
@@ -119,18 +113,6 @@ export default function BlogPageMobile() {
 
             {/* blog-mobile-content anchor for scroll */}
             <div id="blog-mobile-content" />
-
-            {/* ── SEARCH ───────────────────────────────────────────────────── */}
-            <section className="py-5 px-5">
-                <div className="relative">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                    <input type="text" placeholder="Search articles..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-10 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-gray-500 focus:outline-none focus:bg-white/10 focus:border-blue-500/50 transition-all" />
-                    {searchQuery && (
-                        <button onClick={() => setSearchQuery("")} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500"><X size={14} /></button>
-                    )}
-                </div>
-            </section>
 
             {/* ── FEATURED POSTS ───────────────────────────────────────────── */}
             {showFeatured && (
@@ -180,8 +162,8 @@ export default function BlogPageMobile() {
                     <div className="text-center py-16">
                         <div className="text-5xl mb-3">🔍</div>
                         <h3 className="text-lg font-bold text-white mb-1">No articles found</h3>
-                        <p className="text-gray-500 text-sm">Try a different search or category</p>
-                        <button onClick={() => { setSearchQuery(""); setActiveCategory("All"); }} className="mt-5 px-5 py-2.5 rounded-full bg-blue-600 text-white font-semibold text-sm">Reset</button>
+                        <p className="text-gray-500 text-sm">Try a different category</p>
+                        <button onClick={() => { setActiveCategory("All"); }} className="mt-5 px-5 py-2.5 rounded-full bg-blue-600 text-white font-semibold text-sm">Reset</button>
                     </div>
                 ) : (
                     <>
@@ -233,7 +215,7 @@ export default function BlogPageMobile() {
                     <div className="flex items-center gap-2 mb-4"><Tag size={14} className="text-blue-400" /><h3 className="text-sm font-bold text-white">Popular Tags</h3></div>
                     <div className="flex flex-wrap gap-2">
                         {["PMC", "EPC", "Quality", "Cost Control", "Mumbai", "Real Estate", "Sustainability", "QA/QC", "EHS", "Case Study", "CPM", "Billing", "Contracts", "PERT", "Budgeting"].map(tag => (
-                            <button key={tag} onClick={() => setSearchQuery(tag)} className="px-3 py-1.5 rounded-full text-xs bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-blue-500/30 hover:bg-blue-600/10 transition-all">#{tag}</button>
+                            <span key={tag} className="px-3 py-1.5 rounded-full text-xs bg-white/5 border border-white/10 text-gray-400">#{tag}</span>
                         ))}
                     </div>
                 </RevealOnScroll>

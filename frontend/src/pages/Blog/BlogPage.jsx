@@ -108,7 +108,6 @@ export const BlogCard = ({ post, large = false }) => (
 // ─── Desktop Blog Page ────────────────────────────────────────────────────────
 export default function BlogPageDesktop() {
   const [activeCategory, setActiveCategory] = useState("All");
-  const [searchQuery, setSearchQuery] = useState("");
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(9);
 
@@ -128,19 +127,14 @@ export default function BlogPageDesktop() {
   }, []);
 
   const filteredPosts = posts.filter(p => {
-    const matchCat = activeCategory === "All" || p.category === activeCategory;
-    const matchSearch = searchQuery === "" || 
-                        p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                        p.summary.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                        (p.tags || []).some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchCat && matchSearch;
+    return activeCategory === "All" || p.category === activeCategory;
   });
 
   const featuredPosts = posts.filter(p => p.featured);
-  const showFeatured = activeCategory === "All" && searchQuery === "";
+  const showFeatured = activeCategory === "All";
 
   return (
-    <div className="min-h-screen bg-blue-pattern text-white overflow-x-hidden font-sans selection:bg-blue-500/30">
+    <div className="min-h-screen bg-blue-pattern text-white font-sans selection:bg-blue-500/30">
 
       {/* ── HERO using PageHero ─────────────────────────────────────── */}
       <PageHero
@@ -165,18 +159,6 @@ export default function BlogPageDesktop() {
 
       {/* blog-content anchor for scroll */}
       <div id="blog-content" />
-
-      {/* ── SEARCH BAR ───────────────────────────────────────────────── */}
-      <section className="py-8 px-6 md:px-12">
-        <div className="max-w-2xl mx-auto relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-          <input type="text" placeholder="Search articles, topics, tags..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-12 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:bg-white/10 focus:border-blue-500/50 hover:border-blue-500/30 transition-all" />
-          {searchQuery && (
-            <button onClick={() => setSearchQuery("")} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"><X size={16} /></button>
-          )}
-        </div>
-      </section>
 
       {/* ── FEATURED POSTS ───────────────────────────────────────────── */}
       {showFeatured && (
@@ -219,7 +201,6 @@ export default function BlogPageDesktop() {
                   <span className="ml-3 text-base font-normal text-gray-500">({filteredPosts.length})</span>
                 </h2>
               </div>
-              {searchQuery && <p className="text-sm text-gray-400">Results for <span className="text-blue-400 font-medium">"{searchQuery}"</span></p>}
             </div>
           </RevealOnScroll>
 
@@ -233,8 +214,8 @@ export default function BlogPageDesktop() {
               <div className="text-center py-24">
                 <div className="text-6xl mb-4">🔍</div>
                 <h3 className="text-xl font-bold text-white mb-2">No articles found</h3>
-                <p className="text-gray-500">Try a different search term or category</p>
-                <button onClick={() => { setSearchQuery(""); setActiveCategory("All"); }} className="mt-6 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-colors">Reset Filters</button>
+                <p className="text-gray-500">Try a different category</p>
+                <button onClick={() => { setActiveCategory("All"); }} className="mt-6 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-colors">Reset Filters</button>
               </div>
             </RevealOnScroll>
           ) : (
@@ -299,7 +280,7 @@ export default function BlogPageDesktop() {
             <div className="flex items-center gap-3 mb-6"><Tag size={18} className="text-blue-400" /><h3 className="text-lg font-bold text-white">Popular Tags</h3></div>
             <div className="flex flex-wrap gap-3">
               {["PMC", "EPC", "Quality", "Cost Control", "Mumbai", "Real Estate", "Sustainability", "QA/QC", "EHS", "Case Study", "Scheduling", "CPM", "Billing", "Contracts", "PERT", "India Infrastructure", "Budgeting", "Planning"].map(tag => (
-                <button key={tag} onClick={() => setSearchQuery(tag)} className="px-4 py-2 rounded-full text-sm bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-blue-500/30 hover:bg-blue-600/10 transition-all">#{tag}</button>
+                <span key={tag} className="px-4 py-2 rounded-full text-sm bg-white/5 border border-white/10 text-gray-400">#{tag}</span>
               ))}
             </div>
           </div>
