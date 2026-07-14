@@ -100,33 +100,21 @@ const EPCTablet = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        const handleInteraction = () => {
+        const show = () => {
             setIsLoaded(true);
-            removeListeners();
+            cleanup();
         };
-
-        const removeListeners = () => {
-            window.removeEventListener('scroll', handleInteraction);
-            window.removeEventListener('wheel', handleInteraction);
-            window.removeEventListener('touchmove', handleInteraction);
-            window.removeEventListener('keydown', handleInteraction);
-        };
-
-        window.addEventListener('scroll', handleInteraction);
-        window.addEventListener('wheel', handleInteraction);
-        window.addEventListener('touchmove', handleInteraction);
-        window.addEventListener('keydown', handleInteraction);
-
-        // Auto load after small delay if no interaction
-        const timer = setTimeout(() => {
-            setIsLoaded(true);
-            removeListeners();
-        }, 1000);
-
-        return () => {
-            removeListeners();
+        const cleanup = () => {
             clearTimeout(timer);
+            window.removeEventListener('wheel', show);
+            window.removeEventListener('touchmove', show);
+            window.removeEventListener('keydown', show);
         };
+        window.addEventListener('wheel', show, { passive: true });
+        window.addEventListener('touchmove', show, { passive: true });
+        window.addEventListener('keydown', show);
+        const timer = setTimeout(show, 800);
+        return cleanup;
     }, []);
 
     useEffect(() => {
@@ -230,7 +218,7 @@ const EPCTablet = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-blue-pattern text-white overflow-x-hidden font-sans selection:bg-blue-500/30">
+        <div className="min-h-screen bg-blue-pattern text-white font-sans selection:bg-blue-500/30">
             {/* 1. HERO SECTION */}
             <PageHero
                 title="Engineering"
@@ -262,8 +250,17 @@ const EPCTablet = () => {
 
             <div id="content"></div>
 
-            {isLoaded && (
-                <>
+            <div
+                className="transition-all duration-700 ease-out"
+                style={{
+                    opacity: isLoaded ? 1 : 0,
+                    transform: isLoaded ? 'translateY(0)' : 'translateY(32px)',
+                    pointerEvents: isLoaded ? 'auto' : 'none',
+                    height: isLoaded ? 'auto' : '0px',
+                    overflow: isLoaded ? 'visible' : 'hidden',
+                }}
+            >
+            <>
                     {/* 2. VALUE METRICS STRIP */}
                     <section className="relative z-20 -mt-32 pb-16 pt-32 border-b border-white/5 bg-gradient-to-b from-transparent via-black/80 to-black backdrop-blur-sm animate-in fade-in duration-1000"
                         style={{
@@ -737,7 +734,7 @@ const EPCTablet = () => {
                         initialService="EPC Solutions"
                     />
                 </>
-            )}
+            </div>
         </div>
     );
 };
