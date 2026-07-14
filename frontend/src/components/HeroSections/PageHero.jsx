@@ -43,7 +43,7 @@ export default function PageHero({
     headingClassName = ""
 }) {
     return (
-        <div className="relative w-full min-h-screen flex flex-col justify-center text-white overflow-hidden font-sans">
+        <div className="relative w-full min-h-screen flex flex-col justify-center text-white font-sans">
             {/* 
         SCOPED ANIMATIONS 
       */}
@@ -71,8 +71,9 @@ export default function PageHero({
       `}</style>
 
             {/* Background Image(s) */}
-            <div
-                className="absolute inset-0 z-0 opacity-100 blur-[2px] scale-110"
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                <div
+                    className="absolute inset-0 opacity-100 blur-[2px] scale-110"
                 style={{
                     maskImage: "none",
                     WebkitMaskImage: "none",
@@ -328,6 +329,7 @@ export default function PageHero({
                         src={images && images.length > 0 ? images[0] : bgImage}
                     />
                 )}
+            </div>
             </div>
 
             {/* Dark Gradient Overlay for Text Visibility - Adjusted for visibility */}

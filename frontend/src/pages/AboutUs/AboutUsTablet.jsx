@@ -80,28 +80,25 @@ const AboutUsTablet = () => {
     }, []);
 
     useEffect(() => {
-        const revealContent = () => {
+        const show = () => {
             setIsContentVisible(true);
-            removeListeners();
+            cleanup();
         };
-
-        const removeListeners = () => {
-            window.removeEventListener('scroll', revealContent);
-            window.removeEventListener('wheel', revealContent);
-            window.removeEventListener('touchmove', revealContent);
-            window.removeEventListener('keydown', revealContent);
+        const cleanup = () => {
+            clearTimeout(timer);
+            window.removeEventListener('wheel', show);
+            window.removeEventListener('touchmove', show);
+            window.removeEventListener('keydown', show);
         };
-
-        window.addEventListener('scroll', revealContent, { passive: true });
-        window.addEventListener('wheel', revealContent, { passive: true });
-        window.addEventListener('touchmove', revealContent, { passive: true });
-        window.addEventListener('keydown', revealContent);
-
-        return () => removeListeners();
+        window.addEventListener('wheel', show, { passive: true });
+        window.addEventListener('touchmove', show, { passive: true });
+        window.addEventListener('keydown', show);
+        const timer = setTimeout(show, 800);
+        return cleanup;
     }, []);
 
     return (
-        <div className="min-h-screen bg-blue-pattern text-white overflow-x-hidden font-sans selection:bg-blue-500/30">
+        <div className="min-h-screen bg-blue-pattern text-white font-sans selection:bg-blue-500/30">
 
             <style>{`
                 @keyframes marquee {
@@ -120,8 +117,17 @@ const AboutUsTablet = () => {
             {/* Hero Section */}
             <AboutHero />
 
-            {isContentVisible && (
-                <>
+            <div
+                className="transition-all duration-700 ease-out"
+                style={{
+                    opacity: isContentVisible ? 1 : 0,
+                    transform: isContentVisible ? 'translateY(0)' : 'translateY(32px)',
+                    pointerEvents: isContentVisible ? 'auto' : 'none',
+                    height: isContentVisible ? 'auto' : '0px',
+                    overflow: isContentVisible ? 'visible' : 'hidden',
+                }}
+            >
+            <>
 
             {/* About The Company Section */}
             <section className="relative py-16 px-6 overflow-hidden bg-gradient-to-b from-black to-blue-950/20">
@@ -465,7 +471,7 @@ const AboutUsTablet = () => {
             </section>
 
                 </>
-            )}
+            </div>
 
 
         </div >

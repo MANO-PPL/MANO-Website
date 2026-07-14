@@ -80,28 +80,25 @@ const AboutUsDesktop = () => {
     }, []);
 
     useEffect(() => {
-        const revealContent = () => {
+        const show = () => {
             setIsContentVisible(true);
-            removeListeners();
+            cleanup();
         };
-
-        const removeListeners = () => {
-            window.removeEventListener('scroll', revealContent);
-            window.removeEventListener('wheel', revealContent);
-            window.removeEventListener('touchmove', revealContent);
-            window.removeEventListener('keydown', revealContent);
+        const cleanup = () => {
+            clearTimeout(timer);
+            window.removeEventListener('wheel', show);
+            window.removeEventListener('touchmove', show);
+            window.removeEventListener('keydown', show);
         };
-
-        window.addEventListener('scroll', revealContent, { passive: true });
-        window.addEventListener('wheel', revealContent, { passive: true });
-        window.addEventListener('touchmove', revealContent, { passive: true });
-        window.addEventListener('keydown', revealContent);
-
-        return () => removeListeners();
+        window.addEventListener('wheel', show, { passive: true });
+        window.addEventListener('touchmove', show, { passive: true });
+        window.addEventListener('keydown', show);
+        const timer = setTimeout(show, 800);
+        return cleanup;
     }, []);
 
     return (
-        <div className="min-h-screen bg-blue-pattern text-white overflow-x-hidden font-sans selection:bg-blue-500/30">
+        <div className="min-h-screen bg-blue-pattern text-white font-sans selection:bg-blue-500/30">
 
             <style>{`
                 @keyframes marquee {
@@ -120,11 +117,20 @@ const AboutUsDesktop = () => {
             {/* Hero Section */}
             <AboutHero />
 
-            {isContentVisible && (
-                <>
+            <div
+                className="transition-all duration-700 ease-out"
+                style={{
+                    opacity: isContentVisible ? 1 : 0,
+                    transform: isContentVisible ? 'translateY(0)' : 'translateY(32px)',
+                    pointerEvents: isContentVisible ? 'auto' : 'none',
+                    height: isContentVisible ? 'auto' : '0px',
+                    overflow: isContentVisible ? 'visible' : 'hidden',
+                }}
+            >
+            <>
 
             {/* About The Company Section */}
-            <section className="relative py-16 px-6 overflow-hidden bg-gradient-to-b from-black to-blue-950/20">
+            <section id="about-content" className="relative py-16 px-6 overflow-hidden bg-gradient-to-b from-black to-blue-950/20">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(37,99,235,0.1)_0,rgba(0,0,0,0)_50%)] pointer-events-none"></div>
                 <RevealOnScroll>
                     <div className="max-w-6xl mx-auto relative z-10">
@@ -465,7 +471,7 @@ const AboutUsDesktop = () => {
             </section>
 
                 </>
-            )}
+            </div>
 
 
         </div >

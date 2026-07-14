@@ -258,7 +258,7 @@ export default function LandingPageMobile() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-blue-pattern text-white overflow-x-hidden">
+    <div className="min-h-screen bg-blue-pattern text-white">
       {/* Hero Section with Navigation */}
       <LandingHero />
 

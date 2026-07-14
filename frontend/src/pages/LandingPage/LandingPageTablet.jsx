@@ -1,4 +1,4 @@
-import React,{ useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronRight, Briefcase, Calculator, ShieldCheck, FileText, Shield, Hammer, Map, Clock, Handshake } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from "framer-motion";
@@ -242,7 +242,7 @@ export default function LandingPageTablet() {
       const rounded = Math.round(currentIndexRef.current) % projects.length;
       // keep in bounds positive
       const idx = ((rounded % projects.length) + projects.length) % projects.length;
-      
+
       setCurrentProjectIndex((prev) => {
         if (prev !== idx) return idx;
         return prev;
@@ -269,7 +269,7 @@ export default function LandingPageTablet() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-blue-pattern text-white overflow-x-hidden">
+    <div className="min-h-screen bg-blue-pattern text-white" style={{ zoom: 0.80 }}>
       {/* Hero Section with Navigation */}
       <LandingHero />
 

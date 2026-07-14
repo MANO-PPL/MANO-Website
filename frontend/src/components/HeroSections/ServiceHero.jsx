@@ -17,7 +17,7 @@ const StatItem = ({ value, label }) => (
 // --- MAIN COMPONENT ---
 export default function ServiceHero({ compactMobile = false }) {
     return (
-        <div className="relative w-full text-white overflow-hidden font-sans">
+        <div className="relative w-full text-white font-sans">
             {/* 
         SCOPED ANIMATIONS 
       */}
@@ -44,15 +44,17 @@ export default function ServiceHero({ compactMobile = false }) {
         .delay-500 { animation-delay: 0.5s; }
       `}</style>
 
-            {/* Background Image with Gradient Mask */}
-            <div
-                className="absolute inset-0 z-0 bg-cover bg-center opacity-35 blur-[2px] scale-110"
-                style={{
-                    backgroundImage: `url(${import.meta.env.BASE_URL}services-hero.webp)`,
-                    maskImage: "linear-gradient(180deg, transparent, black 0%, black 70%, transparent)",
-                    WebkitMaskImage: "linear-gradient(180deg, transparent, black 0%, black 70%, transparent)",
-                }}
-            />
+            {/* Background Image Wrapper to clip the scale-110 blur */}
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                <div
+                    className="absolute inset-0 bg-cover bg-center opacity-35 blur-[2px] scale-110"
+                    style={{
+                        backgroundImage: `url(${import.meta.env.BASE_URL}services-hero.webp)`,
+                        maskImage: "linear-gradient(180deg, transparent, black 0%, black 70%, transparent)",
+                        WebkitMaskImage: "linear-gradient(180deg, transparent, black 0%, black 70%, transparent)",
+                    }}
+                />
+            </div>
 
             {/* Dark Gradient Overlay for Text Visibility */}
             <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />

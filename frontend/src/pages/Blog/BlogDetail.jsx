@@ -117,7 +117,7 @@ export default function BlogDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-pattern text-white overflow-x-hidden font-sans selection:bg-blue-500/30">
+    <div className="min-h-screen bg-blue-pattern text-white font-sans selection:bg-blue-500/30">
 
       {/* ── HERO IMAGE ─────────────────────────────────────────────── */}
       <div className="relative w-full overflow-hidden" style={{ height: isMobileOrTablet ? "55vw" : "50vh", maxHeight: "520px", minHeight: "220px" }}>
