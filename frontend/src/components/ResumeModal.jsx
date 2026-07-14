@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import ResumeModalDesktop from './ResumeModalDesktop';
 import ResumeModalMobile from './ResumeModalMobile';
 
 const ResumeModal = (props) => {
     const [isMobile, setIsMobile] = useState(false);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
+        setMounted(true);
         if (typeof window === 'undefined') return;
         const mediaQuery = window.matchMedia('(max-width: 639px)');
         
@@ -22,11 +25,16 @@ const ResumeModal = (props) => {
         };
     }, []);
 
-    if (isMobile) {
-        return <ResumeModalMobile {...props} />;
-    }
+    if (!mounted) return null;
 
-    return <ResumeModalDesktop {...props} />;
+    const modalContent = isMobile ? (
+        <ResumeModalMobile {...props} />
+    ) : (
+        <ResumeModalDesktop {...props} />
+    );
+
+    const target = document.getElementById('modal-portal-target') || document.body;
+    return createPortal(modalContent, target);
 };
 
 export default ResumeModal;

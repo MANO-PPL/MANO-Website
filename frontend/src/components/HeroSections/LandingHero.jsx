@@ -40,7 +40,7 @@ export default function LandingHero() {
     }, []);
 
     return (
-        <div className="relative w-full text-white overflow-hidden font-sans">
+        <div className="relative w-full min-h-screen text-white font-sans flex flex-col justify-between">
             {/* SEO-only H1 — visually hidden but crawlable by Google */}
             <h1 className="sr-only">
                 {isEPC
@@ -82,8 +82,8 @@ export default function LandingHero() {
                     className="absolute inset-0 z-0 bg-cover bg-center"
                     style={{
                         backgroundImage: `url(${BACKGROUND_IMAGES[currentImageIndex]})`,
-                        maskImage: "linear-gradient(180deg, transparent, black 0%, black 70%, transparent)",
-                        WebkitMaskImage: "linear-gradient(180deg, transparent, black 0%, black 70%, transparent)",
+                        maskImage: "linear-gradient(180deg, transparent, black 0%, black 90%, transparent)",
+                        WebkitMaskImage: "linear-gradient(180deg, transparent, black 0%, black 90%, transparent)",
                     }}
                 />
             </AnimatePresence>

@@ -90,9 +90,9 @@ const Navbar = () => {
         setIsMobileMenuOpen(false);
     }, [currentPath]);
 
-    const linkBaseClass = "transition-all duration-300 ease-in-out font-medium drop-shadow-md py-2 lg:py-0";
-    const activeClass = "text-white font-bold text-[20px] lg:text-[20px]";
-    const inactiveClass = "text-gray-400 hover:text-white text-[18px] lg:text-[18px]";
+    const linkBaseClass = "transition-all duration-300 ease-in-out font-medium drop-shadow-md py-1.5 px-3 rounded-lg";
+    const activeClass = "text-white font-semibold text-[13px] lg:text-[13px] bg-white/10 border border-white/20 shadow-[0_0_12px_rgba(59,130,246,0.25)] backdrop-blur-sm";
+    const inactiveClass = "text-gray-400 hover:text-white hover:bg-white/5 text-[13px] lg:text-[13px]";
 
     const getLink = (path) => {
         if (path.startsWith('/epc') || path.startsWith('/pmc')) return path; // Return absolute brand paths as is
@@ -102,21 +102,21 @@ const Navbar = () => {
     return (
         <nav className="absolute top-4 lg:top-6 left-0 right-0 z-50 flex items-center justify-center pointer-events-none">
             <div
-                className={`backdrop-blur-xl bg-black/70 border border-white/20 transition-all duration-300 ease-out flex flex-col shadow-[0_4px_30px_rgba(0,0,0,0.1)] pointer-events-auto overflow-hidden rounded-2xl lg:rounded-[32px] w-[92%] sm:w-[95%] max-w-[1400px] lg:backdrop-blur-md lg:bg-white/5`}
+                className={`backdrop-blur-xl bg-black/70 border border-white/20 transition-all duration-300 ease-out flex flex-col shadow-[0_4px_30px_rgba(0,0,0,0.1)] pointer-events-auto overflow-hidden rounded-lg lg:rounded-xl w-[92%] sm:w-[95%] max-w-[1400px] lg:backdrop-blur-md lg:bg-white/5`}
                 onMouseLeave={() => setIsServicesOpen(false)}
             >
                 {/* Top Row: Logo, Links (Desktop), Hamburger, CTA */}
-                <div className="flex items-center justify-between px-4 sm:px-8 py-3 lg:py-4 w-full">
+                <div className="flex items-center justify-between px-4 sm:px-8 py-3 lg:py-3.5 w-full">
                     {/* Logo Section */}
                     <Link to="/" onClick={handleLogoClick} className="flex items-center gap-2 sm:gap-3 flex-shrink-0 group">
-                        <img src={`${import.meta.env.BASE_URL}mano-logo.svg`} alt="Mano Logo" className="h-8 sm:h-10 w-auto group-hover:scale-105 transition-transform duration-300" />
-                        <span className="text-xl sm:text-2xl font-bold text-white tracking-wide">
+                        <img src={`${import.meta.env.BASE_URL}mano-logo.svg`} alt="Mano Logo" className="h-5 sm:h-6 w-auto group-hover:scale-105 transition-transform duration-300" />
+                        <span className="text-base sm:text-lg font-bold text-white tracking-wide">
                             MANO
                         </span>
                     </Link>
 
                     {/* Desktop Navigation Links */}
-                    <div className="hidden xl:flex items-center gap-10 xl:gap-14">
+                    <div className="hidden xl:flex items-center gap-5">
                         <Link to={getLink('/')} className={`${linkBaseClass} ${isActive('/') ? activeClass : inactiveClass}`}>
                             Home
                         </Link>
@@ -152,9 +152,9 @@ const Navbar = () => {
                     <div className="flex items-center gap-4">
                         <div className="hidden xl:block">
                             <div onClick={handleContactClick} className="cursor-pointer">
-                                <RainbowButton borderRadius="rounded-xl">
+                                <RainbowButton borderRadius="rounded-lg" buttonClassName="!px-4 !py-2.5 !text-xs">
                                     {isCareersPage ? 'Apply' : 'Get in Touch'}
-                                    <ChevronRight className="w-4 h-4 ml-2" />
+                                    <ChevronRight className="w-3 h-3 ml-1" />
                                 </RainbowButton>
                             </div>
                         </div>

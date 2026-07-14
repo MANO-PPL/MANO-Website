@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -25,19 +26,61 @@ import AdminPortal from "./pages/Admin/AdminPortal";
 
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
+import ScrollToTop from "./components/ScrollToTop";
 import ChatbotWidget from "./components/ChatbotWidget";
 import { CompanyProvider } from "./context/CompanyContext";
+import useDeviceType from "./hooks/useDeviceType";
 
 // Layout wrapper — wraps brand-specific pages with Navbar, Footer, and context.
 // brand prop is passed explicitly ("pmc" or "epc") — no longer read from URL params.
-const BrandLayout = ({ brand }) => (
-  <CompanyProvider brand={brand}>
-    <Navbar />
-    <Outlet />
-    <Footer />
-    <ToastContainer position="top-right" autoClose={3000} theme="light" />
-  </CompanyProvider>
-);
+const BrandLayout = ({ brand }) => {
+  const [footerVisible, setFooterVisible] = useState(false);
+  const deviceType = useDeviceType();
+  const isDesktop = deviceType === 'desktop';
+
+  useEffect(() => {
+    setFooterVisible(false);
+    const timer = setTimeout(() => setFooterVisible(true), 1000);
+    return () => clearTimeout(timer);
+  }, [brand]);
+
+  return (
+    <CompanyProvider brand={brand}>
+      <div 
+        style={isDesktop ? { 
+          zoom: 0.80, 
+          minHeight: '125vh', 
+          display: 'flex', 
+          flexDirection: 'column' 
+        } : {
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        <ScrollToTop />
+        <Navbar />
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <Outlet />
+        </div>
+        <div
+          style={{
+            opacity: footerVisible ? 1 : 0,
+            transform: footerVisible ? 'translateY(0)' : 'translateY(24px)',
+            transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
+            pointerEvents: footerVisible ? 'auto' : 'none',
+            marginTop: 'auto'
+          }}
+        >
+          <Footer />
+        </div>
+        {/* Portal target for modals, keeping them inside the zoomed context and above the footer */}
+        <div id="modal-portal-target" style={{ position: 'relative', zIndex: 9999 }} />
+      </div>
+      <ToastContainer position="top-right" autoClose={3000} theme="light" />
+    </CompanyProvider>
+  );
+};
 
 function App() {
   const location = useLocation();

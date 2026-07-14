@@ -38,7 +38,7 @@ export default function AboutHero({ showStatsCard = true }) {
     const rotateY = useTransform(mouseX, [-300, 300], [-5, 5]);
 
     return (
-        <div className={`relative w-full text-white overflow-hidden font-sans ${isDesktopHero ? 'min-h-screen' : ''}`}>
+        <div className={`relative w-full text-white font-sans ${isDesktopHero ? 'min-h-screen' : ''}`}>
             {isDesktopHero && (
                 <style>{`
                     @keyframes fadeSlideIn {
@@ -57,23 +57,25 @@ export default function AboutHero({ showStatsCard = true }) {
                 `}</style>
             )}
 
-            {/* Background Image with Gradient Mask */}
-            <div
-                className={`absolute inset-0 z-0 bg-cover bg-center ${isDesktopHero ? 'opacity-35 blur-[2px] scale-110' : 'opacity-30'}`}
-                style={
-                    isDesktopHero
-                        ? {
-                            backgroundImage: `url(${import.meta.env.BASE_URL}about-hero-bg.webp)`,
-                            maskImage: "linear-gradient(180deg, transparent, black 0%, black 70%, transparent)",
-                            WebkitMaskImage: "linear-gradient(180deg, transparent, black 0%, black 70%, transparent)",
-                        }
-                        : {
-                            backgroundImage: `url(${import.meta.env.BASE_URL}about-hero-bg.webp)`,
-                            maskImage: "linear-gradient(180deg, transparent, black 0%, black 70%, transparent)",
-                            WebkitMaskImage: "linear-gradient(180deg, transparent, black 0%, black 70%, transparent)",
-                        }
-                }
-            />
+            {/* Background Image Wrapper to clip the scale-110 blur */}
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                <div
+                    className={`absolute inset-0 bg-cover bg-center ${isDesktopHero ? 'opacity-35 blur-[2px] scale-110' : 'opacity-30'}`}
+                    style={
+                        isDesktopHero
+                            ? {
+                                backgroundImage: `url(${import.meta.env.BASE_URL}about-hero-bg.webp)`,
+                                maskImage: "linear-gradient(180deg, transparent, black 0%, black 70%, transparent)",
+                                WebkitMaskImage: "linear-gradient(180deg, transparent, black 0%, black 70%, transparent)",
+                            }
+                            : {
+                                backgroundImage: `url(${import.meta.env.BASE_URL}about-hero-bg.webp)`,
+                                maskImage: "linear-gradient(180deg, transparent, black 0%, black 70%, transparent)",
+                                WebkitMaskImage: "linear-gradient(180deg, transparent, black 0%, black 70%, transparent)",
+                            }
+                    }
+                />
+            </div>
 
             {/* Dark Gradient Overlay for Text Visibility */}
             <div className={`absolute inset-0 z-0 ${isDesktopHero ? 'bg-gradient-to-r from-black/90 via-black/50 to-transparent' : 'bg-gradient-to-r from-black/95 via-black/60 to-transparent'}`} />

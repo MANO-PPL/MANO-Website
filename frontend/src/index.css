@@ -124,19 +124,30 @@ body {
 }
 
 .bg-blue-pattern {
+    position: relative;
+    isolation: isolate;
+}
+
+.bg-blue-pattern::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
     background-color: #000000;
     background-image:
         radial-gradient(circle at 15% 50%, rgba(30, 41, 59, 0.4) 0%, transparent 25%),
         radial-gradient(circle at 85% 30%, rgba(30, 58, 138, 0.2) 0%, transparent 25%);
-    background-attachment: fixed;
+    pointer-events: none;
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
 }
 
 /* iOS/mobile landscape rendering fix: avoid fixed-background side bands */
 @media (max-width: 1024px) {
-    .bg-blue-pattern {
-        background-attachment: scroll;
-        background-size: cover;
-        background-position: center;
+    .bg-blue-pattern::before {
+        position: absolute;
+        will-change: auto;
+        transform: none;
     }
 }
 

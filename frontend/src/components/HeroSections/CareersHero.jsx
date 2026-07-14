@@ -3,13 +3,13 @@ import { ArrowDown } from "lucide-react";
 
 export default function CareersHero() {
     return (
-        <div className="relative h-screen w-full overflow-hidden flex items-center justify-center">
+        <div className="relative h-screen w-full flex items-center justify-center">
             {/* Background Image with Zoom Effect */}
             <motion.div
                 initial={{ scale: 1.1 }}
                 animate={{ scale: 1 }}
                 transition={{ duration: 10, ease: "easeOut" }}
-                className="absolute inset-0 z-0"
+                className="absolute inset-0 z-0 overflow-hidden"
             >
                 <div
                     className="absolute inset-0 bg-cover bg-center"
