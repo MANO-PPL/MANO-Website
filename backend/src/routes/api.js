@@ -1,5 +1,5 @@
 import express from 'express';
-import { submitEnquiry } from '../controllers/enquiryController.js';
+import { submitEnquiry, getEnquiries, deleteEnquiry } from '../controllers/enquiryController.js';
 import { submitResume, getResumes, deleteResume, viewResume, updateResumeRemarks } from '../controllers/resumeController.js';
 import { getJobs, createJob, updateJob, toggleJobStatus, deleteJob, viewJD } from '../controllers/jobsController.js';
 import { verifyAdminToken } from '../middleware/auth.js';
@@ -89,4 +89,9 @@ router.get('/mano-admin-portal-dashboard-secure/resumes', verifyAdminToken, getR
 router.put('/mano-admin-portal-dashboard-secure/resumes/:id/remarks', verifyAdminToken, updateResumeRemarks);
 router.delete('/mano-admin-portal-dashboard-secure/resumes/:id', verifyAdminToken, deleteResume);
 
+// Protected Admin Actions: Enquiries
+router.get('/mano-admin-portal-dashboard-secure/enquiries', verifyAdminToken, getEnquiries);
+router.delete('/mano-admin-portal-dashboard-secure/enquiries/:id', verifyAdminToken, deleteEnquiry);
+
 export default router;
+

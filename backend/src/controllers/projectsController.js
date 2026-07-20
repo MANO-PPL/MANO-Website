@@ -12,6 +12,57 @@ const safeParse = (data, fallback) => {
   }
 };
 
+const S3_BASE = 'https://mano-static-website.s3.us-east-1.amazonaws.com/';
+
+const enc = (pathStr) => pathStr.split('/').map(p => encodeURIComponent(p)).join('/');
+
+// Mapping fallback for legacy seed paths to exact valid 200 OK S3 object keys
+const legacyPathMap = {
+  'Hotel Moon Kinshasa/001 (3).webp': S3_BASE + enc('projects/Hotel Moon Palace - Kinshasa/001 (3).webp'),
+  'Hotel Moon Kinshasa/002 (3).webp': S3_BASE + enc('projects/Hotel Moon Palace - Kinshasa/002 (3).webp'),
+  'Hotel Moon Kinshasa/003 (3).webp': S3_BASE + enc('projects/Hotel Moon Palace - Kinshasa/003 (3).webp'),
+  'Hotel Moon Kinshasa/006 (2).webp': S3_BASE + enc('projects/Hotel Moon Palace - Kinshasa/006 (2).webp'),
+  'HD Picture TRIVENI Crown, Kalyan/MAIN GATE/1.option 01-crown gate 01.webp': S3_BASE + enc('projects/Triveni Crown/1.option 01-crown gate 01.webp'),
+  'HD Picture TRIVENI Crown, Kalyan/MAIN GATE/5.option 02-crown gate 03.webp': S3_BASE + enc('projects/Triveni Crown/5.option 02-crown gate 03.webp'),
+  'HD Picture TRIVENI Crown, Kalyan/MAIN GATE/6.option 02-crown gate 04.webp': S3_BASE + enc('projects/Triveni Crown/6.option 02-crown gate 04.webp'),
+  'projects_img/Ananda Residency - Paradigm Ambit Buildcon..webp': S3_BASE + enc('projects/Ananda Residency - Paradigm Ambit Buildcon/Ananda Residency - Paradigm Ambit Buildcon..webp'),
+  'Ananda residency/Aerial.webp': S3_BASE + enc('projects/Ananda Residency - Paradigm Ambit Buildcon/Aerial.webp'),
+  'Ananda residency/podium.webp': S3_BASE + enc('projects/Ananda Residency - Paradigm Ambit Buildcon/podium.webp'),
+  'Ananda residency/pool.webp': S3_BASE + enc('projects/Ananda Residency - Paradigm Ambit Buildcon/pool.webp'),
+  'Ananda residency/terrace 2.webp': S3_BASE + enc('projects/Ananda Residency - Paradigm Ambit Buildcon/terrace 2.webp'),
+  'projects_img/Westside – Tata Trent Ltd.(1).webp': S3_BASE + enc('projects/Westside – Tata Trent Ltd./Westside – Tata Trent Ltd.(1).webp'),
+  'projects_img/Westside– Tata Trent Ltd..webp': S3_BASE + enc('projects/Westside – Tata Trent Ltd./Westside– Tata Trent Ltd..webp'),
+  '30 Juin/Tranjio Hotel 03.webp': S3_BASE + enc('projects/30 Juin/Tranjio Hotel 03.webp'),
+  '30 Juin/Tranjio Hotel 04.webp': S3_BASE + enc('projects/30 Juin/Tranjio Hotel 04.webp'),
+  '30 Juin/Tranjio Hotel 06.webp': S3_BASE + enc('projects/30 Juin/Tranjio Hotel 06.webp'),
+  'projects_img/Sati Darshan - Goyal Group..webp': S3_BASE + enc('projects/Sati Darshan - Goyal Group/Sati Darshan - Goyal Group..webp'),
+  'projects_img/Celestia - Shree Ram Samarth..webp': S3_BASE + enc('projects/Celestia - Shree Ram Samarth/Celestia - Shree Ram Samarth..webp'),
+  'projects_img/Shubharambh Residency - Veer Housing Projects LLP..webp': S3_BASE + enc('projects/Shubharambh Residency/Shubharambh Residency - Veer Housing Projects LLP..webp'),
+  'Golf Apartment/Golf Appartment 1 .jpg.webp': S3_BASE + enc('projects/Golf Apartment/Golf Appartment 1 .jpg.webp'),
+  'Golf Apartment/Golf Appartment 2 .jpg.webp': S3_BASE + enc('projects/Golf Apartment/Golf Appartment 2 .jpg.webp'),
+  'HD Picture TRIVENI Classics, Kalyan/Triveni CLASSIC (NEW view) in progress.webp': S3_BASE + enc('projects/Triveni Classics/Triveni CLASSIC (NEW view) in progress.webp'),
+  'HD Picture TRIVENI Classics, Kalyan/Triveni CLASSIC (Old view).webp': S3_BASE + enc('projects/Triveni Classics/Triveni CLASSIC (Old view).webp'),
+  'projects_img/Zudio – Tata Trent Ltd.(3).webp': S3_BASE + enc('projects/Zudio / Tata Trent Projects/Zudio – Tata Trent Ltd.(3).webp'),
+  'projects_img/Zudio – Tata Trent Ltd.(4).webp': S3_BASE + enc('projects/Zudio / Tata Trent Projects/Zudio – Tata Trent Ltd.(4).webp'),
+  'NIDIMO - Kamala mill/2025-12-19 123025 1.webp': S3_BASE + enc('projects/NIDIMO - Kamala Mill/2025-12-19 123025 1.webp'),
+  'NIDIMO - Kamala mill/2025-12-19 123143 3.webp': S3_BASE + enc('projects/NIDIMO - Kamala Mill/2025-12-19 123143 3.webp'),
+  'NIDIMO - Kamala mill/2025-12-19 123201 2.webp': S3_BASE + enc('projects/NIDIMO - Kamala Mill/2025-12-19 123201 2.webp'),
+  'NIDIMO - Kamala mill/2025-12-19 123244 4.webp': S3_BASE + enc('projects/NIDIMO - Kamala Mill/2025-12-19 123244 4.webp'),
+  'projects_img/NSCI Dome – National Sports Club of India..webp': S3_BASE + enc('projects/NSCI Dome – Worli/NSCI Dome – National Sports Club of India..webp'),
+  'NSCI/16.webp': S3_BASE + enc('projects/NSCI Dome – Worli/16.webp'),
+  'NSCI/21.webp': S3_BASE + enc('projects/NSCI Dome – Worli/21.webp'),
+  'NSCI/25.webp': S3_BASE + enc('projects/NSCI Dome – Worli/25.webp'),
+  'projects_img/More Hyper Mart -Aher Constructions Pvt. Ltd..webp': S3_BASE + enc('projects/More Hyper Mart/More Hyper Mart -Aher Constructions Pvt. Ltd..webp'),
+  'projects_img/Expeditors – Studio DNA .webp': S3_BASE + enc('projects/Expeditors – Studio DNA/Expeditors – Studio DNA .webp'),
+  'projects_img/Expeditors – Studio DNA.webp': S3_BASE + enc('projects/Expeditors – Studio DNA/Expeditors – Studio DNA.webp'),
+  'projects_img/Maharail – Studio DNA.webp': S3_BASE + enc('projects/Maharail – Studio DNA/Maharail – Studio DNA.webp'),
+  'projects_img/Prima Plastics Limited..webp': S3_BASE + enc('projects/Prima Plastics Limited/Prima Plastics Limited..webp'),
+  'projects_img/Textile Factory - Micro Interlinings Pvt. Ltd..webp': S3_BASE + enc('projects/Textile Factory/Textile Factory - Micro Interlinings Pvt. Ltd..webp'),
+  'projects_img/Gaiwadi Industrial Estate - Amazon Warehouse..webp': S3_BASE + enc('projects/Gaiwadi Industrial Estate/Gaiwadi Industrial Estate - Amazon Warehouse..webp'),
+  'projects_img/JNPC Infra Development– TUV Rheinland (India) Pvt Ltd..webp': S3_BASE + enc('projects/JNPC Infra Development/JNPC Infra Development– TUV Rheinland (India) Pvt Ltd..webp'),
+  'projects_img/KAPCO Banquets & Catering Pvt. Ltd..webp': S3_BASE + enc('projects/KAPCO Banquets & Catering/KAPCO Banquets & Catering Pvt. Ltd..webp')
+};
+
 // Format a project record for API consumption
 const formatProject = (project) => {
   if (!project) return null;
@@ -21,9 +72,38 @@ const formatProject = (project) => {
     : (project.images || []);
 
   const processedImages = rawImages.map(img => {
-    // Return the image URL exactly as stored in the database.
-    // If it is an S3 URL, it will load directly from S3.
-    // If it is a relative path, it will be served by the webserver static asset route.
+    if (!img) return img;
+
+    const cleanImg = img.replace(/^\/+/, '');
+
+    // 1. Check direct legacy path mapping
+    if (legacyPathMap[cleanImg]) {
+      return legacyPathMap[cleanImg];
+    }
+
+    // 2. Handle /api/projects/images?key=...
+    if (img.includes('/api/projects/images?key=')) {
+      const key = img.split('/api/projects/images?key=')[1];
+      const decodedKey = decodeURIComponent(key).replace(/^\/+/, '');
+      return S3_BASE + enc(decodedKey);
+    }
+
+    // 3. Handle S3 URLs — ensure proper URL component encoding
+    if (img.includes('amazonaws.com')) {
+      try {
+        const urlObj = new URL(img);
+        const parts = urlObj.pathname.split('/').map(p => encodeURIComponent(decodeURIComponent(p)));
+        return `${urlObj.origin}${parts.join('/')}${urlObj.search}`;
+      } catch (e) {
+        return img;
+      }
+    }
+
+    // 4. Fallback relative path starting with projects/
+    if (cleanImg.startsWith('projects/')) {
+      return S3_BASE + enc(cleanImg);
+    }
+
     return img;
   });
 
@@ -34,6 +114,7 @@ const formatProject = (project) => {
     scope: project.scope || ''
   };
 };
+
 
 // Redirect directly to S3 URL for image requests, bypassing local proxy streaming and disk fallback
 export const getProjectImage = async (req, res, next) => {

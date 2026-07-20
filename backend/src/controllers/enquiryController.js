@@ -40,3 +40,31 @@ export const submitEnquiry = async (req, res, next) => {
         next(error);
     }
 };
+
+// Admin: Get all enquiries
+export const getEnquiries = async (req, res, next) => {
+    try {
+        const selectQuery = `
+            SELECT id, name, email, company_name, contact_whatsapp, service_required, project_details, created_at
+            FROM enquiries
+            ORDER BY id DESC
+        `;
+        const result = await query(selectQuery);
+        return res.status(200).json({ ok: true, data: result.rows || [] });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Admin: Delete an enquiry
+export const deleteEnquiry = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const deleteQuery = `DELETE FROM enquiries WHERE id = $1`;
+        await query(deleteQuery, [id]);
+        return res.status(200).json({ ok: true, message: 'Enquiry deleted successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
+
