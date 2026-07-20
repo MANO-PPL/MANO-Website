@@ -1,168 +1,61 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-    Users, Briefcase, LogOut, Plus, Trash2, Edit2, Search, 
-    Filter, X, Download, Calendar, Mail, MapPin, Award, 
-    Clock, DollarSign, UserCheck, Shield, ChevronRight, Check,
-    FileText, Tag, User as UserIcon, BookOpen, ChevronDown, Upload, Image, AlertTriangle,
-    FolderOpen, Star, Globe, Eye, ToggleLeft, ToggleRight, Phone
+    X, Mail, Phone, Calendar, Download, ChevronRight, 
+    FileText, Eye, Star, Award, MapPin, AlertTriangle 
 } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
-import { 
-    API_BASE_URL, 
-    ADMIN_RESUMES_API_URL, 
+import 'react-toastify/dist/ReactToastify.css';
+
+import {
+    API_BASE_URL,
+    ADMIN_RESUMES_API_URL,
     ADMIN_JOBS_API_URL,
     BLOGS_API_URL,
     PROJECTS_API_URL,
-    PROJECTS_ADMIN_API_URL
+    PROJECTS_ADMIN_API_URL,
+    ADMIN_ENQUIRIES_API_URL
 } from '../../config';
 
-// ─── Custom Select Component (GitHub Dark Styled) ─────────────────────────────
-const CustomSelect = ({ value, onChange, options, placeholder = "Select option", className = "" }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const containerRef = React.useRef(null);
+import AdminSidebar from './components/AdminSidebar';
+import AdminHeader from './components/AdminHeader';
+import CareersTab from './tabs/CareersTab';
+import BlogsTab from './tabs/BlogsTab';
+import ProjectsTab from './tabs/ProjectsTab';
+import EnquiriesTab from './tabs/EnquiriesTab';
 
-    React.useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (containerRef.current && !containerRef.current.contains(event.target)) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+import JobModal from './modals/JobModal';
+import BlogModal from './modals/BlogModal';
+import ProjectModal from './modals/ProjectModal';
+import DeleteConfirmModal from './modals/DeleteConfirmModal';
 
-    const selectedOption = options.find(opt => opt.value === value) || { label: value, value };
-
-    return (
-        <div className={`relative inline-block ${className}`} ref={containerRef}>
-            <button
-                type="button"
-                onClick={() => setIsOpen(!isOpen)}
-                className="bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-xs text-[#e6edf3] focus:border-[#58a6ff] hover:border-[#8b949e]/50 transition-all outline-none flex items-center justify-between gap-2 cursor-pointer w-full text-left"
-            >
-                <span className="truncate">{selectedOption.label || placeholder}</span>
-                <ChevronDown size={12} className={`text-[#8b949e] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
-            </button>
-            {isOpen && (
-                <div className="absolute right-0 mt-1.5 w-full min-w-[150px] bg-[#161b22] border border-[#30363d] rounded-lg shadow-xl z-50 py-1 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150">
-                    <div className="max-h-60 overflow-y-auto">
-                        {options.map((opt) => (
-                            <button
-                                key={opt.value}
-                                type="button"
-                                onClick={() => {
-                                    onChange(opt.value);
-                                    setIsOpen(false);
-                                }}
-                                className={`w-full text-left px-3 py-2 text-xs transition-colors flex items-center justify-between cursor-pointer ${opt.value === value ? 'bg-[#1f6feb] text-white font-semibold' : 'text-[#c9d1d9] hover:bg-[#21262d] hover:text-[#e6edf3]'}`}
-                            >
-                                <span className="truncate">{opt.label}</span>
-                                {opt.value === value && <Check size={11} className="text-white flex-shrink-0" />}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-};
-
-// ─── Custom Toggle Switch Component ──────────────────────────────────────────
-const ToggleSwitch = ({ checked, onChange }) => {
-    return (
-        <div 
-            onClick={onChange}
-            style={{
-                width: '38px',
-                height: '20px',
-                borderRadius: '9999px',
-                padding: '2px',
-                cursor: 'pointer',
-                transition: 'background-color 0.2s ease, transform 0.2s ease',
-                display: 'flex',
-                alignItems: 'center',
-                backgroundColor: checked ? '#238636' : '#30363d'
-            }}
-        >
-            <div 
-                style={{
-                    backgroundColor: '#e6edf3',
-                    width: '16px',
-                    height: '16px',
-                    borderRadius: '50%',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                    transition: 'transform 0.2s ease',
-                    transform: checked ? 'translateX(18px)' : 'translateX(0px)'
-                }}
-            />
-        </div>
-    );
-};
+const ADMIN_PROJECTS_BASE_URL = PROJECTS_ADMIN_API_URL || PROJECTS_API_URL;
 
 const AdminDashboard = ({ token, onLogout }) => {
+    // Active Navigation Tabs
     const [activeTab, setActiveTab] = useState('pmc-careers');
     const [subTab, setSubTab] = useState('jobs');
-    const [candidates, setCandidates] = useState([]);
-    const [jobs, setJobs] = useState([]);
-    const [blogs, setBlogs] = useState([]);
-    const [candidatesLoading, setCandidatesLoading] = useState(true);
-    const [jobsLoading, setJobsLoading] = useState(true);
-    const [blogsLoading, setBlogsLoading] = useState(true);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    // Search and Filters
+    // Candidates State
+    const [candidates, setCandidates] = useState([]);
+    const [candidatesLoading, setCandidatesLoading] = useState(false);
     const [candidateSearch, setCandidateSearch] = useState('');
     const [candidateRoleFilter, setCandidateRoleFilter] = useState('All');
-    const [jobSearch, setJobSearch] = useState('');
-    const [jobLocationFilter, setJobLocationFilter] = useState('All');
-    const [blogSearch, setBlogSearch] = useState('');
-    const [blogCategoryFilter, setBlogCategoryFilter] = useState('All');
-
-    // Modals
-    const [isJobModalOpen, setIsJobModalOpen] = useState(false);
-    const [currentEditingJob, setCurrentEditingJob] = useState(null);
-    const [isBlogModalOpen, setIsBlogModalOpen] = useState(false);
-    const [currentEditingBlog, setCurrentEditingBlog] = useState(null);
-    const [viewingJob, setViewingJob] = useState(null);
     const [viewingCandidate, setViewingCandidate] = useState(null);
-    const [viewingBlog, setViewingBlog] = useState(null);
     const [remarksText, setRemarksText] = useState('');
     const [savingRemarks, setSavingRemarks] = useState(false);
-    const [deleteConfirmJob, setDeleteConfirmJob] = useState(null);
-    const [isDeletingJob, setIsDeletingJob] = useState(false);
-    const [isSavingJob, setIsSavingJob] = useState(false);
-    const [isSavingBlog, setIsSavingBlog] = useState(false);
-    // Candidate & Blog delete modals
-    const [deleteConfirmCandidate, setDeleteConfirmCandidate] = useState(null);
-    const [isDeletingCandidate, setIsDeletingCandidate] = useState(false);
-    const [deleteConfirmBlog, setDeleteConfirmBlog] = useState(null);
-    const [isDeletingBlog, setIsDeletingBlog] = useState(false);
-    // Projects state
-    const [projects, setProjects] = useState([]);
-    const [projectsLoading, setProjectsLoading] = useState(false);
-    const [projectSearch, setProjectSearch] = useState('');
-    const [projectCategoryFilter, setProjectCategoryFilter] = useState('All');
-    const [projectStatusFilter, setProjectStatusFilter] = useState('All');
-    const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-    const [currentEditingProject, setCurrentEditingProject] = useState(null);
-    const [deleteConfirmProject, setDeleteConfirmProject] = useState(null);
-    const [isDeletingProject, setIsDeletingProject] = useState(false);
-    const [isSavingProject, setIsSavingProject] = useState(false);
-    const [projectForm, setProjectForm] = useState({
-        title: '',
-        location: '',
-        category: 'Commercial',
-        scope: 'PMC - Project Management Consultants',
-        highlight: '',
-        featured: false,
-        status: 'active',
-        display_order: 0,
-        existingImages: [],   // URLs already stored
-        newImageFiles: [],    // File objects to upload
-        removedImages: []     // URLs to delete
-    });
-    const projectImageInputRef = useRef(null);
 
-    // Form States
+    // Jobs State
+    const [jobs, setJobs] = useState([]);
+    const [jobsLoading, setJobsLoading] = useState(false);
+    const [jobSearch, setJobSearch] = useState('');
+    const [jobLocationFilter, setJobLocationFilter] = useState('All');
+    const [isJobModalOpen, setIsJobModalOpen] = useState(false);
+    const [currentEditingJob, setCurrentEditingJob] = useState(null);
+    const [isSavingJob, setIsSavingJob] = useState(false);
+    const [viewingJob, setViewingJob] = useState(null);
+
+    // Job Form State
     const [jobForm, setJobForm] = useState({
         title: '',
         qualification: '',
@@ -175,12 +68,58 @@ const AdminDashboard = ({ token, onLogout }) => {
         remove_jd: false
     });
 
+    // Blogs State
+    const [blogs, setBlogs] = useState([]);
+    const [blogsLoading, setBlogsLoading] = useState(false);
+    const [blogSearch, setBlogSearch] = useState('');
+    const [blogCategoryFilter, setBlogCategoryFilter] = useState('All');
+    const [isBlogModalOpen, setIsBlogModalOpen] = useState(false);
+    const [currentEditingBlog, setCurrentEditingBlog] = useState(null);
+    const [isSavingBlog, setIsSavingBlog] = useState(false);
+    const [viewingBlog, setViewingBlog] = useState(null);
+
+    // Projects State
+    const [projects, setProjects] = useState([]);
+    const [projectsLoading, setProjectsLoading] = useState(false);
+    const [projectSearch, setProjectSearch] = useState('');
+    const [projectStatusFilter, setProjectStatusFilter] = useState('All');
+    const [projectCategoryFilter, setProjectCategoryFilter] = useState('All');
+    const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+    const [currentEditingProject, setCurrentEditingProject] = useState(null);
+    const [isSavingProject, setIsSavingProject] = useState(false);
+    const projectImageInputRef = useRef(null);
+
+    // Enquiries State
+    const [enquiries, setEnquiries] = useState([]);
+    const [enquiriesLoading, setEnquiriesLoading] = useState(false);
+    const [enquirySearch, setEnquirySearch] = useState('');
+    const [enquiryServiceFilter, setEnquiryServiceFilter] = useState('All');
+    const [viewingEnquiry, setViewingEnquiry] = useState(null);
+
+    // Deletion Modal States
+    const [deleteConfirmJob, setDeleteConfirmJob] = useState(null);
+    const [isDeletingJob, setIsDeletingJob] = useState(false);
+
+    const [deleteConfirmCandidate, setDeleteConfirmCandidate] = useState(null);
+    const [isDeletingCandidate, setIsDeletingCandidate] = useState(false);
+
+    const [deleteConfirmBlog, setDeleteConfirmBlog] = useState(null);
+    const [isDeletingBlog, setIsDeletingBlog] = useState(false);
+
+    const [deleteConfirmProject, setDeleteConfirmProject] = useState(null);
+    const [isDeletingProject, setIsDeletingProject] = useState(false);
+
+    const [deleteConfirmEnquiry, setDeleteConfirmEnquiry] = useState(null);
+    const [isDeletingEnquiry, setIsDeletingEnquiry] = useState(false);
+
+    // Blog Form State
     const [blogForm, setBlogForm] = useState({
         title: '',
         summary: '',
         author: '',
         author_role: '',
         category: 'Project Management',
+        read_time: '',
         image: '',
         featured: false,
         tags: '',
@@ -189,12 +128,25 @@ const AdminDashboard = ({ token, onLogout }) => {
         blog_image: null
     });
 
+    // Project Form State
+    const [projectForm, setProjectForm] = useState({
+        title: '',
+        location: '',
+        category: 'Commercial',
+        scope: 'PMC - Project Management Consultants',
+        highlight: '',
+        featured: false,
+        status: 'active',
+        display_order: 0,
+        existingImages: [],
+        newImageFiles: [],
+        removedImages: []
+    });
+
     const headers = {
         'Content-Type': 'application/json',
         'x-admin-token': token
     };
-
-    const ADMIN_PROJECTS_BASE_URL = `${API_BASE_URL}/api/projects`;
 
     useEffect(() => {
         if (viewingCandidate) {
@@ -312,6 +264,49 @@ const AdminDashboard = ({ token, onLogout }) => {
         }
     };
 
+    const fetchEnquiries = async () => {
+        setEnquiriesLoading(true);
+        try {
+            const response = await fetch(ADMIN_ENQUIRIES_API_URL, { headers });
+            const data = await response.json();
+            if (response.ok && data.ok) {
+                setEnquiries(data.data || []);
+            } else {
+                toast.error(data.message || 'Failed to load client enquiries.');
+            }
+        } catch (error) {
+            console.error('Fetch enquiries error:', error);
+            toast.error('Unable to connect to enquiries server.');
+        } finally {
+            setEnquiriesLoading(false);
+        }
+    };
+
+    const confirmDeleteEnquiry = async () => {
+        if (!deleteConfirmEnquiry) return;
+        setIsDeletingEnquiry(true);
+        try {
+            const response = await fetch(`${ADMIN_ENQUIRIES_API_URL}/${deleteConfirmEnquiry.id}`, {
+                method: 'DELETE',
+                headers
+            });
+            const data = await response.json();
+            if (response.ok && data.ok) {
+                toast.success('Enquiry deleted successfully.');
+                setEnquiries(prev => prev.filter(e => e.id !== deleteConfirmEnquiry.id));
+                if (viewingEnquiry?.id === deleteConfirmEnquiry.id) setViewingEnquiry(null);
+                setDeleteConfirmEnquiry(null);
+            } else {
+                toast.error(data.message || 'Failed to delete enquiry.');
+            }
+        } catch (error) {
+            console.error('Delete enquiry error:', error);
+            toast.error('Unable to connect to enquiries server.');
+        } finally {
+            setIsDeletingEnquiry(false);
+        }
+    };
+
     useEffect(() => {
         if (token) {
             const currentPlatform = activeTab === 'pmc-careers' ? 'pmc' : activeTab === 'epc-careers' ? 'epc' : null;
@@ -322,11 +317,13 @@ const AdminDashboard = ({ token, onLogout }) => {
                 fetchBlogs();
             } else if (activeTab === 'projects') {
                 fetchProjects();
+            } else if (activeTab === 'enquiries') {
+                fetchEnquiries();
             }
         }
     }, [activeTab, token]);
 
-    // Handle Candidates delete — open confirmation modal
+    // Handle Candidates delete
     const handleDeleteCandidate = (candidate) => {
         setDeleteConfirmCandidate(candidate);
     };
@@ -371,7 +368,7 @@ const AdminDashboard = ({ token, onLogout }) => {
         setJobForm({ ...jobForm, platform: ordered.join(',') });
     };
 
-    // Handle Jobs Form submit (Create or Update)
+    // Handle Jobs Form submit
     const handleJobSubmit = async (e) => {
         e.preventDefault();
         if (!jobForm.title.trim()) {
@@ -380,9 +377,7 @@ const AdminDashboard = ({ token, onLogout }) => {
         }
 
         const isEditing = !!currentEditingJob;
-        // Always use jobForm.platform so that switching a job's platform during edit works correctly
         const targetPlatform = (jobForm.platform || 'pmc').toLowerCase();
-        // Use clean endpoints that don't need platform prefix in path
         const url = isEditing 
             ? `${API_BASE_URL}/api/jobs/${currentEditingJob.id}` 
             : `${API_BASE_URL}/api/jobs`;
@@ -415,10 +410,8 @@ const AdminDashboard = ({ token, onLogout }) => {
                 toast.success(isEditing ? 'Job opening updated!' : 'Job opening created!');
                 setIsJobModalOpen(false);
                 resetJobForm();
-                // Refresh the tab that matches the (possibly new) platform
                 const currentPlatform = activeTab === 'pmc-careers' ? 'pmc' : activeTab === 'epc-careers' ? 'epc' : null;
                 fetchJobs(currentPlatform);
-                // If the platform was changed, also refresh the other platform's list in the background
                 if (isEditing && currentEditingJob.platform !== targetPlatform) {
                     const otherPlatform = targetPlatform === 'pmc' ? 'epc' : 'pmc';
                     fetchJobs(otherPlatform);
@@ -454,12 +447,10 @@ const AdminDashboard = ({ token, onLogout }) => {
         }
     };
 
-    // Open the delete confirmation modal
     const handleDeleteJob = (job) => {
         setDeleteConfirmJob(job);
     };
 
-    // Execute deletion after user confirms in the modal
     const confirmDeleteJob = async () => {
         if (!deleteConfirmJob) return;
         setIsDeletingJob(true);
@@ -473,22 +464,13 @@ const AdminDashboard = ({ token, onLogout }) => {
             if (response.ok && data.ok) {
                 setJobs(jobs.filter(j => j.id !== deleteConfirmJob.id));
                 setDeleteConfirmJob(null);
-                toast.success(`"${deleteConfirmJob.title}" deleted successfully.`, {
-                    position: 'top-right',
-                    autoClose: 4000,
-                });
+                toast.success(`"${deleteConfirmJob.title}" deleted successfully.`);
             } else {
-                toast.error(data.message || 'Failed to delete job opening.', {
-                    position: 'top-right',
-                    autoClose: 5000,
-                });
+                toast.error(data.message || 'Failed to delete job opening.');
             }
         } catch (error) {
             console.error('Delete job error:', error);
-            toast.error('Server error. Could not delete job opening.', {
-                position: 'top-right',
-                autoClose: 5000,
-            });
+            toast.error('Server error. Could not delete job opening.');
         } finally {
             setIsDeletingJob(false);
         }
@@ -541,11 +523,13 @@ const AdminDashboard = ({ token, onLogout }) => {
             author: '',
             author_role: '',
             category: 'Project Management',
+            read_time: '',
             image: '',
             featured: false,
             tags: '',
             sections: [{ heading: '', body: '' }],
-            keyTakeaways: ''
+            keyTakeaways: '',
+            blog_image: null
         });
     };
 
@@ -557,6 +541,7 @@ const AdminDashboard = ({ token, onLogout }) => {
             author: '',
             author_role: '',
             category: 'Project Management',
+            read_time: '',
             image: '',
             featured: false,
             tags: '',
@@ -575,6 +560,7 @@ const AdminDashboard = ({ token, onLogout }) => {
             author: blog.author || '',
             author_role: blog.author_role || '',
             category: blog.category || 'Project Management',
+            read_time: blog.read_time || '',
             image: blog.image || '',
             featured: !!blog.featured,
             tags: (blog.tags || []).join(', '),
@@ -616,6 +602,7 @@ const AdminDashboard = ({ token, onLogout }) => {
         formData.append('author', blogForm.author.trim());
         formData.append('author_role', blogForm.author_role.trim());
         formData.append('category', blogForm.category);
+        formData.append('read_time', blogForm.read_time.trim());
         formData.append('image', blogForm.image.trim());
         formData.append('featured', blogForm.featured ? 'true' : 'false');
         formData.append('tags', JSON.stringify(tagsArray));
@@ -654,7 +641,6 @@ const AdminDashboard = ({ token, onLogout }) => {
         }
     };
 
-    // Blog delete — open confirmation modal
     const handleDeleteBlog = (blog) => {
         setDeleteConfirmBlog(blog);
     };
@@ -706,7 +692,7 @@ const AdminDashboard = ({ token, onLogout }) => {
         setBlogForm({ ...blogForm, sections: updated });
     };
 
-    // ─── Projects Handlers ────────────────────────────────────────────────────
+    // Projects Handlers
     const resetProjectForm = () => {
         setIsProjectModalOpen(false);
         setCurrentEditingProject(null);
@@ -863,7 +849,6 @@ const AdminDashboard = ({ token, onLogout }) => {
         }
     };
 
-
     const currentPlatform = activeTab === 'pmc-careers' ? 'pmc' : activeTab === 'epc-careers' ? 'epc' : null;
 
     const stats = {
@@ -912,28 +897,16 @@ const AdminDashboard = ({ token, onLogout }) => {
         return matchesSearch && matchesStatus;
     });
 
-    const projectCategoryOptions = [
-        { label: 'All Categories', value: 'All' },
-        { label: 'Commercial', value: 'Commercial' },
-        { label: 'Residential', value: 'Residential' },
-        { label: 'Hospitality', value: 'Hospitality' },
-        { label: 'Industrial', value: 'Industrial' },
-        { label: 'International', value: 'International' },
-        { label: 'Infrastructure', value: 'Infrastructure' }
-    ];
-
     const projectStatusOptions = [
         { label: 'All Statuses', value: 'All' },
         { label: 'Active', value: 'active' },
         { label: 'Inactive', value: 'inactive' }
     ];
 
-    // Unique values for dropdown filters
     const candidateRoles = ['All', ...new Set(candidates.map(c => c.job_role))];
     const jobLocations = ['All', ...new Set(jobs.map(j => j.details?.Location).filter(Boolean))];
     const blogCategories = ['All', ...new Set(blogs.map(b => b.category).filter(Boolean))];
 
-    // Helper to extract file name and serve download
     const getFileLink = (filePath, subFolder = 'resumes') => {
         if (!filePath) return '#';
         const filename = filePath.split('/').pop().split('\\').pop();
@@ -942,6 +915,7 @@ const AdminDashboard = ({ token, onLogout }) => {
         }
         return `${API_BASE_URL}/api/resumes/view/${filename}`;
     };
+
     const getResumeLink = (filePath) => {
         if (!filePath) return '#';
         const filename = filePath.split('/').pop().split('\\').pop();
@@ -950,1668 +924,198 @@ const AdminDashboard = ({ token, onLogout }) => {
 
     return (
         <div className="min-h-[117.65vh] bg-[#0d1117] text-[#e6edf3]">
-            {/* Left Sidebar (Fixed on desktop, occupies full screen height, static zero scroll) */}
-            <aside className="w-64 bg-[#161b22] border-r border-[#30363d] p-0 hidden md:flex flex-col justify-between fixed top-0 left-0 bottom-0 z-50 overflow-hidden">
-                    <div className="space-y-4">
-                        {/* Company Logo in Sidebar (aligned with header line) */}
-                        <div className="flex items-center gap-2.5 px-6 h-[73px] border-b border-[#30363d] bg-[#161b22]">
-                            <img src="/mano-logo.svg" alt="MANO Logo" className="h-8 w-auto" />
-                            <div>
-                                <span className="text-xs font-extrabold text-white tracking-wider uppercase block leading-tight">MANO</span>
-                                <span className="text-[9px] font-semibold text-[#8b949e] uppercase tracking-wider block">Admin Control</span>
-                            </div>
-                        </div>
+            {/* Left Sidebar */}
+            <AdminSidebar
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                setSubTab={setSubTab}
+                enquiriesCount={enquiries.length}
+                onLogout={onLogout}
+                isMobileMenuOpen={isMobileMenuOpen}
+                setIsMobileMenuOpen={setIsMobileMenuOpen}
+            />
 
-                        <nav className="space-y-1 px-4">
-                            <button
-                                onClick={() => { setActiveTab('pmc-careers'); setSubTab('jobs'); }}
-                                className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center gap-3 cursor-pointer ${activeTab === 'pmc-careers' ? 'bg-[#1f6feb] text-white' : 'text-[#8b949e] hover:text-[#e6edf3] hover:bg-[#21262d]'}`}
-                            >
-                                <Briefcase size={16} />
-                                <span>PMC Careers</span>
-                            </button>
+            {/* Top Navigation Header */}
+            <AdminHeader
+                activeTab={activeTab}
+                onLogout={onLogout}
+                isMobileMenuOpen={isMobileMenuOpen}
+                setIsMobileMenuOpen={setIsMobileMenuOpen}
+            />
 
-                            <button
-                                onClick={() => { setActiveTab('epc-careers'); setSubTab('jobs'); }}
-                                className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center gap-3 cursor-pointer ${activeTab === 'epc-careers' ? 'bg-[#1f6feb] text-white' : 'text-[#8b949e] hover:text-[#e6edf3] hover:bg-[#21262d]'}`}
-                            >
-                                <Briefcase size={16} />
-                                <span>EPC Careers</span>
-                            </button>
-
-                            <button
-                                onClick={() => setActiveTab('blogs')}
-                                className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center gap-3 cursor-pointer ${activeTab === 'blogs' ? 'bg-[#1f6feb] text-white' : 'text-[#8b949e] hover:text-[#e6edf3] hover:bg-[#21262d]'}`}
-                            >
-                                <FileText size={16} />
-                                <span>Blog Posts</span>
-                            </button>
-
-                            <button
-                                onClick={() => setActiveTab('projects')}
-                                className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center gap-3 cursor-pointer ${activeTab === 'projects' ? 'bg-[#1f6feb] text-white' : 'text-[#8b949e] hover:text-[#e6edf3] hover:bg-[#21262d]'}`}
-                            >
-                                <FolderOpen size={16} />
-                                <span>Projects</span>
-                            </button>
-                        </nav>
-                    </div>
-
-                    <div className="p-4 border-t border-[#30363d] space-y-4 bg-[#161b22]">
-                        <div className="flex items-center gap-3 px-2">
-                            <div className="w-8 h-8 rounded-full bg-[#1f6feb]/20 flex items-center justify-center text-[#58a6ff] font-bold text-xs border border-[#1f6feb]/30">
-                                SA
-                            </div>
-                            <div>
-                                <p className="text-xs font-semibold text-[#e6edf3]">Sys Admin</p>
-                                <p className="text-[9px] text-[#8b949e] uppercase">Owner Account</p>
-                            </div>
-                        </div>
-                        <button
-                            onClick={onLogout}
-                            className="w-full bg-[#21262d] hover:bg-[#da3633] hover:text-white border border-[#30363d] hover:border-[#da3633] text-[#c9d1d9] py-2 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95"
-                        >
-                            <LogOut size={14} />
-                            Logout
-                        </button>
-                    </div>
-                </aside>
-
-                {/* Top Navigation Header (starts after sidebar on desktop, locks to top) */}
-                <header className="sticky top-0 z-40 bg-[#161b22]/90 border-b border-[#30363d] backdrop-blur-xl px-6 h-[73px] flex items-center justify-between md:ml-64 transition-all">
-                    {/* Mobile Logo & Title */}
-                    <div className="flex items-center gap-3 md:hidden">
-                        <img src="/mano-logo.svg" alt="MANO Logo" className="h-6 w-auto" />
-                        <h1 className="text-sm font-bold text-[#e6edf3] tracking-tight">MANO Admin</h1>
-                    </div>
-                    {/* Desktop dashboard panel indicator */}
-                    <div className="hidden md:block">
-                        <span className="text-xs font-bold text-white uppercase tracking-widest">
-                            {activeTab === 'pmc-careers' && 'PMC Careers Portal'}
-                            {activeTab === 'epc-careers' && 'EPC Careers Portal'}
-                            {activeTab === 'blogs' && 'Blog Posts'}
-                            {activeTab === 'projects' && 'Projects'}
-                        </span>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <div className="text-right hidden sm:block">
-                            <p className="text-sm font-semibold text-[#e6edf3]">System Administrator</p>
-                            <p className="text-xs text-[#58a6ff] font-medium">Session Active</p>
-                        </div>
-                        <button
-                            onClick={onLogout}
-                            className="bg-[#21262d] hover:bg-[#da3633] hover:text-white hover:border-[#da3633] border border-[#30363d] text-[#c9d1d9] py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center gap-2 cursor-pointer transition-all active:scale-95 md:hidden"
-                        >
-                            <LogOut size={14} />
-                            Logout
-                        </button>
-                    </div>
-                </header>
-
-                {/* Main Content Area (offset by sidebar width on desktop) */}
-                <main className="md:ml-64 p-6 space-y-6">
-                    
-                    {/* Mobile Navigation Header Tabs (Visible on mobile only) */}
-                    <div className="md:hidden bg-[#161b22] border border-[#30363d] p-1.5 rounded-xl flex gap-1 mb-2">
-                        <button
-                            onClick={() => { setActiveTab('pmc-careers'); setSubTab('jobs'); }}
-                            className={`flex-1 text-center py-2 rounded-lg text-xs font-bold cursor-pointer transition-all ${activeTab === 'pmc-careers' ? 'bg-[#1f6feb] text-white' : 'text-[#8b949e]'}`}
-                        >
-                            PMC
-                        </button>
-                        <button
-                            onClick={() => { setActiveTab('epc-careers'); setSubTab('jobs'); }}
-                            className={`flex-1 text-center py-2 rounded-lg text-xs font-bold cursor-pointer transition-all ${activeTab === 'epc-careers' ? 'bg-[#1f6feb] text-white' : 'text-[#8b949e]'}`}
-                        >
-                            EPC
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('blogs')}
-                            className={`flex-1 text-center py-2 rounded-lg text-xs font-bold cursor-pointer transition-all ${activeTab === 'blogs' ? 'bg-[#1f6feb] text-white' : 'text-[#8b949e]'}`}
-                        >
-                            Blogs ({blogs.length})
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('projects')}
-                            className={`flex-1 text-center py-2 rounded-lg text-xs font-bold cursor-pointer transition-all ${activeTab === 'projects' ? 'bg-[#1f6feb] text-white' : 'text-[#8b949e]'}`}
-                        >
-                            Projects ({projects.length})
-                        </button>
-                    </div>
-
+            {/* Main Content Area */}
+            <main className="pt-4 px-4 md:px-6 pb-8 md:ml-64 transition-all">
+                <div className="w-full space-y-6">
                     {(activeTab === 'pmc-careers' || activeTab === 'epc-careers') && (
-                        <div className="md:hidden bg-[#161b22] border border-[#30363d] p-1 rounded-lg flex gap-1 mb-2">
-                            <button
-                                onClick={() => setSubTab('jobs')}
-                                className={`flex-1 text-center py-1.5 rounded-md text-[11px] font-semibold cursor-pointer transition-all ${subTab === 'jobs' ? 'bg-[#21262d] text-[#58a6ff]' : 'text-[#8b949e]'}`}
-                            >
-                                Jobs ({stats.activeJobs})
-                            </button>
-                            <button
-                                onClick={() => setSubTab('candidates')}
-                                className={`flex-1 text-center py-1.5 rounded-md text-[11px] font-semibold cursor-pointer transition-all ${subTab === 'candidates' ? 'bg-[#21262d] text-[#58a6ff]' : 'text-[#8b949e]'}`}
-                            >
-                                Candidates ({stats.totalApplicants})
-                            </button>
-                        </div>
+                        <CareersTab
+                            activeTab={activeTab}
+                            subTab={subTab}
+                            setSubTab={setSubTab}
+                            stats={stats}
+                            candidates={candidates}
+                            candidatesLoading={candidatesLoading}
+                            candidateSearch={candidateSearch}
+                            setCandidateSearch={setCandidateSearch}
+                            candidateRoleFilter={candidateRoleFilter}
+                            setCandidateRoleFilter={setCandidateRoleFilter}
+                            candidateRoles={candidateRoles}
+                            filteredCandidates={filteredCandidates}
+                            setViewingCandidate={setViewingCandidate}
+                            handleDeleteCandidate={handleDeleteCandidate}
+                            jobs={jobs}
+                            jobsLoading={jobsLoading}
+                            jobSearch={jobSearch}
+                            setJobSearch={setJobSearch}
+                            jobLocationFilter={jobLocationFilter}
+                            setJobLocationFilter={setJobLocationFilter}
+                            jobLocations={jobLocations}
+                            filteredJobs={filteredJobs}
+                            openCreateModal={openCreateModal}
+                            openEditModal={openEditModal}
+                            handleDeleteJob={handleDeleteJob}
+                            handleToggleJobStatus={handleToggleJobStatus}
+                            setViewingJob={setViewingJob}
+                        />
                     )}
 
-                    {/* Tab Content Box */}
-                    <div className="space-y-6">
-                        {/* Desktop Careers Sub-tabs Switcher (Only visible on Careers view) */}
-                        {(activeTab === 'pmc-careers' || activeTab === 'epc-careers') && (
-                            <div className="hidden md:flex gap-6 border-b border-[#30363d] pb-2">
-                                <button
-                                    onClick={() => setSubTab('jobs')}
-                                    className={`pb-2 text-sm font-semibold transition-all relative cursor-pointer ${subTab === 'jobs' ? 'text-[#58a6ff]' : 'text-[#8b949e] hover:text-[#e6edf3]'}`}
-                                >
-                                    Job Openings ({stats.activeJobs})
-                                    {subTab === 'jobs' && <div className="absolute bottom-[-10px] left-0 right-0 h-[2.5px] bg-[#58a6ff] rounded-full animate-in fade-in duration-200" />}
-                                </button>
-                                <button
-                                    onClick={() => setSubTab('candidates')}
-                                    className={`pb-2 text-sm font-semibold transition-all relative cursor-pointer ${subTab === 'candidates' ? 'text-[#58a6ff]' : 'text-[#8b949e] hover:text-[#e6edf3]'}`}
-                                >
-                                    Candidates ({stats.totalApplicants})
-                                    {subTab === 'candidates' && <div className="absolute bottom-[-10px] left-0 right-0 h-[2.5px] bg-[#58a6ff] rounded-full animate-in fade-in duration-200" />}
-                                </button>
-                            </div>
-                        )}
-                            
-                            {/* 1. CANDIDATES PORTAL VIEW */}
-                            {(activeTab === 'pmc-careers' || activeTab === 'epc-careers') && subTab === 'candidates' && (
-                                <div className="space-y-6">
-                                    {/* Search & Filters */}
-                                    <div className="flex flex-col sm:flex-row gap-4 bg-[#161b22] p-4 rounded-xl border border-[#30363d]">
-                                        <div className="flex-1 relative">
-                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8b949e]" size={16} />
-                                            <input
-                                                type="text"
-                                                value={candidateSearch}
-                                                onChange={(e) => setCandidateSearch(e.target.value)}
-                                                placeholder="Search candidates by name or email..."
-                                                className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg pl-10 pr-4 py-2 text-xs text-[#e6edf3] focus:border-[#58a6ff] transition-all outline-none placeholder-[#484f58]"
-                                            />
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <Filter size={14} className="text-[#8b949e]" />
-                                            <CustomSelect
-                                                value={candidateRoleFilter}
-                                                onChange={setCandidateRoleFilter}
-                                                options={candidateRoles.map(role => ({ value: role, label: role === 'All' ? 'All Roles' : role }))}
-                                                className="min-w-[140px]"
-                                            />
-                                        </div>
-                                    </div>
+                    {activeTab === 'blogs' && (
+                        <BlogsTab
+                            blogSearch={blogSearch}
+                            setBlogSearch={setBlogSearch}
+                            blogCategoryFilter={blogCategoryFilter}
+                            setBlogCategoryFilter={setBlogCategoryFilter}
+                            blogCategories={blogCategories}
+                            blogsLoading={blogsLoading}
+                            filteredBlogs={filteredBlogs}
+                            openCreateBlogModal={openCreateBlogModal}
+                            openEditBlogModal={openEditBlogModal}
+                            handleDeleteBlog={handleDeleteBlog}
+                            setViewingBlog={setViewingBlog}
+                        />
+                    )}
 
-                                    {candidatesLoading ? (
-                                        <div className="h-48 flex flex-col items-center justify-center gap-3 text-[#8b949e]">
-                                            <div className="w-8 h-8 border-2 border-[#1f6feb] border-t-transparent rounded-full animate-spin" />
-                                            <span className="text-xs">Fetching candidate applications...</span>
-                                        </div>
-                                    ) : filteredCandidates.length === 0 ? (
-                                        <div className="h-48 border border-dashed border-[#30363d] rounded-xl flex flex-col items-center justify-center text-[#8b949e] gap-2">
-                                            <Users size={32} className="opacity-40" />
-                                            <p className="text-xs font-semibold">No candidate submissions found</p>
-                                            <p className="text-[10px] text-[#484f58]">Try adjusting your filters or search keywords</p>
-                                        </div>
-                                    ) : (
-                        <div className="overflow-x-auto border border-[#30363d] rounded-xl">
-                                            <table className="w-full text-left border-collapse">
-                                                <thead>
-                                                    <tr className="bg-[#161b22] text-[#8b949e] border-b border-[#30363d] text-[10px] font-bold uppercase tracking-wider">
-                                                        <th className="px-6 py-4">Name & Email</th>
-                                                        <th className="px-6 py-4">Mobile Number</th>
-                                                        <th className="px-6 py-4">Platform</th>
-                                                        <th className="px-6 py-4">Applied Role</th>
-                                                        <th className="px-6 py-4">Date Applied</th>
-                                                        <th className="px-6 py-4 max-w-[150px] truncate">Resume File</th>
-                                                        <th className="px-6 py-4 max-w-[250px]">Remarks</th>
-                                                        <th className="px-6 py-4 text-right">Actions</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y divide-[#30363d]/60 text-xs text-[#c9d1d9]">
-                                                    {filteredCandidates.map(c => (
-                                                        <tr 
-                                                            key={c.id}
-                                                            onClick={() => setViewingCandidate(c)}
-                                                            className="hover:bg-[#161b22]/80 transition-colors cursor-pointer group"
-                                                        >
-                                                            <td className="px-6 py-4">
-                                                                <div>
-                                                                    <p className="font-bold text-[#e6edf3] text-sm group-hover:text-[#58a6ff] transition-colors">{c.name}</p>
-                                                                    <p className="text-xs text-[#8b949e] flex items-center gap-1.5 mt-0.5">
-                                                                        <Mail size={12} />
-                                                                        {c.email}
-                                                                    </p>
-                                                                </div>
-                                                            </td>
-                                                            <td className="px-6 py-4">
-                                                                {c.mobile ? (
-                                                                    <a 
-                                                                        href={`tel:${c.mobile}`} 
-                                                                        onClick={(e) => e.stopPropagation()} 
-                                                                        className="hover:text-[#58a6ff] flex items-center gap-1.5 text-[#c9d1d9] font-medium"
-                                                                    >
-                                                                        <Phone size={12} className="text-[#8b949e]" />
-                                                                        {c.mobile}
-                                                                    </a>
-                                                                ) : (
-                                                                    <span className="text-[#484f58] font-light">-</span>
-                                                                )}
-                                                            </td>
-                                                            <td className="px-6 py-4">
-                                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${c.platform?.toLowerCase() === 'epc' ? 'bg-purple-900/30 border border-purple-800/50 text-purple-400' : 'bg-blue-900/30 border border-blue-800/50 text-blue-400'}`}>
-                                                                    {c.platform || 'pmc'}
-                                                                </span>
-                                                            </td>
-                                                            <td className="px-6 py-4">
-                                                                <span className={`px-2 py-1 rounded text-[10px] font-bold tracking-wide border inline-block whitespace-nowrap ${
-                                                                     c.job_role === 'General Application'
-                                                                         ? 'bg-[#d29922]/15 border-[#d29922]/30 text-[#d29922]'
-                                                                         : 'bg-[#1f6feb]/15 border-[#388bfd]/30 text-[#58a6ff]'
-                                                                 }`}>
-                                                                     {c.job_role}
-                                                                 </span>
-                                                            </td>
-                                                            <td className="px-6 py-4">
-                                                                <p className="text-[#8b949e] flex items-center gap-1.5">
-                                                                    <Calendar size={12} />
-                                                                    {new Date(c.created_at).toLocaleDateString(undefined, {
-                                                                        year: 'numeric',
-                                                                        month: 'short',
-                                                                        day: 'numeric'
-                                                                    })}
-                                                                </p>
-                                                            </td>
-                                                            <td className="px-6 py-4 max-w-[150px]">
-                                                                <a
-                                                                    href={getResumeLink(c.file_path)}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    onClick={(e) => e.stopPropagation()}
-                                                                    className="inline-flex items-center gap-1.5 text-[#58a6ff] hover:underline font-semibold max-w-full"
-                                                                >
-                                                                    <Download size={12} className="flex-shrink-0" />
-                                                                    <span className="truncate" title={c.file_name || 'Download Resume'}>
-                                                                        {c.file_name || 'Download Resume'}
-                                                                    </span>
-                                                                </a>
-                                                            </td>
-                                                            <td className="px-6 py-4 max-w-[250px]">
-                                                                {c.remarks ? (
-                                                                    <div className="text-[#c9d1d9] line-clamp-3 whitespace-normal break-words" title={c.remarks}>
-                                                                        {c.remarks}
-                                                                    </div>
-                                                                ) : (
-                                                                    <span className="text-[#484f58] font-light">-</span>
-                                                                )}
-                                                            </td>
-                                                            <td className="px-6 py-4 text-right">
-                                                                <button
-                                                                    onClick={(e) => { e.stopPropagation(); handleDeleteCandidate(c); }}
-                                                                    className="text-[#8b949e] hover:text-[#f85149] p-1.5 bg-[#21262d] hover:bg-[#da3633]/20 border border-[#30363d] hover:border-[#f85149] rounded-md transition-all cursor-pointer"
-                                                                    title="Delete Candidate Record"
-                                                                >
-                                                                    <Trash2 size={14} />
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                    {activeTab === 'projects' && (
+                        <ProjectsTab
+                            token={token}
+                            projectSearch={projectSearch}
+                            setProjectSearch={setProjectSearch}
+                            projectStatusFilter={projectStatusFilter}
+                            setProjectStatusFilter={setProjectStatusFilter}
+                            projectStatusOptions={projectStatusOptions}
+                            projectCategoryFilter={projectCategoryFilter}
+                            setProjectCategoryFilter={setProjectCategoryFilter}
+                            projectsLoading={projectsLoading}
+                            filteredProjects={filteredProjects}
+                            setProjects={setProjects}
+                            openCreateProjectModal={openCreateProjectModal}
+                            openEditProjectModal={openEditProjectModal}
+                            handleToggleProjectStatus={handleToggleProjectStatus}
+                            setDeleteConfirmProject={setDeleteConfirmProject}
+                        />
+                    )}
 
-                            {/* 2. JOB OPENINGS MANAGER VIEW */}
-                            {(activeTab === 'pmc-careers' || activeTab === 'epc-careers') && subTab === 'jobs' && (
-                                <div className="space-y-6">
-                                    <div className="flex flex-col sm:flex-row gap-4 bg-[#161b22] p-4 rounded-xl border border-[#30363d] items-center">
-                                        <div className="flex-1 w-full relative">
-                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8b949e]" size={16} />
-                                            <input
-                                                type="text"
-                                                value={jobSearch}
-                                                onChange={(e) => setJobSearch(e.target.value)}
-                                                placeholder="Search openings by job title..."
-                                                className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg pl-10 pr-4 py-2 text-xs text-[#e6edf3] focus:border-[#58a6ff] transition-all outline-none placeholder-[#484f58]"
-                                            />
-                                        </div>
-                                        <div className="flex w-full sm:w-auto items-center justify-between sm:justify-start gap-4">
-                                            <div className="flex items-center gap-2.5">
-                                                <Filter size={14} className="text-[#8b949e]" />
-                                                <CustomSelect
-                                                    value={jobLocationFilter}
-                                                    onChange={setJobLocationFilter}
-                                                    options={jobLocations.map(location => ({ value: location, label: location === 'All' ? 'All Locations' : location }))}
-                                                    className="min-w-[140px]"
-                                                />
-                                            </div>
-                                            <button
-                                                onClick={openCreateModal}
-                                                className="bg-[#238636] hover:bg-[#2ea44f] border border-[#30363d]/50 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer whitespace-nowrap"
-                                            >
-                                                <Plus size={14} />
-                                                Create Opening
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {jobsLoading ? (
-                                        <div className="h-48 flex flex-col items-center justify-center gap-3 text-[#8b949e]">
-                                            <div className="w-8 h-8 border-2 border-[#1f6feb] border-t-transparent rounded-full animate-spin" />
-                                            <span className="text-xs">Fetching job openings...</span>
-                                        </div>
-                                    ) : filteredJobs.length === 0 ? (
-                                        <div className="h-48 border border-dashed border-[#30363d] rounded-xl flex flex-col items-center justify-center text-[#8b949e] gap-2">
-                                            <Briefcase size={32} className="opacity-40" />
-                                            <p className="text-xs font-semibold">No active job openings found</p>
-                                            <p className="text-[10px] text-[#484f58]">Click "Create Opening" to publish a new job opening.</p>
-                                        </div>
-                                    ) : (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            {filteredJobs.map(job => (
-                                                <div 
-                                                    key={job.id} 
-                                                    onClick={() => setViewingJob(job)}
-                                                    className="bg-[#161b22] border border-[#30363d] rounded-xl p-5 flex flex-col justify-between gap-4 hover:border-[#8b949e]/40 hover:shadow-lg transition-all group cursor-pointer"
-                                                >
-                                                    <div className="space-y-3">
-                                                        <div className="flex justify-between items-start gap-4">
-                                                            <div>
-                                                                <h3 className="text-md font-bold text-[#e6edf3] group-hover:text-[#58a6ff] transition-colors inline-block mr-2">
-                                                                    {job.title}
-                                                                </h3>
-                                                                {(job.platform || 'pmc').split(',').map(p => (
-                                                                    <span key={p} className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider inline-block align-middle mr-1 ${p.trim().toLowerCase() === 'epc' ? 'bg-purple-900/30 border border-purple-800/50 text-purple-400' : 'bg-blue-900/30 border border-blue-800/50 text-blue-400'}`}>
-                                                                        {p.trim()}
-                                                                    </span>
-                                                                ))}
-                                                            </div>
-                                                            <div className="flex gap-2 items-center">
-                                                                <button
-                                                                    onClick={(e) => { e.stopPropagation(); openEditModal(job); }}
-                                                                    className="text-[#c9d1d9] hover:text-[#58a6ff] p-1.5 bg-[#21262d] border border-[#30363d] hover:border-[#58a6ff] rounded-md transition-all cursor-pointer"
-                                                                    title="Edit Job details"
-                                                                >
-                                                                    <Edit2 size={13} />
-                                                                </button>
-                                                                <button
-                                                                    onClick={(e) => { e.stopPropagation(); handleDeleteJob(job); }}
-                                                                    className="text-[#c9d1d9] hover:text-[#f85149] p-1.5 bg-[#21262d] border border-[#30363d] hover:border-[#f85149] rounded-md transition-all cursor-pointer"
-                                                                    title="Delete Job Opening"
-                                                                >
-                                                                    <Trash2 size={13} />
-                                                                </button>
-                                                                <div 
-                                                                    className="flex items-center gap-1.5 flex-shrink-0" 
-                                                                    title={job.status === 'active' ? "Deactivate Opening" : "Activate Opening"}
-                                                                >
-                                                                    <span className={`text-[10px] font-bold ${job.status === 'active' ? 'text-[#2ea44f]' : 'text-[#8b949e]'}`}>
-                                                                        {job.status === 'active' ? 'Active' : 'Inactive'}
-                                                                    </span>
-                                                                    <ToggleSwitch 
-                                                                        checked={job.status === 'active'}
-                                                                        onChange={(e) => { 
-                                                                            e.stopPropagation(); 
-                                                                            handleToggleJobStatus(job.id, job.status); 
-                                                                        }}
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-[11px] text-[#8b949e]">
-                                                            <p className="flex items-center gap-1.5">
-                                                                <MapPin size={12} className="text-[#8b949e]" />
-                                                                <span className="font-semibold text-[#c9d1d9]">Location:</span> {job.details?.Location || 'Pan India'}
-                                                            </p>
-                                                            <p className="flex items-center gap-1.5">
-                                                                <Clock size={12} className="text-[#8b949e]" />
-                                                                <span className="font-semibold text-[#c9d1d9]">Notice Period:</span> {job.details?.['Notice Period'] || 'Immediate'}
-                                                            </p>
-                                                            <p className="flex items-center gap-1.5">
-                                                                <Users size={12} className="text-[#8b949e]" />
-                                                                <span className="font-semibold text-[#c9d1d9]">Gender Preference:</span> {job.details?.Gender || 'Any'}
-                                                            </p>
-                                                            {job.jd_file_path && (
-                                                                <p className="flex items-center gap-1.5 col-span-2">
-                                                                    <FileText size={12} className="text-[#58a6ff]" />
-                                                                    <span className="font-semibold text-[#58a6ff]">JD:</span> <a href={getFileLink(job.jd_file_path, 'jds')} target="_blank" rel="noopener noreferrer" className="text-[#58a6ff] hover:underline">Download JD File</a>
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="border-t border-[#30363d]/80 pt-3 text-[10px] text-[#8b949e] flex justify-between items-center">
-                                                        <span>Qualification: {job.details?.Qualification || 'Any Graduate'}</span>
-                                                        <span className={job.status === 'active' ? 'text-[#2ea44f] font-semibold' : 'text-[#8b949e]'}>
-                                                            {job.status === 'active' ? 'Live' : 'Inactive'}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* 3. BLOG POSTS MANAGER VIEW */}
-                            {activeTab === 'blogs' && (
-                                <div className="space-y-6">
-                                    {/* Search & Category Filter */}
-                                    <div className="flex flex-col sm:flex-row gap-4 bg-[#161b22] p-4 rounded-xl border border-[#30363d] items-center">
-                                        <div className="flex-1 w-full relative">
-                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8b949e]" size={16} />
-                                            <input
-                                                type="text"
-                                                value={blogSearch}
-                                                onChange={(e) => setBlogSearch(e.target.value)}
-                                                placeholder="Search blogs by title, summary or author..."
-                                                className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg pl-10 pr-4 py-2 text-xs text-[#e6edf3] focus:border-[#58a6ff] transition-all outline-none placeholder-[#484f58]"
-                                            />
-                                        </div>
-                                        <div className="flex w-full sm:w-auto items-center justify-between sm:justify-start gap-4">
-                                            <div className="flex items-center gap-2.5">
-                                                <Filter size={14} className="text-[#8b949e]" />
-                                                <CustomSelect
-                                                    value={blogCategoryFilter}
-                                                    onChange={setBlogCategoryFilter}
-                                                    options={blogCategories.map(cat => ({ value: cat, label: cat === 'All' ? 'All Categories' : cat }))}
-                                                    className="min-w-[140px]"
-                                                />
-                                            </div>
-                                            <button
-                                                onClick={openCreateBlogModal}
-                                                className="bg-[#238636] hover:bg-[#2ea44f] border border-[#30363d]/50 text-white text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer whitespace-nowrap"
-                                            >
-                                                <Plus size={14} />
-                                                Create Blog Post
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {blogsLoading ? (
-                                        <div className="h-48 flex flex-col items-center justify-center gap-3 text-[#8b949e]">
-                                            <div className="w-8 h-8 border-2 border-[#1f6feb] border-t-transparent rounded-full animate-spin" />
-                                            <span className="text-xs">Fetching blog articles...</span>
-                                        </div>
-                                    ) : filteredBlogs.length === 0 ? (
-                                        <div className="h-48 border border-dashed border-[#30363d] rounded-xl flex flex-col items-center justify-center text-[#8b949e] gap-2">
-                                            <FileText size={32} className="opacity-40" />
-                                            <p className="text-xs font-semibold">No blog articles found</p>
-                                            <p className="text-[10px] text-[#484f58]">Click "Create Blog Post" to publish a new article.</p>
-                                        </div>
-                                    ) : (
-                                        <div className="grid grid-cols-1 gap-4">
-                                            {filteredBlogs.map(blog => (
-                                                <div 
-                                                    key={blog.id} 
-                                                    onClick={() => setViewingBlog(blog)}
-                                                    className="bg-[#161b22] border border-[#30363d] rounded-xl p-5 flex flex-col sm:flex-row gap-5 hover:border-[#8b949e]/40 transition-all group cursor-pointer hover:shadow-lg"
-                                                >
-                                                    {blog.image && (
-                                                        <div className="w-full sm:w-36 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-[#0d1117] border border-[#30363d]">
-                                                            <img src={blog.image} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                                        </div>
-                                                    )}
-                                                    
-                                                    <div className="flex-1 flex flex-col justify-between gap-3">
-                                                        <div className="space-y-1.5">
-                                                            <div className="flex justify-between items-start gap-4">
-                                                                <h3 className="text-sm font-bold text-[#e6edf3] group-hover:text-[#58a6ff] transition-colors leading-tight">
-                                                                    {blog.title}
-                                                                </h3>
-                                                                <div className="flex gap-2 flex-shrink-0">
-                                                                    <button
-                                                                        onClick={(e) => { e.stopPropagation(); openEditBlogModal(blog); }}
-                                                                        className="text-[#c9d1d9] hover:text-[#58a6ff] p-1.5 bg-[#21262d] border border-[#30363d] hover:border-[#58a6ff] rounded-md transition-all cursor-pointer"
-                                                                        title="Edit Blog Post"
-                                                                    >
-                                                                        <Edit2 size={13} />
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={(e) => { e.stopPropagation(); handleDeleteBlog(blog); }}
-                                                                        className="text-[#c9d1d9] hover:text-[#f85149] p-1.5 bg-[#21262d] border border-[#30363d] hover:border-[#f85149] rounded-md transition-all cursor-pointer"
-                                                                        title="Delete Blog Post"
-                                                                    >
-                                                                        <Trash2 size={13} />
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                            <p className="text-xs text-[#8b949e] line-clamp-2 leading-relaxed">
-                                                                {blog.summary}
-                                                            </p>
-                                                        </div>
-
-                                                        <div className="flex flex-wrap items-center justify-between gap-3 text-[10px] text-[#8b949e] border-t border-[#30363d]/60 pt-2.5">
-                                                            <div className="flex items-center gap-3">
-                                                                <span className="bg-[#1f6feb]/15 border border-[#388bfd]/30 text-[#58a6ff] px-2 py-0.5 rounded font-bold uppercase tracking-wider">{blog.category}</span>
-                                                                <span className="flex items-center gap-1"><UserIcon size={11} /> {blog.author}</span>
-                                                                <span className="flex items-center gap-1"><Calendar size={11} /> {blog.date}</span>
-                                                            </div>
-                                                            <div className="flex items-center gap-2">
-                                                                {blog.featured && <span className="bg-amber-900/30 border border-amber-800/80 text-amber-400 px-2 py-0.5 rounded font-bold">★ Featured</span>}
-                                                                <span>{blog.read_time}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {activeTab === 'projects' && (
-                                <div className="space-y-8">
-                                    {/* Action Bar */}
-                                    <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-[#161b22] border border-[#30363d] p-4 rounded-xl">
-                                        <div className="flex flex-wrap gap-3 items-center w-full sm:w-auto">
-                                            {/* Search Input */}
-                                            <div className="relative flex-1 sm:flex-none sm:w-64">
-                                                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8b949e]" />
-                                                <input
-                                                    type="text"
-                                                    placeholder="Search projects..."
-                                                    value={projectSearch}
-                                                    onChange={(e) => setProjectSearch(e.target.value)}
-                                                    className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg pl-9 pr-4 py-2 text-xs text-[#e6edf3] outline-none placeholder-[#484f58] transition-all"
-                                                />
-                                                {projectSearch && (
-                                                    <button onClick={() => setProjectSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8b949e] hover:text-[#e6edf3]">
-                                                        <X size={12} />
-                                                    </button>
-                                                )}
-                                            </div>
-
-                                            {/* Status Filter */}
-                                            <CustomSelect
-                                                value={projectStatusFilter}
-                                                onChange={setProjectStatusFilter}
-                                                options={projectStatusOptions}
-                                                className="w-32 sm:w-36"
-                                            />
-                                        </div>
-
-                                        <button
-                                            onClick={openCreateProjectModal}
-                                            className="w-full sm:w-auto bg-[#238636] hover:bg-[#2ea043] text-white py-2 px-4 rounded-lg text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 border border-[#3fb950]/30 shadow-md shadow-[#238636]/10"
-                                        >
-                                            <Plus size={14} />
-                                            Add Project
-                                        </button>
-                                    </div>
-
-                                    {/* Projects Grid / Content */}
-                                    {projectsLoading ? (
-                                        <div className="flex flex-col items-center justify-center py-20 gap-4">
-                                            <div className="w-8 h-8 border-2 border-[#58a6ff] border-t-transparent rounded-full animate-spin" />
-                                            <p className="text-xs text-[#8b949e]">Loading portfolio projects...</p>
-                                        </div>
-                                    ) : filteredProjects.length === 0 ? (
-                                        <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-16 text-center space-y-4">
-                                            <div className="w-12 h-12 rounded-full bg-[#30363d]/50 flex items-center justify-center text-[#8b949e] mx-auto">
-                                                <FolderOpen size={22} />
-                                            </div>
-                                            <div className="space-y-1 max-w-sm mx-auto">
-                                                <h3 className="text-sm font-bold text-[#e6edf3]">No Projects Found</h3>
-                                                <p className="text-xs text-[#8b949e]">
-                                                    {projectSearch || projectStatusFilter !== 'All'
-                                                        ? 'No projects match your current filters. Try resetting search or select options.'
-                                                        : 'Get started by publishing the first project masterpiece in the admin workspace.'}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-10">
-                                            {/* SECTION 1: FEATURED MASTERPIECES */}
-                                            <div className="space-y-4">
-                                                <div className="flex items-center justify-between border-b border-[#30363d] pb-3">
-                                                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                                                        <Star size={16} className="text-amber-400 fill-amber-400" />
-                                                        Featured Masterpieces (Hero Slideshows)
-                                                    </h3>
-                                                    <span className="text-[10px] bg-amber-900/30 border border-amber-800/80 text-amber-400 font-bold px-2 py-0.5 rounded-full">
-                                                        {filteredProjects.filter(p => p.featured).length} Projects
-                                                    </span>
-                                                </div>
-                                                {filteredProjects.filter(p => p.featured).length === 0 ? (
-                                                    <p className="text-xs text-[#8b949e] italic py-4">No featured projects found matching current filters.</p>
-                                                ) : (
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                                        {filteredProjects
-                                                            .filter(p => p.featured)
-                                                            .sort((a, b) => (Number(a.display_order) || 0) - (Number(b.display_order) || 0))
-                                                            .map((project) => (
-                                                                <div key={project.id} className="bg-[#161b22] border border-[#30363d] hover:border-[#8b949e]/30 rounded-xl overflow-hidden shadow-lg transition-all duration-300 flex flex-col group">
-                                                                    {/* Image Box */}
-                                                                    <div className="relative aspect-[16/10] bg-[#0d1117] border-b border-[#30363d] overflow-hidden flex items-center justify-center">
-                                                                        {project.images && project.images.length > 0 ? (
-                                                                            <img
-                                                                                src={project.images[0]}
-                                                                                alt={project.title}
-                                                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                                                            />
-                                                                        ) : (
-                                                                            <div className="text-center text-[#484f58]">
-                                                                                <Image size={32} className="mx-auto mb-2 opacity-55" />
-                                                                                <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">No Image Uploaded</span>
-                                                                            </div>
-                                                                        )}
-
-                                                                        {/* Top Labels */}
-                                                                        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 items-center">
-                                                                            <span className="bg-[#161b22]/90 border border-[#30363d] text-[#e6edf3] text-[10px] font-bold px-2 py-0.5 rounded shadow">
-                                                                                {project.category}
-                                                                            </span>
-                                                                            <span className="bg-amber-900/90 border border-amber-800 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-0.5 shadow">
-                                                                                <Star size={9} className="fill-amber-400" /> Featured
-                                                                            </span>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    {/* Details Box */}
-                                                                    <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                                                                        <div className="space-y-2">
-                                                                            <h3 className="text-sm font-bold text-[#e6edf3] line-clamp-1 group-hover:text-[#58a6ff] transition-colors">
-                                                                                {project.title}
-                                                                            </h3>
-
-                                                                            {project.location && (
-                                                                                <div className="flex items-center gap-1.5 text-xs text-[#8b949e]">
-                                                                                    <MapPin size={12} className="text-[#58a6ff]" />
-                                                                                    <span>{project.location}</span>
-                                                                                </div>
-                                                                            )}
-
-                                                                            <div className="flex items-start gap-1.5 text-xs text-[#8b949e]">
-                                                                                <Award size={12} className="text-[#58a6ff] flex-shrink-0 mt-0.5" />
-                                                                                <span className="line-clamp-1">{project.scope}</span>
-                                                                            </div>
-
-                                                                            {project.highlight && (
-                                                                                <p className="text-xs text-[#8b949e] italic line-clamp-2 leading-relaxed bg-[#0d1117]/50 border border-[#30363d]/50 p-2.5 rounded-lg">
-                                                                                    "{project.highlight}"
-                                                                                </p>
-                                                                            )}
-                                                                        </div>
-
-                                                                        {/* Inline Controls */}
-                                                                        <div className="space-y-2 bg-[#0d1117]/45 p-3 rounded-lg border border-[#30363d]/40 text-xs">
-                                                                            <div className="flex items-center justify-between">
-                                                                                <span className="text-[#8b949e] font-medium">Status:</span>
-                                                                                <div className="flex items-center gap-2">
-                                                                                    <span className={`text-[10px] font-bold uppercase ${project.status === 'active' ? 'text-[#3fb950]' : 'text-[#f85149]'}`}>
-                                                                                        {project.status === 'active' ? 'Active' : 'Inactive'}
-                                                                                    </span>
-                                                                                    <ToggleSwitch
-                                                                                        checked={project.status === 'active'}
-                                                                                        onChange={() => handleToggleProjectStatus(project)}
-                                                                                    />
-                                                                                </div>
-                                                                            </div>
-
-                                                                            <div className="flex items-center justify-between">
-                                                                                <span className="text-[#8b949e] font-medium">Featured:</span>
-                                                                                <div className="flex items-center gap-2">
-                                                                                    <span className="text-[10px] font-bold uppercase text-amber-400">Featured</span>
-                                                                                    <ToggleSwitch
-                                                                                        checked={true}
-                                                                                        onChange={async () => {
-                                                                                            setProjects(prev => prev.map(p => p.id === project.id ? { ...p, featured: false } : p));
-                                                                                            try {
-                                                                                                const formData = new FormData();
-                                                                                                formData.append('featured', 'false');
-                                                                                                formData.append('existing_images', JSON.stringify(project.images || []));
-                                                                                                const response = await fetch(`${ADMIN_PROJECTS_BASE_URL}/${project.id}`, {
-                                                                                                    method: 'PUT',
-                                                                                                    headers: { 'x-admin-token': token },
-                                                                                                    body: formData
-                                                                                                });
-                                                                                                const data = await response.json();
-                                                                                                if (!response.ok || !data.ok) {
-                                                                                                    toast.error(data.message || 'Failed to update featured status.');
-                                                                                                }
-                                                                                            } catch (err) {
-                                                                                                console.error(err);
-                                                                                                toast.error('Error updating featured status.');
-                                                                                            }
-                                                                                        }}
-                                                                                    />
-                                                                                </div>
-                                                                            </div>
-
-                                                                            <div className="flex items-center justify-between">
-                                                                                <span className="text-[#8b949e] font-medium">Display Order:</span>
-                                                                                <input
-                                                                                    type="number"
-                                                                                    value={project.display_order || 0}
-                                                                                    onChange={async (e) => {
-                                                                                        const val = parseInt(e.target.value) || 0;
-                                                                                        setProjects(prev => prev.map(p => p.id === project.id ? { ...p, display_order: val } : p));
-                                                                                        try {
-                                                                                            const formData = new FormData();
-                                                                                            formData.append('display_order', val.toString());
-                                                                                            formData.append('existing_images', JSON.stringify(project.images || []));
-                                                                                            const response = await fetch(`${ADMIN_PROJECTS_BASE_URL}/${project.id}`, {
-                                                                                                method: 'PUT',
-                                                                                                headers: { 'x-admin-token': token },
-                                                                                                body: formData
-                                                                                            });
-                                                                                            const data = await response.json();
-                                                                                            if (!response.ok || !data.ok) {
-                                                                                                toast.error(data.message || 'Failed to update order.');
-                                                                                            }
-                                                                                        } catch (err) {
-                                                                                            console.error(err);
-                                                                                            toast.error('Error updating order.');
-                                                                                        }
-                                                                                    }}
-                                                                                    className="w-16 bg-[#161b22] text-[#e6edf3] border border-[#30363d] focus:border-[#58a6ff] rounded text-[11px] text-center outline-none py-0.5"
-                                                                                />
-                                                                            </div>
-                                                                        </div>
-
-                                                                        {/* Actions Panel */}
-                                                                        <div className="flex items-center justify-between border-t border-[#30363d]/60 pt-4 mt-auto">
-                                                                            <span className="text-[10px] text-[#484f58] font-bold uppercase tracking-wider">
-                                                                                {project.images?.length || 0} Images
-                                                                            </span>
-                                                                            <div className="flex gap-2">
-                                                                                <button
-                                                                                    onClick={() => openEditProjectModal(project)}
-                                                                                    className="text-[#c9d1d9] hover:text-[#58a6ff] p-2 bg-[#21262d] border border-[#30363d] hover:border-[#58a6ff] rounded-md transition-all cursor-pointer flex items-center gap-1.5 text-xs"
-                                                                                    title="Edit Project"
-                                                                                >
-                                                                                    <Edit2 size={12} />
-                                                                                    Edit
-                                                                                </button>
-                                                                                <button
-                                                                                    onClick={() => setDeleteConfirmProject(project)}
-                                                                                    className="text-[#c9d1d9] hover:text-[#f85149] p-2 bg-[#21262d] border border-[#30363d] hover:border-[#f85149] rounded-md transition-all cursor-pointer flex items-center gap-1.5 text-xs"
-                                                                                    title="Delete Project"
-                                                                                >
-                                                                                    <Trash2 size={12} />
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            ))}
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            {/* SECTION 2: PORTFOLIO BY CATEGORY */}
-                                            <div className="space-y-4 border-t border-[#30363d] pt-8">
-                                                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#30363d] pb-3 gap-3">
-                                                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                                                        <FolderOpen size={16} className="text-[#58a6ff]" />
-                                                        Portfolio Projects by Category
-                                                    </h3>
-                                                    {/* Category Tabs */}
-                                                    <div className="flex flex-wrap gap-1.5">
-                                                        {['All', 'Commercial', 'Residential', 'Hospitality', 'Industrial', 'International', 'Infrastructure'].map((cat) => (
-                                                            <button
-                                                                key={cat}
-                                                                onClick={() => setProjectCategoryFilter(cat)}
-                                                                className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
-                                                                    projectCategoryFilter === cat
-                                                                        ? 'bg-[#1f6feb] border-[#388bfd] text-white shadow-md'
-                                                                        : 'bg-[#161b22] border-[#30363d] text-[#8b949e] hover:bg-[#21262d] hover:text-[#e6edf3]'
-                                                                }`}
-                                                            >
-                                                                {cat}
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                </div>
-
-                                                {filteredProjects.filter(p => projectCategoryFilter === 'All' ? true : p.category === projectCategoryFilter).length === 0 ? (
-                                                    <p className="text-xs text-[#8b949e] italic py-4">No projects found in this category matching current filters.</p>
-                                                ) : (
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                                        {filteredProjects
-                                                            .filter(p => projectCategoryFilter === 'All' ? true : p.category === projectCategoryFilter)
-                                                            .sort((a, b) => (Number(a.display_order) || 0) - (Number(b.display_order) || 0))
-                                                            .map((project) => (
-                                                                <div key={project.id} className="bg-[#161b22] border border-[#30363d] hover:border-[#8b949e]/30 rounded-xl overflow-hidden shadow-lg transition-all duration-300 flex flex-col group">
-                                                                    {/* Image Box */}
-                                                                    <div className="relative aspect-[16/10] bg-[#0d1117] border-b border-[#30363d] overflow-hidden flex items-center justify-center">
-                                                                        {project.images && project.images.length > 0 ? (
-                                                                            <img
-                                                                                src={project.images[0]}
-                                                                                alt={project.title}
-                                                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                                                            />
-                                                                        ) : (
-                                                                            <div className="text-center text-[#484f58]">
-                                                                                <Image size={32} className="mx-auto mb-2 opacity-55" />
-                                                                                <span className="text-[10px] uppercase font-bold tracking-wider opacity-60">No Image Uploaded</span>
-                                                                            </div>
-                                                                        )}
-
-                                                                        {/* Top Labels */}
-                                                                        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 items-center">
-                                                                            <span className="bg-[#161b22]/90 border border-[#30363d] text-[#e6edf3] text-[10px] font-bold px-2 py-0.5 rounded shadow">
-                                                                                {project.category}
-                                                                            </span>
-                                                                            {project.featured && (
-                                                                                <span className="bg-amber-900/90 border border-amber-800 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-0.5 shadow">
-                                                                                    <Star size={9} className="fill-amber-400" /> Featured
-                                                                                </span>
-                                                                            )}
-                                                                        </div>
-                                                                    </div>
-
-                                                                    {/* Details Box */}
-                                                                    <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                                                                        <div className="space-y-2">
-                                                                            <h3 className="text-sm font-bold text-[#e6edf3] line-clamp-1 group-hover:text-[#58a6ff] transition-colors">
-                                                                                {project.title}
-                                                                            </h3>
-
-                                                                            {project.location && (
-                                                                                <div className="flex items-center gap-1.5 text-xs text-[#8b949e]">
-                                                                                    <MapPin size={12} className="text-[#58a6ff]" />
-                                                                                    <span>{project.location}</span>
-                                                                                </div>
-                                                                            )}
-
-                                                                            <div className="flex items-start gap-1.5 text-xs text-[#8b949e]">
-                                                                                <Award size={12} className="text-[#58a6ff] flex-shrink-0 mt-0.5" />
-                                                                                <span className="line-clamp-1">{project.scope}</span>
-                                                                            </div>
-
-                                                                            {project.highlight && (
-                                                                                <p className="text-xs text-[#8b949e] italic line-clamp-2 leading-relaxed bg-[#0d1117]/50 border border-[#30363d]/50 p-2.5 rounded-lg">
-                                                                                    "{project.highlight}"
-                                                                                </p>
-                                                                            )}
-                                                                        </div>
-
-                                                                        {/* Inline Controls */}
-                                                                        <div className="space-y-2 bg-[#0d1117]/45 p-3 rounded-lg border border-[#30363d]/40 text-xs">
-                                                                            <div className="flex items-center justify-between">
-                                                                                <span className="text-[#8b949e] font-medium">Status:</span>
-                                                                                <div className="flex items-center gap-2">
-                                                                                    <span className={`text-[10px] font-bold uppercase ${project.status === 'active' ? 'text-[#3fb950]' : 'text-[#f85149]'}`}>
-                                                                                        {project.status === 'active' ? 'Active' : 'Inactive'}
-                                                                                    </span>
-                                                                                    <ToggleSwitch
-                                                                                        checked={project.status === 'active'}
-                                                                                        onChange={() => handleToggleProjectStatus(project)}
-                                                                                    />
-                                                                                </div>
-                                                                            </div>
-
-                                                                            <div className="flex items-center justify-between">
-                                                                                <span className="text-[#8b949e] font-medium">Featured:</span>
-                                                                                <div className="flex items-center gap-2">
-                                                                                    <span className={`text-[10px] font-bold uppercase ${project.featured ? 'text-amber-400' : 'text-[#8b949e]'}`}>
-                                                                                        {project.featured ? 'Featured' : 'Standard'}
-                                                                                    </span>
-                                                                                    <ToggleSwitch
-                                                                                        checked={Boolean(project.featured)}
-                                                                                        onChange={async () => {
-                                                                                            const newFeatured = !project.featured;
-                                                                                            setProjects(prev => prev.map(p => p.id === project.id ? { ...p, featured: newFeatured } : p));
-                                                                                            try {
-                                                                                                const formData = new FormData();
-                                                                                                formData.append('featured', newFeatured ? 'true' : 'false');
-                                                                                                formData.append('existing_images', JSON.stringify(project.images || []));
-                                                                                                const response = await fetch(`${ADMIN_PROJECTS_BASE_URL}/${project.id}`, {
-                                                                                                    method: 'PUT',
-                                                                                                    headers: { 'x-admin-token': token },
-                                                                                                    body: formData
-                                                                                                });
-                                                                                                const data = await response.json();
-                                                                                                if (!response.ok || !data.ok) {
-                                                                                                    toast.error(data.message || 'Failed to update featured status.');
-                                                                                                }
-                                                                                            } catch (err) {
-                                                                                                console.error(err);
-                                                                                                toast.error('Error updating featured status.');
-                                                                                            }
-                                                                                        }}
-                                                                                    />
-                                                                                </div>
-                                                                            </div>
-
-                                                                            <div className="flex items-center justify-between">
-                                                                                <span className="text-[#8b949e] font-medium">Display Order:</span>
-                                                                                <input
-                                                                                    type="number"
-                                                                                    value={project.display_order || 0}
-                                                                                    onChange={async (e) => {
-                                                                                        const val = parseInt(e.target.value) || 0;
-                                                                                        setProjects(prev => prev.map(p => p.id === project.id ? { ...p, display_order: val } : p));
-                                                                                        try {
-                                                                                            const formData = new FormData();
-                                                                                            formData.append('display_order', val.toString());
-                                                                                            formData.append('existing_images', JSON.stringify(project.images || []));
-                                                                                            const response = await fetch(`${ADMIN_PROJECTS_BASE_URL}/${project.id}`, {
-                                                                                                method: 'PUT',
-                                                                                                headers: { 'x-admin-token': token },
-                                                                                                body: formData
-                                                                                            });
-                                                                                            const data = await response.json();
-                                                                                            if (!response.ok || !data.ok) {
-                                                                                                toast.error(data.message || 'Failed to update order.');
-                                                                                            }
-                                                                                        } catch (err) {
-                                                                                            console.error(err);
-                                                                                            toast.error('Error updating order.');
-                                                                                        }
-                                                                                    }}
-                                                                                    className="w-16 bg-[#161b22] text-[#e6edf3] border border-[#30363d] focus:border-[#58a6ff] rounded text-[11px] text-center outline-none py-0.5"
-                                                                                />
-                                                                            </div>
-                                                                        </div>
-
-                                                                        {/* Actions Panel */}
-                                                                        <div className="flex items-center justify-between border-t border-[#30363d]/60 pt-4 mt-auto">
-                                                                            <span className="text-[10px] text-[#484f58] font-bold uppercase tracking-wider">
-                                                                                {project.images?.length || 0} Images
-                                                                            </span>
-                                                                            <div className="flex gap-2">
-                                                                                <button
-                                                                                    onClick={() => openEditProjectModal(project)}
-                                                                                    className="text-[#c9d1d9] hover:text-[#58a6ff] p-2 bg-[#21262d] border border-[#30363d] hover:border-[#58a6ff] rounded-md transition-all cursor-pointer flex items-center gap-1.5 text-xs"
-                                                                                    title="Edit Project"
-                                                                                >
-                                                                                    <Edit2 size={12} />
-                                                                                    Edit
-                                                                                </button>
-                                                                                <button
-                                                                                    onClick={() => setDeleteConfirmProject(project)}
-                                                                                    className="text-[#c9d1d9] hover:text-[#f85149] p-2 bg-[#21262d] border border-[#30363d] hover:border-[#f85149] rounded-md transition-all cursor-pointer flex items-center gap-1.5 text-xs"
-                                                                                    title="Delete Project"
-                                                                                >
-                                                                                    <Trash2 size={12} />
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            ))}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                    </div>
-                </main>
-
-            {/* CREATE / EDIT JOB OPENING MODAL - Slides from Right Sidebar Drawer */}
-            {isJobModalOpen && (
-                <div className="fixed inset-0 z-50 flex justify-end">
-                    <div className="absolute inset-0 bg-[#040d21]/70 backdrop-blur-sm" onClick={resetJobForm} />
-                    <div className="relative bg-[#161b22] border-l border-[#30363d] w-full max-w-xl h-full flex flex-col shadow-2xl overflow-hidden animate-slide-in-right">
-                        <div className="p-6 border-b border-[#30363d] flex items-center justify-between">
-                            <h3 className="text-lg font-bold text-[#e6edf3]">
-                                {currentEditingJob ? 'Edit Job Opening' : 'Create Job Opening'}
-                            </h3>
-                            <button onClick={resetJobForm} className="text-[#8b949e] hover:text-[#e6edf3] transition-colors cursor-pointer">
-                                <X size={20} />
-                            </button>
-                        </div>
-                        <form onSubmit={handleJobSubmit} autoComplete="off" className="flex-1 overflow-y-auto p-6 space-y-4">
-                            <div className="space-y-4">
-                                {/* Job Title — full width */}
-                                <div>
-                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Job Title *</label>
-                                    <input
-                                        type="text" required value={jobForm.title}
-                                        onChange={(e) => setJobForm({ ...jobForm, title: e.target.value })}
-                                        placeholder="e.g. Senior Billing Engineer"
-                                        className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
-                                    />
-                                </div>
-
-                                {/* Qualification + Location side-by-side */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Qualification</label>
-                                        <input
-                                            type="text" value={jobForm.qualification}
-                                            onChange={(e) => setJobForm({ ...jobForm, qualification: e.target.value })}
-                                            placeholder="e.g. BE/B.Tech Civil"
-                                            className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Location</label>
-                                        <input
-                                            type="text" value={jobForm.location}
-                                            onChange={(e) => setJobForm({ ...jobForm, location: e.target.value })}
-                                            placeholder="e.g. HO (Dadar)"
-                                            className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Gender + Status side-by-side */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Gender Preference</label>
-                                        <CustomSelect
-                                            value={jobForm.gender}
-                                            onChange={(val) => setJobForm({ ...jobForm, gender: val })}
-                                            options={[
-                                                { value: 'Any', label: 'Any' },
-                                                { value: 'Male', label: 'Male' },
-                                                { value: 'Female', label: 'Female' }
-                                            ]}
-                                            className="w-full"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Status</label>
-                                        <div className="flex items-center gap-3 bg-[#0d1117] border border-[#30363d] rounded-lg p-2 px-3 h-[38px] w-full">
-                                            <ToggleSwitch 
-                                                checked={jobForm.status === 'active'}
-                                                onChange={() => setJobForm({ ...jobForm, status: jobForm.status === 'active' ? 'inactive' : 'active' })}
-                                            />
-                                            <span className={`text-xs font-bold ${jobForm.status === 'active' ? 'text-[#2ea44f]' : 'text-[#8b949e]'}`}>
-                                                {jobForm.status === 'active' ? 'Active' : 'Inactive'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Platform — full width */}
-                                <div>
-                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Platform *</label>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        {['pmc', 'epc'].map(p => {
-                                             const selectedPlatforms = jobForm.platform ? jobForm.platform.split(',') : ['pmc'];
-                                             const isSelected = selectedPlatforms.includes(p);
-                                             return (
-                                                 <button
-                                                     key={p}
-                                                     type="button"
-                                                     onClick={() => handlePlatformToggle(p)}
-                                                     className={`py-2.5 px-4 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
-                                                         isSelected
-                                                             ? p === 'epc'
-                                                                 ? 'bg-purple-900/30 border-purple-700 text-purple-300'
-                                                                 : 'bg-blue-900/30 border-blue-700 text-blue-300'
-                                                             : 'bg-[#0d1117] border-[#30363d] text-[#8b949e] hover:border-[#58a6ff] hover:text-[#e6edf3]'
-                                                     }`}
-                                                 >
-                                                     {p === 'pmc' ? 'PMC — Project Management' : 'EPC — Engineering & Procurement'}
-                                                 </button>
-                                             );
-                                         })}
-                                    </div>
-                                    {currentEditingJob && currentEditingJob.platform !== jobForm.platform && (
-                                        <p className="text-[10px] text-amber-400 mt-1.5 flex items-center gap-1">
-                                            <AlertTriangle size={11} />
-                                            This will update the job's assigned platform settings.
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* JD Upload — full width */}
-                                <div>
-                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Job Description (JD)</label>
-
-                                    {/* Current JD row with view link + remove button */}
-                                    {jobForm.jd_file_path && !jobForm.remove_jd && (
-                                        <div className="flex items-center justify-between bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2.5 mb-2">
-                                            <div className="flex items-center gap-2 min-w-0">
-                                                <FileText size={13} className="text-[#58a6ff] flex-shrink-0" />
-                                                <a
-                                                    href={getFileLink(jobForm.jd_file_path, 'jds')}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    className="text-[#58a6ff] text-xs hover:underline font-semibold truncate"
-                                                >
-                                                    {jobForm.jd_file_path.split('/').pop().split('\\').pop()}
-                                                </a>
-                                            </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => setJobForm({ ...jobForm, remove_jd: true, jd_file: null })}
-                                                className="flex-shrink-0 ml-3 text-[10px] font-bold text-[#f85149] hover:underline cursor-pointer"
-                                            >
-                                                Remove
-                                            </button>
-                                        </div>
-                                    )}
-
-                                    {/* Pending removal notice */}
-                                    {jobForm.remove_jd && (
-                                        <div className="flex items-center justify-between bg-[#da3633]/10 border border-[#da3633]/30 rounded-lg px-3 py-2 mb-2">
-                                            <span className="text-xs text-[#f85149] font-semibold">JD will be removed on save</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => setJobForm({ ...jobForm, remove_jd: false })}
-                                                className="text-[10px] text-[#8b949e] hover:text-[#e6edf3] font-bold cursor-pointer"
-                                            >
-                                                Undo
-                                            </button>
-                                        </div>
-                                    )}
-
-                                    {/* File picker drop zone */}
-                                    <label className="relative flex flex-col items-center justify-center text-center border border-dashed border-[#30363d] hover:border-[#58a6ff] rounded-lg p-5 bg-[#0d1117] cursor-pointer transition-all group">
-                                        <input
-                                            key={jobForm.jd_file ? jobForm.jd_file.name : 'empty'}
-                                            type="file"
-                                            accept=".pdf,.doc,.docx"
-                                            className="sr-only"
-                                            onChange={(e) => {
-                                                const f = e.target.files?.[0];
-                                                if (f) setJobForm({ ...jobForm, jd_file: f, remove_jd: false });
-                                            }}
-                                        />
-                                        <Upload size={18} className="text-[#8b949e] group-hover:text-[#58a6ff] mb-2 transition-colors" />
-                                        {jobForm.jd_file ? (
-                                            <div className="text-xs text-[#e6edf3] space-y-0.5">
-                                                <p className="font-bold text-[#58a6ff]">New file ready to upload</p>
-                                                <p className="text-[#8b949e] truncate max-w-[280px]">{jobForm.jd_file.name}</p>
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => { e.preventDefault(); setJobForm({ ...jobForm, jd_file: null }); }}
-                                                    className="text-[10px] text-[#f85149] hover:underline font-bold mt-1"
-                                                >
-                                                    Clear selection
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <div className="text-xs text-[#8b949e] space-y-0.5">
-                                                <p className="text-[#e6edf3] font-semibold group-hover:text-[#58a6ff] transition-colors">
-                                                    {jobForm.jd_file_path && !jobForm.remove_jd ? 'Replace JD file' : 'Upload JD file'}
-                                                </p>
-                                                <p>PDF, DOC or DOCX &mdash; up to 50 MB</p>
-                                            </div>
-                                        )}
-                                    </label>
-                                </div>
-                            </div>
-                            <div className="pt-4 border-t border-[#30363d] flex justify-end gap-3">
-                                <button
-                                    type="button" onClick={resetJobForm}
-                                    className="bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] text-[#c9d1d9] py-2 px-4 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="bg-[#238636] hover:bg-[#2ea44f] border border-[#30363d]/50 text-white py-2 px-5 rounded-lg text-xs font-bold shadow-lg cursor-pointer transition-colors"
-                                >
-                                    Save Changes
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                    {activeTab === 'enquiries' && (
+                        <EnquiriesTab
+                            enquirySearch={enquirySearch}
+                            setEnquirySearch={setEnquirySearch}
+                            enquiryServiceFilter={enquiryServiceFilter}
+                            setEnquiryServiceFilter={setEnquiryServiceFilter}
+                            enquiries={enquiries}
+                            enquiriesLoading={enquiriesLoading}
+                            setViewingEnquiry={setViewingEnquiry}
+                            setDeleteConfirmEnquiry={setDeleteConfirmEnquiry}
+                        />
+                    )}
                 </div>
-            )}
+            </main>
 
-            {/* CREATE / EDIT BLOG POST MODAL - Slides from Right Sidebar Drawer */}
-            {isBlogModalOpen && (
-                <div className="fixed inset-0 z-50 flex justify-end">
-                    <div className="absolute inset-0 bg-[#040d21]/70 backdrop-blur-sm" onClick={resetBlogForm} />
-                    <div className="relative bg-[#161b22] border-l border-[#30363d] w-full max-w-2xl h-full flex flex-col shadow-2xl overflow-hidden animate-slide-in-right">
-                        <div className="p-6 border-b border-[#30363d] flex items-center justify-between">
-                            <h3 className="text-lg font-bold text-[#e6edf3]">
-                                {currentEditingBlog ? 'Edit Blog Post' : 'Create Blog Post'}
-                            </h3>
-                            <button onClick={resetBlogForm} className="text-[#8b949e] hover:text-[#e6edf3] transition-colors cursor-pointer">
-                                <X size={20} />
-                            </button>
-                        </div>
+            {/* MODALS */}
+            <JobModal
+                isOpen={isJobModalOpen}
+                onClose={resetJobForm}
+                currentEditingJob={currentEditingJob}
+                jobForm={jobForm}
+                setJobForm={setJobForm}
+                handleJobSubmit={handleJobSubmit}
+                isSavingJob={isSavingJob}
+                handlePlatformToggle={handlePlatformToggle}
+                getFileLink={getFileLink}
+            />
 
-                        <form onSubmit={handleBlogSubmit} autoComplete="off" className="flex-1 overflow-y-auto p-6 space-y-4">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="sm:col-span-2">
-                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Article Title *</label>
-                                    <input
-                                        type="text" required value={blogForm.title}
-                                        onChange={(e) => setBlogForm({ ...blogForm, title: e.target.value })}
-                                        placeholder="e.g. The Future of Construction Project Management"
-                                        className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
-                                    />
-                                </div>
-                                <div className="sm:col-span-2">
-                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Short Summary / Intro *</label>
-                                    <textarea
-                                        required rows={1} value={blogForm.summary}
-                                        onChange={(e) => setBlogForm({ ...blogForm, summary: e.target.value })}
-                                        placeholder="Write a brief intro/summary of the post..."
-                                        ref={(el) => {
-                                            if (el) {
-                                                el.style.height = 'auto';
-                                                el.style.height = `${el.scrollHeight}px`;
-                                            }
-                                        }}
-                                        onInput={(e) => {
-                                            e.target.style.height = 'auto';
-                                            e.target.style.height = `${e.target.scrollHeight}px`;
-                                        }}
-                                        className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58] resize-none overflow-hidden"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Author Name *</label>
-                                    <input
-                                        type="text" required value={blogForm.author}
-                                        onChange={(e) => setBlogForm({ ...blogForm, author: e.target.value })}
-                                        placeholder="e.g. Mugilan Muthaiah"
-                                        className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Author Designation</label>
-                                    <input
-                                        type="text" value={blogForm.author_role}
-                                        onChange={(e) => setBlogForm({ ...blogForm, author_role: e.target.value })}
-                                        placeholder="e.g. Founder & MD, MANO Projects"
-                                        className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Category *</label>
-                                    <CustomSelect
-                                        value={blogForm.category}
-                                        onChange={(val) => setBlogForm({ ...blogForm, category: val })}
-                                        options={[
-                                            { value: 'Project Management', label: 'Project Management' },
-                                            { value: 'Cost & Finance', label: 'Cost & Finance' },
-                                            { value: 'Quality & Safety', label: 'Quality & Safety' },
-                                            { value: 'EPC & Construction', label: 'EPC & Construction' },
-                                            { value: 'Industry Trends', label: 'Industry Trends' },
-                                            { value: 'Real Estate', label: 'Real Estate' }
-                                        ]}
-                                        className="w-full"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Read Time (e.g. '8 min read')</label>
-                                    <input
-                                        type="text" value={blogForm.read_time}
-                                        onChange={(e) => setBlogForm({ ...blogForm, read_time: e.target.value })}
-                                        placeholder="e.g. 8 min read"
-                                        className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
-                                    />
-                                </div>
-                                <div className="sm:col-span-2">
-                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-2">Banner Image *</label>
-                                    <div className="flex flex-col sm:flex-row gap-4 items-start">
-                                        {/* Image Preview Window */}
-                                        <div className="w-full sm:w-48 h-32 rounded-xl border border-[#30363d] bg-[#0d1117] overflow-hidden flex-shrink-0 flex items-center justify-center relative group/preview">
-                                            {blogForm.blog_image ? (
-                                                <img 
-                                                    src={URL.createObjectURL(blogForm.blog_image)} 
-                                                    alt="Preview" 
-                                                    className="w-full h-full object-cover" 
-                                                />
-                                            ) : blogForm.image ? (
-                                                <img 
-                                                    src={blogForm.image} 
-                                                    alt="Current Banner" 
-                                                    className="w-full h-full object-cover" 
-                                                />
-                                            ) : (
-                                                <div className="flex flex-col items-center justify-center text-center p-3 text-[#484f58]">
-                                                    <Image size={24} className="mb-1" />
-                                                    <span className="text-[10px]">No image selected</span>
-                                                </div>
-                                            )}
-                                        </div>
+            <BlogModal
+                isOpen={isBlogModalOpen}
+                onClose={resetBlogForm}
+                currentEditingBlog={currentEditingBlog}
+                blogForm={blogForm}
+                setBlogForm={setBlogForm}
+                handleBlogSubmit={handleBlogSubmit}
+                isSavingBlog={isSavingBlog}
+                addBlogSection={addBlogSection}
+                removeBlogSection={removeBlogSection}
+                updateBlogSection={updateBlogSection}
+            />
 
-                                        {/* File Upload Field */}
-                                        <div className="flex-1 w-full space-y-2">
-                                            <div className="relative border border-dashed border-[#30363d] hover:border-[#58a6ff] rounded-xl p-6 bg-[#0d1117] flex flex-col items-center justify-center text-center cursor-pointer transition-all">
-                                                <input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    onChange={(e) => {
-                                                        const file = e.target.files[0];
-                                                        if (file) {
-                                                            setBlogForm({ ...blogForm, blog_image: file });
-                                                        }
-                                                    }}
-                                                    className="absolute inset-0 opacity-0 cursor-pointer"
-                                                />
-                                                <Upload size={20} className="text-[#8b949e] mb-2" />
-                                                <p className="text-xs text-[#e6edf3] font-semibold mb-0.5">
-                                                    {blogForm.blog_image ? "Replace selected image" : "Choose a banner image"}
-                                                </p>
-                                                <p className="text-[10px] text-[#8b949e]">
-                                                    PNG, JPG, JPEG, WEBP or GIF (up to 10MB)
-                                                </p>
-                                            </div>
-                                            {blogForm.blog_image && (
-                                                <div className="flex items-center justify-between bg-[#161b22] border border-[#30363d] px-3 py-1.5 rounded-lg">
-                                                    <span className="text-[10px] text-[#8b949e] truncate max-w-[200px]">
-                                                        {blogForm.blog_image.name}
-                                                    </span>
-                                                    <button 
-                                                        type="button"
-                                                        onClick={() => setBlogForm({ ...blogForm, blog_image: null })}
-                                                        className="text-[#f85149] hover:underline text-[10px] font-bold cursor-pointer"
-                                                    >
-                                                        Clear
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="sm:col-span-2">
-                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Tags (Comma-separated)</label>
-                                    <input
-                                        type="text" value={blogForm.tags}
-                                        onChange={(e) => setBlogForm({ ...blogForm, tags: e.target.value })}
-                                        placeholder="e.g. PMC, Cost Control, Residential"
-                                        className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
-                                    />
-                                </div>
-                                <div className="flex items-center gap-3 py-1">
-                                    <input
-                                        type="checkbox" id="blogFeatured" checked={blogForm.featured}
-                                        onChange={(e) => setBlogForm({ ...blogForm, featured: e.target.checked })}
-                                        className="bg-[#0d1117] border border-[#30363d] focus:ring-[#58a6ff] h-4 w-4 text-[#1f6feb] rounded"
-                                    />
-                                    <label htmlFor="blogFeatured" className="text-xs font-semibold text-[#8b949e] uppercase tracking-wider cursor-pointer">Pin to Featured Post</label>
-                                </div>
+            <ProjectModal
+                isOpen={isProjectModalOpen}
+                onClose={resetProjectForm}
+                currentEditingProject={currentEditingProject}
+                projectForm={projectForm}
+                setProjectForm={setProjectForm}
+                handleProjectSubmit={handleProjectSubmit}
+                isSavingProject={isSavingProject}
+                projectImageInputRef={projectImageInputRef}
+                handleProjectImageAdd={handleProjectImageAdd}
+                removeExistingProjectImage={removeExistingProjectImage}
+                removeNewProjectImage={removeNewProjectImage}
+            />
 
-                                <div className="sm:col-span-2 border-t border-[#30363d] pt-4 mt-2">
-                                    <div className="flex justify-between items-center mb-3">
-                                        <h4 className="text-xs font-bold text-[#e6edf3] uppercase tracking-wide">Article Sections</h4>
-                                        <button
-                                            type="button" onClick={addBlogSection}
-                                            className="bg-[#21262d] hover:bg-[#30363d] text-[#58a6ff] border border-[#30363d] hover:border-[#58a6ff] py-1 px-3 rounded text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-colors"
-                                        >
-                                            <Plus size={12} /> Add Section
-                                        </button>
-                                    </div>
-                                    <div className="space-y-4">
-                                        {blogForm.sections.map((section, index) => (
-                                            <div key={index} className="p-3 bg-[#0d1117] border border-[#30363d] rounded-xl space-y-3 relative">
-                                                <div className="flex justify-between items-center">
-                                                    <span className="text-[10px] font-bold text-[#8b949e]">Section #{index + 1}</span>
-                                                    <button
-                                                        type="button" onClick={() => removeBlogSection(index)}
-                                                        className="text-red-400 hover:text-red-300 text-[10px] font-bold cursor-pointer"
-                                                    >
-                                                        Remove
-                                                    </button>
-                                                </div>
-                                                <input
-                                                    type="text" required value={section.heading}
-                                                    onChange={(e) => updateBlogSection(index, 'heading', e.target.value)}
-                                                    placeholder="Section Heading"
-                                                    className="w-full bg-[#161b22] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2 text-xs text-[#e6edf3] outline-none"
-                                                />
-                                                <textarea
-                                                    required rows={1} value={section.body}
-                                                    onChange={(e) => updateBlogSection(index, 'body', e.target.value)}
-                                                    placeholder="Section Body Content (Use **bold** for headings or emphasis if needed)"
-                                                    ref={(el) => {
-                                                        if (el) {
-                                                            el.style.height = 'auto';
-                                                            el.style.height = `${el.scrollHeight}px`;
-                                                        }
-                                                    }}
-                                                    onInput={(e) => {
-                                                        e.target.style.height = 'auto';
-                                                        e.target.style.height = `${e.target.scrollHeight}px`;
-                                                    }}
-                                                    className="w-full bg-[#161b22] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2 text-xs text-[#e6edf3] outline-none resize-none overflow-hidden"
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
+            {/* DELETE CONFIRMATION MODALS */}
+            <DeleteConfirmModal
+                isOpen={!!deleteConfirmJob}
+                onClose={() => setDeleteConfirmJob(null)}
+                onConfirm={confirmDeleteJob}
+                title="Delete Job Opening"
+                message={`Are you sure you want to permanently delete "${deleteConfirmJob?.title}"? This action cannot be undone.`}
+                isDeleting={isDeletingJob}
+            />
 
-                                <div className="sm:col-span-2 border-t border-[#30363d] pt-4 mt-2">
-                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Key Takeaways (one per line)</label>
-                                    <textarea
-                                        rows={1} value={blogForm.keyTakeaways}
-                                        onChange={(e) => setBlogForm({ ...blogForm, keyTakeaways: e.target.value })}
-                                        placeholder="Takeaway 1&#10;Takeaway 2&#10;Takeaway 3"
-                                        ref={(el) => {
-                                            if (el) {
-                                                el.style.height = 'auto';
-                                                el.style.height = `${el.scrollHeight}px`;
-                                            }
-                                        }}
-                                        onInput={(e) => {
-                                            e.target.style.height = 'auto';
-                                            e.target.style.height = `${e.target.scrollHeight}px`;
-                                        }}
-                                        className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58] resize-none overflow-hidden"
-                                    />
-                                </div>
-                            </div>
+            <DeleteConfirmModal
+                isOpen={!!deleteConfirmCandidate}
+                onClose={() => setDeleteConfirmCandidate(null)}
+                onConfirm={confirmDeleteCandidate}
+                title="Delete Candidate Record"
+                message={`Are you sure you want to delete the application record for "${deleteConfirmCandidate?.name}"? This will remove their resume file permanently.`}
+                isDeleting={isDeletingCandidate}
+            />
 
-                            <div className="pt-4 border-t border-[#30363d] flex justify-end gap-3">
-                                <button
-                                    type="button" onClick={resetBlogForm}
-                                    className="bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] text-[#c9d1d9] py-2 px-4 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="bg-[#238636] hover:bg-[#2ea44f] border border-[#30363d]/50 text-white py-2 px-5 rounded-lg text-xs font-bold shadow-lg cursor-pointer transition-colors"
-                                >
-                                    Save Changes
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+            <DeleteConfirmModal
+                isOpen={!!deleteConfirmBlog}
+                onClose={() => setDeleteConfirmBlog(null)}
+                onConfirm={confirmDeleteBlog}
+                title="Delete Blog Post"
+                message={`Are you sure you want to delete "${deleteConfirmBlog?.title}"?`}
+                isDeleting={isDeletingBlog}
+            />
 
-            {/* CREATE / EDIT PROJECT MODAL - Slides from Right Sidebar Drawer */}
-            {isProjectModalOpen && (
-                <div className="fixed inset-0 z-50 flex justify-end">
-                    <div className="absolute inset-0 bg-[#040d21]/70 backdrop-blur-sm" onClick={resetProjectForm} />
-                    <div className="relative bg-[#161b22] border-l border-[#30363d] w-full max-w-xl h-full flex flex-col shadow-2xl overflow-hidden animate-slide-in-right">
-                        <div className="p-6 border-b border-[#30363d] flex items-center justify-between">
-                            <h3 className="text-lg font-bold text-[#e6edf3]">
-                                {currentEditingProject ? 'Edit Project Masterpiece' : 'Publish New Project'}
-                            </h3>
-                            <button onClick={resetProjectForm} className="text-[#8b949e] hover:text-[#e6edf3] transition-colors cursor-pointer">
-                                <X size={20} />
-                            </button>
-                        </div>
-                        <form onSubmit={handleProjectSubmit} autoComplete="off" className="flex-1 overflow-y-auto p-6 space-y-4">
-                            <div className="space-y-4">
-                                {/* Title */}
-                                <div>
-                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Project Title *</label>
-                                    <input
-                                        type="text" required value={projectForm.title}
-                                        onChange={(e) => setProjectForm({ ...projectForm, title: e.target.value })}
-                                        placeholder="e.g. Hotel Moon Palace"
-                                        className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
-                                    />
-                                </div>
+            <DeleteConfirmModal
+                isOpen={!!deleteConfirmProject}
+                onClose={() => setDeleteConfirmProject(null)}
+                onConfirm={confirmDeleteProject}
+                title="Delete Project Masterpiece"
+                message={`Are you sure you want to delete "${deleteConfirmProject?.title}"? This will remove all associated project images.`}
+                isDeleting={isDeletingProject}
+            />
 
-                                {/* Location + Category */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Location</label>
-                                        <input
-                                            type="text" value={projectForm.location}
-                                            onChange={(e) => setProjectForm({ ...projectForm, location: e.target.value })}
-                                            placeholder="e.g. Kinshasa, Congo"
-                                            className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Category *</label>
-                                        <CustomSelect
-                                            value={projectForm.category}
-                                            onChange={(val) => setProjectForm({ ...projectForm, category: val })}
-                                            options={[
-                                                { label: 'Commercial', value: 'Commercial' },
-                                                { label: 'Residential', value: 'Residential' },
-                                                { label: 'Hospitality', value: 'Hospitality' },
-                                                { label: 'Industrial', value: 'Industrial' },
-                                                { label: 'International', value: 'International' },
-                                                { label: 'Infrastructure', value: 'Infrastructure' }
-                                            ]}
-                                            className="w-full"
-                                        />
-                                    </div>
-                                </div>
+            <DeleteConfirmModal
+                isOpen={!!deleteConfirmEnquiry}
+                onClose={() => setDeleteConfirmEnquiry(null)}
+                onConfirm={confirmDeleteEnquiry}
+                title="Delete Client Enquiry"
+                message={`Are you sure you want to delete the client enquiry from "${deleteConfirmEnquiry?.name}" (${deleteConfirmEnquiry?.company_name || 'No Company'})?`}
+                isDeleting={isDeletingEnquiry}
+            />
 
-                                {/* Scope of Work */}
-                                <div>
-                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Scope of Work</label>
-                                    <input
-                                        type="text" value={projectForm.scope}
-                                        onChange={(e) => setProjectForm({ ...projectForm, scope: e.target.value })}
-                                        placeholder="e.g. PMC - Project Management Consultants"
-                                        className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
-                                    />
-                                </div>
-
-                                {/* Highlight/Description */}
-                                <div>
-                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Highlight/Description</label>
-                                    <textarea
-                                        rows={3} value={projectForm.highlight}
-                                        onChange={(e) => setProjectForm({ ...projectForm, highlight: e.target.value })}
-                                        placeholder="Briefly summarize project details, scale or impact..."
-                                        className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
-                                    />
-                                </div>
-
-                                {/* Display Order + Status + Featured */}
-                                <div className="grid grid-cols-3 gap-4 items-center">
-                                    <div>
-                                        <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Display Order</label>
-                                        <input
-                                            type="number" value={projectForm.display_order}
-                                            onChange={(e) => setProjectForm({ ...projectForm, display_order: e.target.value })}
-                                            placeholder="0"
-                                            className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-2.5 text-xs text-[#e6edf3] outline-none placeholder-[#484f58]"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">Status</label>
-                                        <CustomSelect
-                                            value={projectForm.status}
-                                            onChange={(val) => setProjectForm({ ...projectForm, status: val })}
-                                            options={[
-                                                { label: 'Active', value: 'active' },
-                                                { label: 'Inactive', value: 'inactive' }
-                                            ]}
-                                            className="w-full"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col items-center">
-                                        <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-2">Featured Project</label>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            <span className={`text-[10px] font-bold uppercase ${projectForm.featured ? 'text-amber-400' : 'text-gray-500'}`}>
-                                                {projectForm.featured ? "Featured" : "Standard"}
-                                            </span>
-                                            <ToggleSwitch
-                                                checked={projectForm.featured}
-                                                onChange={() => setProjectForm({ ...projectForm, featured: !projectForm.featured })}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Multiple Image Upload */}
-                                <div className="border-t border-[#30363d] pt-4 mt-2">
-                                    <label className="block text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-2.5">Project Gallery Images (Max 20)</label>
-                                    
-                                    {/* Upload box */}
-                                    <div className="relative border border-dashed border-[#30363d] hover:border-[#58a6ff] rounded-xl p-6 bg-[#0d1117] flex flex-col items-center justify-center text-center cursor-pointer transition-all">
-                                        <input
-                                            ref={projectImageInputRef}
-                                            type="file"
-                                            multiple
-                                            accept="image/*"
-                                            onChange={handleProjectImageAdd}
-                                            className="absolute inset-0 opacity-0 cursor-pointer"
-                                        />
-                                        <Upload size={20} className="text-[#8b949e] mb-2" />
-                                        <p className="text-xs text-[#e6edf3] font-semibold mb-0.5">Click to choose image files</p>
-                                        <p className="text-[10px] text-[#8b949e]">Select multiple files (PNG, JPG, WEBP, GIF up to 15MB each)</p>
-                                    </div>
-
-                                    {/* Image previews list */}
-                                    {(projectForm.existingImages.length > 0 || projectForm.newImageFiles.length > 0) && (
-                                        <div className="mt-4 bg-[#0d1117] border border-[#30363d] rounded-xl p-4">
-                                            <span className="block text-[10px] font-bold text-[#8b949e] uppercase tracking-wider mb-3">
-                                                Image Gallery Previews ({projectForm.existingImages.length + projectForm.newImageFiles.length} Selected)
-                                            </span>
-                                            <div className="grid grid-cols-4 gap-3">
-                                                {/* Existing images */}
-                                                {projectForm.existingImages.map((imgUrl, idx) => (
-                                                    <div key={`exist-${idx}`} className="relative aspect-square rounded-lg border border-[#30363d] overflow-hidden group">
-                                                        <img src={imgUrl} alt={`Existing ${idx}`} className="w-full h-full object-cover" />
-                                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => removeExistingProjectImage(imgUrl)}
-                                                                className="bg-[#da3633] hover:bg-[#f85149] text-white p-1.5 rounded-md text-xs font-semibold cursor-pointer transition-all"
-                                                            >
-                                                                Delete
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                ))}
-
-                                                {/* New files */}
-                                                {projectForm.newImageFiles.map((file, idx) => (
-                                                    <div key={`new-${idx}`} className="relative aspect-square rounded-lg border border-[#30363d] overflow-hidden group">
-                                                        <img src={URL.createObjectURL(file)} alt={`New ${idx}`} className="w-full h-full object-cover" />
-                                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => removeNewProjectImage(idx)}
-                                                                className="bg-[#da3633] hover:bg-[#f85149] text-white p-1.5 rounded-md text-xs font-semibold cursor-pointer transition-all"
-                                                            >
-                                                                Clear
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="pt-4 border-t border-[#30363d] flex justify-end gap-3">
-                                <button
-                                    type="button" onClick={resetProjectForm}
-                                    className="bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] text-[#c9d1d9] py-2 px-4 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="bg-[#238636] hover:bg-[#2ea44f] border border-[#30363d]/50 text-white py-2 px-5 rounded-lg text-xs font-bold shadow-lg cursor-pointer transition-colors"
-                                >
-                                    Publish Project
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {/* VIEW JOB DETAILS RIGHT-SLIDING DRAWER */}
+            {/* VIEW JOB DETAILS DRAWER */}
             {viewingJob && (
                 <div className="fixed inset-0 z-50 flex justify-end">
                     <div className="absolute inset-0 bg-[#040d21]/70 backdrop-blur-sm" onClick={() => setViewingJob(null)} />
@@ -2675,7 +1179,6 @@ const AdminDashboard = ({ token, onLogout }) => {
                                     </div>
                                 )}
                                 
-                                {/* Candidates Applied Section */}
                                 <div className="col-span-2 border-t border-[#30363d] pt-4">
                                     <span className="block text-[10px] font-semibold text-[#8b949e] uppercase tracking-wider mb-2">
                                         Candidates Applied ({candidates.filter(c => 
@@ -2751,7 +1254,7 @@ const AdminDashboard = ({ token, onLogout }) => {
                 </div>
             )}
 
-            {/* CANDIDATE DETAILS RIGHT-SLIDING DRAWER */}
+            {/* CANDIDATE DETAILS DRAWER */}
             {viewingCandidate && (
                 <div className="fixed inset-0 z-50 flex justify-end">
                     <div
@@ -2759,7 +1262,6 @@ const AdminDashboard = ({ token, onLogout }) => {
                         onClick={() => setViewingCandidate(null)}
                     />
                     <div className="relative bg-[#161b22] border-l border-[#30363d] w-full max-w-md h-full flex flex-col shadow-2xl overflow-hidden animate-slide-in-right">
-                        {/* Header */}
                         <div className="p-6 border-b border-[#30363d] flex items-center justify-between flex-shrink-0">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded-full bg-[#1f6feb]/20 border border-[#1f6feb]/40 flex items-center justify-center text-[#58a6ff] font-extrabold text-lg flex-shrink-0">
@@ -2780,10 +1282,7 @@ const AdminDashboard = ({ token, onLogout }) => {
                             </button>
                         </div>
 
-                        {/* Body */}
                         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
-
-                            {/* Applied Role */}
                             <div className="flex flex-col gap-1">
                                 <span className="text-[10px] font-bold text-[#8b949e] uppercase tracking-widest">Applied Role</span>
                                 <span className={`font-semibold text-sm self-start px-3 py-1 rounded border ${
@@ -2795,7 +1294,6 @@ const AdminDashboard = ({ token, onLogout }) => {
                                 </span>
                             </div>
 
-                            {/* Date Applied */}
                             <div className="flex flex-col gap-1">
                                 <span className="text-[10px] font-bold text-[#8b949e] uppercase tracking-widest">Date Applied</span>
                                 <span className="text-[#e6edf3] font-medium text-sm flex items-center gap-2">
@@ -2809,7 +1307,6 @@ const AdminDashboard = ({ token, onLogout }) => {
                                 </span>
                             </div>
 
-                            {/* Contact Email */}
                             <div className="flex flex-col gap-1">
                                 <span className="text-[10px] font-bold text-[#8b949e] uppercase tracking-widest">Contact Email</span>
                                 <span className="text-[#e6edf3] font-medium text-sm flex items-center gap-2">
@@ -2820,7 +1317,6 @@ const AdminDashboard = ({ token, onLogout }) => {
                                 </span>
                             </div>
 
-                            {/* Contact Mobile */}
                             {viewingCandidate.mobile && (
                                 <div className="flex flex-col gap-1">
                                     <span className="text-[10px] font-bold text-[#8b949e] uppercase tracking-widest">Contact Mobile</span>
@@ -2833,7 +1329,6 @@ const AdminDashboard = ({ token, onLogout }) => {
                                 </div>
                             )}
 
-                            {/* Resume / CV */}
                             <div className="flex flex-col gap-1.5">
                                 <span className="text-[10px] font-bold text-[#8b949e] uppercase tracking-widest">Resume / CV</span>
                                 <a
@@ -2855,63 +1350,61 @@ const AdminDashboard = ({ token, onLogout }) => {
                                 </a>
                             </div>
 
-                            {/* Candidate Remarks (Editable) */}
-                            <div className="flex flex-col gap-2 pt-4 border-t border-[#30363d]">
-                                <span className="text-[10px] font-bold text-[#8b949e] uppercase tracking-widest">Candidate Remarks</span>
+                            <div className="border-t border-[#30363d] pt-4 space-y-2">
+                                <span className="text-[10px] font-bold text-[#8b949e] uppercase tracking-widest block">HR Remarks / Notes</span>
                                 <textarea
-                                    className="w-full h-24 bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-3 text-xs text-[#e6edf3] placeholder-[#484f58] focus:outline-none resize-none transition-colors"
-                                    placeholder="Add admin remarks / comments about this candidate (2-3 lines)..."
                                     value={remarksText}
                                     onChange={(e) => setRemarksText(e.target.value)}
-                                    maxLength={1000}
+                                    placeholder="Add notes, interview status, rating, or internal feedback about this candidate..."
+                                    rows={4}
+                                    className="w-full bg-[#0d1117] border border-[#30363d] focus:border-[#58a6ff] rounded-lg p-3 text-xs text-[#e6edf3] outline-none placeholder-[#484f58] transition-all resize-none"
                                 />
-                                <button
-                                    onClick={handleSaveRemarks}
-                                    disabled={savingRemarks || remarksText === (viewingCandidate.remarks || '')}
-                                    className="self-end px-3 py-1.5 text-[11px] font-bold bg-[#238636] hover:bg-[#2ea043] disabled:bg-[#238636]/50 text-white rounded-md transition-colors flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
-                                >
-                                    {savingRemarks ? 'Saving...' : 'Save Remarks'}
-                                </button>
+                                <div className="flex justify-end">
+                                    <button
+                                        onClick={handleSaveRemarks}
+                                        disabled={savingRemarks}
+                                        className="bg-[#238636] hover:bg-[#2ea44f] disabled:opacity-50 text-white text-xs font-bold py-1.5 px-4 rounded-lg shadow-sm transition-all cursor-pointer"
+                                    >
+                                        {savingRemarks ? 'Saving...' : 'Save Remarks'}
+                                    </button>
+                                </div>
                             </div>
-
                         </div>
 
-                        {/* Footer Actions */}
-                        <div className="p-6 border-t border-[#30363d] flex gap-3 bg-[#0d1117]/30 flex-shrink-0">
-                            <a
-                                href={getResumeLink(viewingCandidate.file_path)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex-1 bg-[#1f6feb] hover:bg-[#388bfd] text-white py-2.5 px-4 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
-                            >
-                                <Download size={14} />
-                                Download Resume
-                            </a>
+                        <div className="p-6 border-t border-[#30363d] flex items-center justify-between bg-[#0d1117]/30 flex-shrink-0">
                             <button
-                                onClick={() => {
-                                    handleDeleteCandidate(viewingCandidate);
-                                }}
-                                className="bg-[#21262d] hover:bg-[#da3633]/20 hover:text-[#f85149] hover:border-[#f85149] border border-[#30363d] text-[#8b949e] py-2.5 px-4 rounded-lg text-xs font-semibold flex items-center gap-2 cursor-pointer transition-all"
+                                onClick={() => handleDeleteCandidate(viewingCandidate)}
+                                className="text-[#f85149] hover:bg-[#da3633]/20 border border-[#f85149]/30 py-2 px-3 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
                             >
-                                <Trash2 size={14} />
-                                Delete
+                                Delete Application
+                            </button>
+                            <button
+                                onClick={() => setViewingCandidate(null)}
+                                className="bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] text-[#c9d1d9] py-2 px-4 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
+                            >
+                                Close Drawer
                             </button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* VIEW BLOG DETAILS RIGHT-SLIDING DRAWER */}
+            {/* BLOG DETAILS DRAWER */}
             {viewingBlog && (
                 <div className="fixed inset-0 z-50 flex justify-end">
                     <div className="absolute inset-0 bg-[#040d21]/70 backdrop-blur-sm" onClick={() => setViewingBlog(null)} />
                     <div className="relative bg-[#161b22] border-l border-[#30363d] w-full max-w-xl h-full flex flex-col shadow-2xl overflow-hidden animate-slide-in-right">
                         <div className="p-6 border-b border-[#30363d] flex items-center justify-between flex-shrink-0">
                             <div>
-                                <span className="bg-[#1f6feb]/15 border border-[#388bfd]/30 text-[#58a6ff] px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
+                                <span className="bg-[#1f6feb]/15 border border-[#388bfd]/30 text-[#58a6ff] text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider mr-2">
                                     {viewingBlog.category}
                                 </span>
-                                <h3 className="text-lg font-bold text-[#e6edf3] mt-2">
+                                {viewingBlog.featured && (
+                                    <span className="bg-amber-900/30 border border-amber-800/80 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded">
+                                        ★ Featured
+                                    </span>
+                                )}
+                                <h3 className="text-lg font-bold text-[#e6edf3] mt-2 leading-snug">
                                     {viewingBlog.title}
                                 </h3>
                             </div>
@@ -2920,95 +1413,46 @@ const AdminDashboard = ({ token, onLogout }) => {
                             </button>
                         </div>
 
-                        <div className="p-6 space-y-6 flex-1 overflow-y-auto">
+                        <div className="p-6 space-y-6 flex-1 overflow-y-auto text-xs text-[#c9d1d9]">
                             {viewingBlog.image && (
-                                <div className="w-full h-48 rounded-xl overflow-hidden border border-[#30363d] bg-[#0d1117]">
+                                <div className="w-full h-48 rounded-xl overflow-hidden border border-[#30363d]">
                                     <img src={viewingBlog.image} alt={viewingBlog.title} className="w-full h-full object-cover" />
                                 </div>
                             )}
 
-                            <div className="space-y-4 text-xs text-[#c9d1d9]">
+                            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#30363d] pb-4 text-[#8b949e]">
                                 <div>
-                                    <span className="block text-[10px] font-semibold text-[#8b949e] uppercase tracking-wider mb-1">Summary</span>
-                                    <p className="font-medium text-[#e6edf3] leading-relaxed">{viewingBlog.summary}</p>
+                                    <p className="font-bold text-[#e6edf3]">{viewingBlog.author}</p>
+                                    <p className="text-[10px]">{viewingBlog.author_role}</p>
                                 </div>
-
-                                <div className="grid grid-cols-2 gap-4 border-t border-[#30363d] pt-4">
-                                    <div>
-                                        <span className="block text-[10px] font-semibold text-[#8b949e] uppercase tracking-wider mb-1">Author</span>
-                                        <p className="font-medium text-[#e6edf3]">{viewingBlog.author} {viewingBlog.author_role && `(${viewingBlog.author_role})`}</p>
-                                    </div>
-                                    <div>
-                                        <span className="block text-[10px] font-semibold text-[#8b949e] uppercase tracking-wider mb-1">Date</span>
-                                        <p className="font-medium text-[#e6edf3]">{viewingBlog.date}</p>
-                                    </div>
-                                    <div>
-                                        <span className="block text-[10px] font-semibold text-[#8b949e] uppercase tracking-wider mb-1">Read Time</span>
-                                        <p className="font-medium text-[#e6edf3]">{viewingBlog.read_time}</p>
-                                    </div>
-                                    <div>
-                                        <span className="block text-[10px] font-semibold text-[#8b949e] uppercase tracking-wider mb-1">Featured</span>
-                                        <p className="font-medium text-[#e6edf3]">{viewingBlog.featured ? '★ Yes' : 'No'}</p>
-                                    </div>
+                                <div className="text-right text-[10px]">
+                                    <p>{viewingBlog.date}</p>
+                                    <p>{viewingBlog.read_time}</p>
                                 </div>
-
-                                {viewingBlog.tags && (
-                                    <div className="border-t border-[#30363d] pt-4">
-                                        <span className="block text-[10px] font-semibold text-[#8b949e] uppercase tracking-wider mb-2">Tags</span>
-                                        <div className="flex flex-wrap gap-1.5">
-                                            {(() => {
-                                                try {
-                                                    const parsedTags = typeof viewingBlog.tags === 'string' ? JSON.parse(viewingBlog.tags) : viewingBlog.tags;
-                                                    if (Array.isArray(parsedTags)) {
-                                                        return parsedTags.map((t, idx) => (
-                                                            <span key={idx} className="bg-[#21262d] border border-[#30363d] text-[#c9d1d9] px-2 py-0.5 rounded text-[10px]">
-                                                                {t}
-                                                            </span>
-                                                        ));
-                                                    }
-                                                } catch (e) {}
-                                                return <span className="text-gray-500 italic">No tags</span>;
-                                            })()}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {viewingBlog.content && (
-                                    <div className="border-t border-[#30363d] pt-4">
-                                        <span className="block text-[10px] font-semibold text-[#8b949e] uppercase tracking-wider mb-2">Detailed Content Sections</span>
-                                        <div className="space-y-4">
-                                            {(() => {
-                                                try {
-                                                    const contentObj = typeof viewingBlog.content === 'string' ? JSON.parse(viewingBlog.content) : viewingBlog.content;
-                                                    if (contentObj) {
-                                                        return (
-                                                            <>
-                                                                {Array.isArray(contentObj.sections) && contentObj.sections.map((sec, idx) => (
-                                                                    <div key={idx} className="space-y-1.5 bg-[#0d1117] border border-[#30363d] p-3 rounded-lg">
-                                                                        <h4 className="font-bold text-xs text-[#58a6ff]">{sec.heading || `Section ${idx + 1}`}</h4>
-                                                                        <p className="text-[#c9d1d9] leading-relaxed whitespace-pre-line">{sec.body}</p>
-                                                                    </div>
-                                                                ))}
-                                                                {Array.isArray(contentObj.keyTakeaways) && contentObj.keyTakeaways.length > 0 && (
-                                                                    <div className="space-y-1.5 bg-amber-900/10 border border-amber-800/30 p-3 rounded-lg">
-                                                                        <h4 className="font-bold text-xs text-amber-400">Key Takeaways</h4>
-                                                                        <ul className="list-disc pl-4 space-y-1 text-[#c9d1d9]">
-                                                                            {contentObj.keyTakeaways.map((takeaway, idx) => (
-                                                                                <li key={idx}>{takeaway}</li>
-                                                                            ))}
-                                                                        </ul>
-                                                                    </div>
-                                                                )}
-                                                            </>
-                                                        );
-                                                    }
-                                                } catch (e) {}
-                                                return <p className="text-gray-500 italic">No sectioned content</p>;
-                                            })()}
-                                        </div>
-                                    </div>
-                                )}
                             </div>
+
+                            <div>
+                                <h4 className="text-[10px] font-bold text-[#8b949e] uppercase tracking-wider mb-1">Summary</h4>
+                                <p className="leading-relaxed bg-[#0d1117] p-3 rounded-lg border border-[#30363d]">{viewingBlog.summary}</p>
+                            </div>
+
+                            {viewingBlog.content?.sections?.map((sec, i) => (
+                                <div key={i} className="space-y-1">
+                                    <h4 className="text-xs font-bold text-[#58a6ff]">{sec.heading}</h4>
+                                    <p className="leading-relaxed whitespace-pre-wrap text-[#c9d1d9]">{sec.body}</p>
+                                </div>
+                            ))}
+
+                            {viewingBlog.content?.keyTakeaways?.length > 0 && (
+                                <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-4 space-y-2">
+                                    <h4 className="text-[10px] font-bold text-[#8b949e] uppercase tracking-wider">Key Takeaways</h4>
+                                    <ul className="list-disc list-inside space-y-1 text-xs">
+                                        {viewingBlog.content.keyTakeaways.map((takeaway, i) => (
+                                            <li key={i}>{takeaway}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                         </div>
 
                         <div className="p-6 border-t border-[#30363d] flex justify-end gap-3 bg-[#0d1117]/30 flex-shrink-0">
@@ -3025,395 +1469,101 @@ const AdminDashboard = ({ token, onLogout }) => {
                                 }}
                                 className="bg-[#1f6feb] hover:bg-[#388bfd] text-white py-2 px-4 rounded-lg text-xs font-bold cursor-pointer transition-colors"
                             >
-                                Edit Post
+                                Edit Article
                             </button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* SAVING JOB OVERLAY */}
-            {isSavingJob && (
-                <div className="fixed inset-0 bg-[#040d21]/70 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center animate-in fade-in duration-300">
-                    <div className="bg-[#161b22]/90 border border-[#30363d] rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl flex flex-col items-center gap-6 text-center backdrop-blur-xl">
-                        <div className="relative w-16 h-16 flex items-center justify-center">
-                            <div className="absolute inset-0 rounded-full border-4 border-[#30363d]"></div>
-                            <div className="absolute inset-0 rounded-full border-4 border-t-[#58a6ff] border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
-                            <Briefcase className="w-6 h-6 text-[#58a6ff] animate-pulse" />
-                        </div>
-                        <div className="space-y-2">
-                            <h3 className="text-base font-semibold text-[#e6edf3]">
-                                {currentEditingJob ? 'Updating Job Opening...' : 'Creating Job Opening...'}
-                            </h3>
-                            <p className="text-xs text-[#8b949e] leading-relaxed max-w-[240px]">
-                                Please wait while we process the job description and publish to the live careers page.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* SAVING BLOG OVERLAY */}
-            {isSavingBlog && (
-                <div className="fixed inset-0 bg-[#040d21]/70 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center animate-in fade-in duration-300">
-                    <div className="bg-[#161b22]/90 border border-[#30363d] rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl flex flex-col items-center gap-6 text-center backdrop-blur-xl">
-                        <div className="relative w-16 h-16 flex items-center justify-center">
-                            <div className="absolute inset-0 rounded-full border-4 border-[#30363d]"></div>
-                            <div className="absolute inset-0 rounded-full border-4 border-t-[#58a6ff] border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
-                            <FileText className="w-6 h-6 text-[#58a6ff] animate-pulse" />
-                        </div>
-                        <div className="space-y-2">
-                            <h3 className="text-base font-semibold text-[#e6edf3]">
-                                {currentEditingBlog ? 'Updating Blog Post...' : 'Creating Blog Post...'}
-                            </h3>
-                            <p className="text-xs text-[#8b949e] leading-relaxed max-w-[240px]">
-                                Please wait while we publish the article to the live insights page.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* DELETE JOB OPENING CONFIRMATION MODAL */}
-            {deleteConfirmJob && (
-                <div className="fixed inset-0 bg-[#040d21]/80 backdrop-blur-sm z-[9999] flex items-center justify-center animate-in fade-in duration-200 p-4">
-                    <div className="bg-[#161b22] border border-[#30363d] rounded-2xl max-w-md w-full shadow-2xl overflow-hidden" style={{animation: 'modalZoomIn 0.2s ease-out'}}>
-                        
-                        {/* Red accent top strip */}
-                        <div className="h-1 w-full bg-gradient-to-r from-[#da3633] to-[#f85149]" />
-                        
-                        {/* Header */}
-                        <div className="px-6 pt-5 pb-4 flex items-start justify-between gap-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-[#da3633]/15 border border-[#da3633]/30 flex items-center justify-center flex-shrink-0">
-                                    <Trash2 size={18} className="text-[#f85149]" />
+            {/* ENQUIRY DETAILS DRAWER */}
+            {viewingEnquiry && (
+                <div className="fixed inset-0 z-50 flex justify-end">
+                    <div className="absolute inset-0 bg-[#040d21]/70 backdrop-blur-sm" onClick={() => setViewingEnquiry(null)} />
+                    <div className="relative bg-[#161b22] border-l border-[#30363d] w-full max-w-md h-full flex flex-col shadow-2xl overflow-hidden animate-slide-in-right">
+                        <div className="p-6 border-b border-[#30363d] flex items-center justify-between flex-shrink-0">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-full bg-[#1f6feb]/20 border border-[#1f6feb]/40 flex items-center justify-center text-[#58a6ff] font-extrabold text-lg flex-shrink-0">
+                                    {viewingEnquiry.name?.charAt(0).toUpperCase()}
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-bold text-[#f85149]">Delete Job Opening</h3>
-                                    <p className="text-[10px] text-[#8b949e] mt-0.5">This action cannot be undone</p>
-                                </div>
-                            </div>
-                            <button
-                                onClick={() => !isDeletingJob && setDeleteConfirmJob(null)}
-                                className="text-[#8b949e] hover:text-[#e6edf3] transition-colors cursor-pointer flex-shrink-0 mt-0.5"
-                            >
-                                <X size={18} />
-                            </button>
-                        </div>
-
-                        {/* Body */}
-                        <div className="px-6 pb-5 space-y-4">
-                            {/* Job preview card */}
-                            <div className="bg-[#0d1117] border border-[#30363d] rounded-xl p-4 space-y-2">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="text-sm font-bold text-[#e6edf3]">{deleteConfirmJob.title}</span>
-                                    <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${
-                                        deleteConfirmJob.platform?.toLowerCase() === 'epc'
-                                            ? 'bg-purple-900/30 border border-purple-800/50 text-purple-400'
-                                            : 'bg-blue-900/30 border border-blue-800/50 text-blue-400'
-                                    }`}>
-                                        {deleteConfirmJob.platform?.toUpperCase() || 'PMC'}
-                                    </span>
-                                </div>
-                                {deleteConfirmJob.details?.Location && (
-                                    <p className="text-[11px] text-[#8b949e] flex items-center gap-1.5">
-                                        <MapPin size={11} />
-                                        {deleteConfirmJob.details.Location}
+                                    <h3 className="text-base font-bold text-[#e6edf3] leading-tight">{viewingEnquiry.name}</h3>
+                                    <p className="text-xs text-[#8b949e] mt-0.5 flex items-center gap-1.5">
+                                        <Mail size={11} />{viewingEnquiry.email}
                                     </p>
-                                )}
-                            </div>
-
-                            {/* Warning message */}
-                            <div className="bg-[#da3633]/8 border border-[#da3633]/25 rounded-xl px-4 py-3 flex items-start gap-3">
-                                <AlertTriangle size={15} className="text-[#f85149] flex-shrink-0 mt-0.5" />
-                                <p className="text-[11px] text-[#8b949e] leading-relaxed">
-                                    This will <span className="text-[#f85149] font-semibold">permanently remove</span> the job opening from the live website and delete any attached JD file. Existing applications from candidates will not be affected.
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Footer */}
-                        <div className="px-6 py-4 bg-[#0d1117]/60 border-t border-[#30363d] flex justify-end gap-3">
-                            <button
-                                type="button"
-                                disabled={isDeletingJob}
-                                onClick={() => setDeleteConfirmJob(null)}
-                                className="bg-[#21262d] hover:bg-[#30363d] disabled:opacity-50 border border-[#30363d] text-[#c9d1d9] py-2 px-5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="button"
-                                disabled={isDeletingJob}
-                                onClick={confirmDeleteJob}
-                                className="bg-[#da3633] hover:bg-[#f85149] disabled:opacity-70 disabled:cursor-not-allowed text-white py-2 px-5 rounded-lg text-xs font-bold cursor-pointer transition-colors flex items-center gap-2"
-                            >
-                                {isDeletingJob ? (
-                                    <>
-                                        <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                                        Deleting...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Trash2 size={13} />
-                                        Yes, Delete It
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* SAVING PROJECT OVERLAY */}
-            {isSavingProject && (
-                <div className="fixed inset-0 bg-[#040d21]/70 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center animate-in fade-in duration-300">
-                    <div className="bg-[#161b22]/90 border border-[#30363d] rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl flex flex-col items-center gap-6 text-center backdrop-blur-xl">
-                        <div className="relative w-16 h-16 flex items-center justify-center">
-                            <div className="absolute inset-0 rounded-full border-4 border-[#30363d]"></div>
-                            <div className="absolute inset-0 rounded-full border-4 border-t-[#58a6ff] border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
-                            <FolderOpen className="w-6 h-6 text-[#58a6ff] animate-pulse" />
-                        </div>
-                        <div className="space-y-2">
-                            <h3 className="text-base font-semibold text-[#e6edf3]">
-                                {currentEditingProject ? 'Updating Project...' : 'Publishing Project...'}
-                            </h3>
-                            <p className="text-xs text-[#8b949e] leading-relaxed max-w-[240px]">
-                                Please wait while we upload the project details and gallery to the database.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* DELETE CANDIDATE CONFIRMATION MODAL */}
-            {deleteConfirmCandidate && (
-                <div className="fixed inset-0 bg-[#040d21]/80 backdrop-blur-sm z-[9999] flex items-center justify-center animate-in fade-in duration-200 p-4">
-                    <div className="bg-[#161b22] border border-[#30363d] rounded-2xl max-w-md w-full shadow-2xl overflow-hidden animate-zoom-in">
-                        <div className="h-1 w-full bg-gradient-to-r from-[#da3633] to-[#f85149]" />
-                        <div className="px-6 pt-5 pb-4 flex items-start justify-between gap-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-[#da3633]/15 border border-[#da3633]/30 flex items-center justify-center flex-shrink-0">
-                                    <Trash2 size={18} className="text-[#f85149]" />
-                                </div>
-                                <div>
-                                    <h3 className="text-sm font-bold text-[#f85149]">Delete Application</h3>
-                                    <p className="text-[10px] text-[#8b949e] mt-0.5">This action cannot be undone</p>
                                 </div>
                             </div>
                             <button
-                                onClick={() => !isDeletingCandidate && setDeleteConfirmCandidate(null)}
-                                className="text-[#8b949e] hover:text-[#e6edf3] transition-colors cursor-pointer flex-shrink-0 mt-0.5"
+                                onClick={() => setViewingEnquiry(null)}
+                                className="text-[#8b949e] hover:text-[#e6edf3] transition-colors cursor-pointer p-1.5 hover:bg-[#21262d] rounded-lg"
                             >
                                 <X size={18} />
                             </button>
                         </div>
-                        <div className="px-6 pb-5 space-y-4">
-                            <div className="bg-[#0d1117] border border-[#30363d] rounded-xl p-4 space-y-2 text-xs">
-                                <div>
-                                    <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Candidate Name</span>
-                                    <span className="font-bold text-[#e6edf3] text-sm">{deleteConfirmCandidate.name}</span>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4 pt-1">
-                                    <div>
-                                        <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Email Address</span>
-                                        <span className="text-[#c9d1d9] truncate block">{deleteConfirmCandidate.email}</span>
-                                    </div>
-                                    <div>
-                                        <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Applied Role</span>
-                                        <span className="text-[#c9d1d9] truncate block">{deleteConfirmCandidate.job_role}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="bg-[#da3633]/8 border border-[#da3633]/25 rounded-xl px-4 py-3 flex items-start gap-3">
-                                <AlertTriangle size={15} className="text-[#f85149] flex-shrink-0 mt-0.5" />
-                                <p className="text-[11px] text-[#8b949e] leading-relaxed">
-                                    This will <span className="text-[#f85149] font-semibold">permanently remove</span> this application from the dashboard database and delete their resume file from storage.
-                                </p>
-                            </div>
-                        </div>
-                        <div className="px-6 py-4 bg-[#0d1117]/60 border-t border-[#30363d] flex justify-end gap-3">
-                            <button
-                                type="button"
-                                disabled={isDeletingCandidate}
-                                onClick={() => setDeleteConfirmCandidate(null)}
-                                className="bg-[#21262d] hover:bg-[#30363d] disabled:opacity-50 border border-[#30363d] text-[#c9d1d9] py-2 px-5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="button"
-                                disabled={isDeletingCandidate}
-                                onClick={confirmDeleteCandidate}
-                                className="bg-[#da3633] hover:bg-[#f85149] disabled:opacity-70 disabled:cursor-not-allowed text-white py-2 px-5 rounded-lg text-xs font-bold cursor-pointer transition-colors flex items-center gap-2"
-                            >
-                                {isDeletingCandidate ? (
-                                    <>
-                                        <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                                        Deleting...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Trash2 size={13} />
-                                        Yes, Delete It
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
-            {/* DELETE BLOG CONFIRMATION MODAL */}
-            {deleteConfirmBlog && (
-                <div className="fixed inset-0 bg-[#040d21]/80 backdrop-blur-sm z-[9999] flex items-center justify-center animate-in fade-in duration-200 p-4">
-                    <div className="bg-[#161b22] border border-[#30363d] rounded-2xl max-w-md w-full shadow-2xl overflow-hidden animate-zoom-in">
-                        <div className="h-1 w-full bg-gradient-to-r from-[#da3633] to-[#f85149]" />
-                        <div className="px-6 pt-5 pb-4 flex items-start justify-between gap-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-[#da3633]/15 border border-[#da3633]/30 flex items-center justify-center flex-shrink-0">
-                                    <Trash2 size={18} className="text-[#f85149]" />
-                                </div>
-                                <div>
-                                    <h3 className="text-sm font-bold text-[#f85149]">Delete Blog Post</h3>
-                                    <p className="text-[10px] text-[#8b949e] mt-0.5">This action cannot be undone</p>
-                                </div>
+                        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
+                            <div className="flex flex-col gap-1">
+                                <span className="text-[10px] font-bold text-[#8b949e] uppercase tracking-widest">Company Name</span>
+                                <span className="text-[#e6edf3] font-semibold text-sm">
+                                    {viewingEnquiry.company_name || 'Not Specified'}
+                                </span>
                             </div>
-                            <button
-                                onClick={() => !isDeletingBlog && setDeleteConfirmBlog(null)}
-                                className="text-[#8b949e] hover:text-[#e6edf3] transition-colors cursor-pointer flex-shrink-0 mt-0.5"
-                            >
-                                <X size={18} />
-                            </button>
-                        </div>
-                        <div className="px-6 pb-5 space-y-4">
-                            <div className="bg-[#0d1117] border border-[#30363d] rounded-xl p-4 space-y-2 text-xs">
-                                <div>
-                                    <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Blog Title</span>
-                                    <span className="font-bold text-[#e6edf3] text-sm leading-snug block">{deleteConfirmBlog.title}</span>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4 pt-1">
-                                    <div>
-                                        <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Author</span>
-                                        <span className="text-[#c9d1d9] truncate block">{deleteConfirmBlog.author}</span>
-                                    </div>
-                                    <div>
-                                        <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Category</span>
-                                        <span className="text-[#c9d1d9] truncate block">{deleteConfirmBlog.category}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="bg-[#da3633]/8 border border-[#da3633]/25 rounded-xl px-4 py-3 flex items-start gap-3">
-                                <AlertTriangle size={15} className="text-[#f85149] flex-shrink-0 mt-0.5" />
-                                <p className="text-[11px] text-[#8b949e] leading-relaxed">
-                                    This will <span className="text-[#f85149] font-semibold">permanently remove</span> this article from the live website and delete the thumbnail image.
-                                </p>
-                            </div>
-                        </div>
-                        <div className="px-6 py-4 bg-[#0d1117]/60 border-t border-[#30363d] flex justify-end gap-3">
-                            <button
-                                type="button"
-                                disabled={isDeletingBlog}
-                                onClick={() => setDeleteConfirmBlog(null)}
-                                className="bg-[#21262d] hover:bg-[#30363d] disabled:opacity-50 border border-[#30363d] text-[#c9d1d9] py-2 px-5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="button"
-                                disabled={isDeletingBlog}
-                                onClick={confirmDeleteBlog}
-                                className="bg-[#da3633] hover:bg-[#f85149] disabled:opacity-70 disabled:cursor-not-allowed text-white py-2 px-5 rounded-lg text-xs font-bold cursor-pointer transition-colors flex items-center gap-2"
-                            >
-                                {isDeletingBlog ? (
-                                    <>
-                                        <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                                        Deleting...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Trash2 size={13} />
-                                        Yes, Delete It
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
-            {/* DELETE PROJECT CONFIRMATION MODAL */}
-            {deleteConfirmProject && (
-                <div className="fixed inset-0 bg-[#040d21]/80 backdrop-blur-sm z-[9999] flex items-center justify-center animate-in fade-in duration-200 p-4">
-                    <div className="bg-[#161b22] border border-[#30363d] rounded-2xl max-w-md w-full shadow-2xl overflow-hidden animate-zoom-in">
-                        <div className="h-1 w-full bg-gradient-to-r from-[#da3633] to-[#f85149]" />
-                        <div className="px-6 pt-5 pb-4 flex items-start justify-between gap-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-[#da3633]/15 border border-[#da3633]/30 flex items-center justify-center flex-shrink-0">
-                                    <Trash2 size={18} className="text-[#f85149]" />
-                                </div>
-                                <div>
-                                    <h3 className="text-sm font-bold text-[#f85149]">Delete Project</h3>
-                                    <p className="text-[10px] text-[#8b949e] mt-0.5">This action cannot be undone</p>
-                                </div>
+                            <div className="flex flex-col gap-1">
+                                <span className="text-[10px] font-bold text-[#8b949e] uppercase tracking-widest">Service Required</span>
+                                <span className="bg-[#1f6feb]/15 border border-[#388bfd]/30 text-[#58a6ff] px-3 py-1 rounded text-xs font-bold self-start">
+                                    {viewingEnquiry.service_required}
+                                </span>
                             </div>
-                            <button
-                                onClick={() => !isDeletingProject && setDeleteConfirmProject(null)}
-                                className="text-[#8b949e] hover:text-[#e6edf3] transition-colors cursor-pointer flex-shrink-0 mt-0.5"
-                            >
-                                <X size={18} />
-                            </button>
-                        </div>
-                        <div className="px-6 pb-5 space-y-4">
-                            <div className="bg-[#0d1117] border border-[#30363d] rounded-xl p-4 space-y-2 text-xs">
-                                <div>
-                                    <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Project Title</span>
-                                    <span className="font-bold text-[#e6edf3] text-sm leading-snug block">{deleteConfirmProject.title}</span>
+
+                            {viewingEnquiry.contact_whatsapp && (
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-[10px] font-bold text-[#8b949e] uppercase tracking-widest">WhatsApp Contact</span>
+                                    <a
+                                        href={`https://wa.me/${viewingEnquiry.contact_whatsapp.replace(/[^0-9]/g, '')}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-[#2ea44f] hover:underline font-semibold text-sm flex items-center gap-2"
+                                    >
+                                        <Phone size={14} />
+                                        {viewingEnquiry.contact_whatsapp}
+                                    </a>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4 pt-1">
-                                    <div>
-                                        <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Category</span>
-                                        <span className="text-[#c9d1d9] truncate block">{deleteConfirmProject.category}</span>
-                                    </div>
-                                    <div>
-                                        <span className="text-[#8b949e] block text-[9px] uppercase font-semibold">Location</span>
-                                        <span className="text-[#c9d1d9] truncate block">{deleteConfirmProject.location || 'N/A'}</span>
-                                    </div>
-                                </div>
+                            )}
+
+                            <div className="flex flex-col gap-1">
+                                <span className="text-[10px] font-bold text-[#8b949e] uppercase tracking-widest">Submitted Date</span>
+                                <span className="text-[#e6edf3] font-medium text-sm flex items-center gap-2">
+                                    <Calendar size={13} className="text-[#58a6ff] flex-shrink-0" />
+                                    {new Date(viewingEnquiry.created_at).toLocaleDateString(undefined, {
+                                        weekday: 'long',
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                    })}
+                                </span>
                             </div>
-                            <div className="bg-[#da3633]/8 border border-[#da3633]/25 rounded-xl px-4 py-3 flex items-start gap-3">
-                                <AlertTriangle size={15} className="text-[#f85149] flex-shrink-0 mt-0.5" />
-                                <p className="text-[11px] text-[#8b949e] leading-relaxed">
-                                    This will <span className="text-[#f85149] font-semibold">permanently remove</span> this project and delete its entire image gallery from the database and servers.
-                                </p>
+
+                            <div className="border-t border-[#30363d] pt-4 space-y-2">
+                                <span className="text-[10px] font-bold text-[#8b949e] uppercase tracking-widest block">Project Details / Message</span>
+                                <div className="bg-[#0d1117] border border-[#30363d] rounded-lg p-3.5 text-xs text-[#e6edf3] whitespace-pre-wrap leading-relaxed">
+                                    {viewingEnquiry.project_details || 'No additional project details provided.'}
+                                </div>
                             </div>
                         </div>
-                        <div className="px-6 py-4 bg-[#0d1117]/60 border-t border-[#30363d] flex justify-end gap-3">
+
+                        <div className="p-6 border-t border-[#30363d] flex items-center justify-between bg-[#0d1117]/30 flex-shrink-0">
                             <button
-                                type="button"
-                                disabled={isDeletingProject}
-                                onClick={() => setDeleteConfirmProject(null)}
-                                className="bg-[#21262d] hover:bg-[#30363d] disabled:opacity-50 border border-[#30363d] text-[#c9d1d9] py-2 px-5 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
+                                onClick={() => setDeleteConfirmEnquiry(viewingEnquiry)}
+                                className="text-[#f85149] hover:bg-[#da3633]/20 border border-[#f85149]/30 py-2 px-3 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
                             >
-                                Cancel
+                                Delete Enquiry
                             </button>
                             <button
-                                type="button"
-                                disabled={isDeletingProject}
-                                onClick={confirmDeleteProject}
-                                className="bg-[#da3633] hover:bg-[#f85149] disabled:opacity-70 disabled:cursor-not-allowed text-white py-2 px-5 rounded-lg text-xs font-bold cursor-pointer transition-colors flex items-center gap-2"
+                                onClick={() => setViewingEnquiry(null)}
+                                className="bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] text-[#c9d1d9] py-2 px-4 rounded-lg text-xs font-semibold cursor-pointer transition-colors"
                             >
-                                {isDeletingProject ? (
-                                    <>
-                                        <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                                        Deleting...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Trash2 size={13} />
-                                        Yes, Delete It
-                                    </>
-                                )}
+                                Close Drawer
                             </button>
                         </div>
                     </div>
