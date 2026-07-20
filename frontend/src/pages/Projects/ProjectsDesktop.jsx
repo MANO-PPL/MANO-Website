@@ -133,28 +133,10 @@ const ProjectsDesktop = () => {
     const [isContactOpen, setIsContactOpen] = useState(false);
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(true);
 
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, []);
-
-    useEffect(() => {
-        const show = () => {
-            setIsLoaded(true);
-            cleanup();
-        };
-        const cleanup = () => {
-            clearTimeout(timer);
-            window.removeEventListener('wheel', show);
-            window.removeEventListener('touchmove', show);
-            window.removeEventListener('keydown', show);
-        };
-        window.addEventListener('wheel', show, { passive: true });
-        window.addEventListener('touchmove', show, { passive: true });
-        window.addEventListener('keydown', show);
-        const timer = setTimeout(show, 800);
-        return cleanup;
     }, []);
 
     useEffect(() => {
@@ -163,7 +145,19 @@ const ProjectsDesktop = () => {
                 const res = await fetch(PROJECTS_API_URL);
                 const data = await res.json();
                 if (res.ok && data.ok) {
-                    setProjects(data.data || []);
+                    const fetchedProjects = data.data || [];
+                    setProjects(fetchedProjects);
+
+                    // Immediately preload all featured project images
+                    fetchedProjects
+                        .filter(p => p.featured)
+                        .flatMap(p => p.images || [])
+                        .forEach(src => {
+                            if (src) {
+                                const img = new Image();
+                                img.src = src;
+                            }
+                        });
                 }
             } catch (err) {
                 console.error('Failed to fetch projects:', err);
@@ -173,6 +167,7 @@ const ProjectsDesktop = () => {
         };
         fetchProjects();
     }, []);
+
 
     const featuredProjects = projects.filter(p => p.featured);
     const categoryProjects = projects;

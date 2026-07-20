@@ -140,7 +140,19 @@ const ProjectsTablet = () => {
                 const res = await fetch(PROJECTS_API_URL);
                 const data = await res.json();
                 if (res.ok && data.ok) {
-                    setProjects(data.data || []);
+                    const fetchedProjects = data.data || [];
+                    setProjects(fetchedProjects);
+
+                    // Preload featured project images
+                    fetchedProjects
+                        .filter(p => p.featured)
+                        .flatMap(p => p.images || [])
+                        .forEach(src => {
+                            if (src) {
+                                const img = new Image();
+                                img.src = src;
+                            }
+                        });
                 }
             } catch (err) {
                 console.error('Failed to fetch projects:', err);
