@@ -131,7 +131,7 @@ async function run() {
           featured: 1, display_order: 3
         },
         {
-          title: "Westside – Tata Trent Ltd.",
+          title: "Westside - Tata Trent Ltd.",
           location: "Gachibowli, Hyderabad",
           category: "Commercial",
           scope: "PMC - Project Management Consultants",
@@ -235,7 +235,7 @@ async function run() {
           featured: 0, display_order: 12
         },
         {
-          title: "NSCI Dome – Worli",
+          title: "NSCI Dome - Worli",
           location: "Worli, Mumbai",
           category: "Commercial",
           scope: "PMC - Project Management Consultants",
@@ -258,7 +258,7 @@ async function run() {
           featured: 0, display_order: 14
         },
         {
-          title: "Expeditors – Studio DNA",
+          title: "Expeditors - Studio DNA",
           location: "",
           category: "Commercial",
           scope: "PMC - Project Management Consultants",
@@ -270,7 +270,7 @@ async function run() {
           featured: 0, display_order: 15
         },
         {
-          title: "Maharail – Studio DNA",
+          title: "Maharail - Studio DNA",
           location: "",
           category: "Commercial",
           scope: "PMC - Project Management Consultants",

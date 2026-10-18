@@ -31,8 +31,8 @@ import ChatbotWidget from "./components/ChatbotWidget";
 import { CompanyProvider } from "./context/CompanyContext";
 import useDeviceType from "./hooks/useDeviceType";
 
-// Layout wrapper — wraps brand-specific pages with Navbar, Footer, and context.
-// brand prop is passed explicitly ("pmc" or "epc") — no longer read from URL params.
+// Layout wrapper: wraps brand-specific pages with Navbar, Footer, and context.
+// brand prop is passed explicitly ("pmc" or "epc"), no longer read from URL params.
 const BrandLayout = ({ brand }) => {
   const [footerVisible, setFooterVisible] = useState(false);
   const deviceType = useDeviceType();
@@ -94,17 +94,17 @@ function App() {
         {/* Gateway as Root */}
         <Route path="/" element={<Gateway />} />
 
-        {/* Admin Portal — isolated layout, no Navbar/Footer */}
+        {/* Admin Portal: isolated layout, no Navbar/Footer */}
         <Route path="/mano-admin-portal-dashboard-secure" element={<AdminPortal />} />
         <Route path="/mano-admin-portal-dashboard-secure/*" element={<AdminPortal />} />
 
-        {/* Admin URL aliases — all redirect to the correct admin route */}
+        {/* Admin URL aliases: all redirect to the correct admin route */}
         <Route path="/admin" element={<Navigate to="/mano-admin-portal-dashboard-secure" replace />} />
         <Route path="/admin/*" element={<Navigate to="/mano-admin-portal-dashboard-secure" replace />} />
         <Route path="/admin-portal-dashboard-secure" element={<Navigate to="/mano-admin-portal-dashboard-secure" replace />} />
         <Route path="/admin-portal-dashboard-secure/*" element={<Navigate to="/mano-admin-portal-dashboard-secure" replace />} />
 
-        {/* PMC Division — explicit fixed routes, no dynamic /:brand wildcard */}
+        {/* PMC Division: explicit fixed routes, no dynamic /:brand wildcard */}
         <Route path="/pmc" element={<BrandLayout brand="pmc" />}>
           <Route index element={<LandingPage />} />
           <Route path="about-us" element={<AboutUs />} />
@@ -124,7 +124,7 @@ function App() {
           <Route path="blog/:id" element={<BlogDetail />} />
         </Route>
 
-        {/* EPC Division — explicit fixed routes, no dynamic /:brand wildcard */}
+        {/* EPC Division: explicit fixed routes, no dynamic /:brand wildcard */}
         <Route path="/epc" element={<BrandLayout brand="epc" />}>
           <Route index element={<LandingPage />} />
           <Route path="about-us" element={<AboutUs />} />

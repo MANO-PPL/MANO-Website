@@ -8,7 +8,7 @@ import { useState, useEffect, useRef } from "react";
  *  - src: image URL (required)
  *  - className: Tailwind/CSS classes (should include bg-cover, bg-center, etc.)
  *  - style: additional inline styles (backgroundImage is managed internally)
- *  - rootMargin: IntersectionObserver rootMargin (default "200px" — preloads 200px before visible)
+ *  - rootMargin: IntersectionObserver rootMargin (default "200px", preloads 200px before visible)
  *  - eager: if true, skips lazy behavior and loads immediately (for above-fold content)
  *  - children, ...rest: forwarded to the underlying <div>
  */

@@ -88,7 +88,7 @@ const formatProject = (project) => {
       return S3_BASE + enc(decodedKey);
     }
 
-    // 3. Handle S3 URLs — ensure proper URL component encoding
+    // 3. Handle S3 URLs: ensure proper URL component encoding
     if (img.includes('amazonaws.com')) {
       try {
         const urlObj = new URL(img);
@@ -107,11 +107,17 @@ const formatProject = (project) => {
     return img;
   });
 
+  const cleanTitle = project.title ? project.title.replace(/[—–]/g, '-').replace(/\s+/g, ' ') : project.title;
+  const cleanHighlight = project.highlight ? project.highlight.replace(/[—–]/g, '-').replace(/\s+/g, ' ') : project.highlight;
+  const cleanScope = project.scope ? project.scope.replace(/[—–]/g, '-').replace(/\s+/g, ' ') : '';
+
   return {
     ...project,
+    title: cleanTitle,
+    highlight: cleanHighlight,
     featured: Boolean(project.featured),
     images: processedImages,
-    scope: project.scope || ''
+    scope: cleanScope
   };
 };
 
@@ -158,7 +164,7 @@ export const syncProjectsToS3 = async () => {
   }
 };
 
-// GET /api/projects — Public
+// GET /api/projects: Public
 export const getProjects = async (req, res) => {
   try {
     const { category, status } = req.query;
@@ -180,7 +186,7 @@ export const getProjects = async (req, res) => {
   }
 };
 
-// GET /api/projects/admin — Admin: returns all (active + inactive)
+// GET /api/projects/admin: Admin returns all (active + inactive)
 export const getAllProjectsAdmin = async (req, res) => {
   try {
     const rawProjects = await ManoWebDB('projects').orderBy('display_order', 'asc').orderBy('id', 'asc');
@@ -191,7 +197,7 @@ export const getAllProjectsAdmin = async (req, res) => {
   }
 };
 
-// GET /api/projects/:id — Public
+// GET /api/projects/:id: Public
 export const getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -206,7 +212,7 @@ export const getProjectById = async (req, res) => {
   }
 };
 
-// POST /api/projects — Admin only
+// POST /api/projects: Admin only
 export const createProject = async (req, res) => {
   try {
     const { title, location, category, scope, highlight, featured, status, display_order, existing_images } = req.body;
@@ -254,7 +260,7 @@ export const createProject = async (req, res) => {
   }
 };
 
-// PUT /api/projects/:id — Admin only
+// PUT /api/projects/:id: Admin only
 export const updateProject = async (req, res) => {
   try {
     const { id } = req.params;
@@ -324,7 +330,7 @@ export const updateProject = async (req, res) => {
   }
 };
 
-// DELETE /api/projects/:id — Admin only
+// DELETE /api/projects/:id: Admin only
 export const deleteProject = async (req, res) => {
   try {
     const { id } = req.params;

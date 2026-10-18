@@ -41,12 +41,12 @@ export const getJobs = async (req, res, next) => {
             }
             return {
                 id: job.id,
-                title: job.title,
+                title: job.title ? job.title.replace(/[—–]/g, '-').replace(/\s+/g, ' ') : job.title,
                 status: job.status || "active",
                 platform: job.platform || "pmc",
                 details: {
-                    "Qualification": job.qualification || "",
-                    "Location": job.location || "Pan India",
+                    "Qualification": job.qualification ? job.qualification.replace(/[—–]/g, '-').replace(/\s+/g, ' ') : "",
+                    "Location": job.location ? job.location.replace(/[—–]/g, '-').replace(/\s+/g, ' ') : "Pan India",
                     "Gender": job.gender || "Any"
                 },
                 jd_file_path: jdPath

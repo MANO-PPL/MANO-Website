@@ -183,7 +183,7 @@ export const sendApplicationEmail = async (details) => {
                                     </td>
                                     <td style="padding: 14px 16px; font-size: 14px; font-weight: bold; color: #0366d6; vertical-align: middle; word-break: break-all;">
                                         <a href="${downloadLink}" target="_blank" style="color: #0366d6; text-decoration: none;">
-                                            📂 ${fileName}
+                                            ${fileName}
                                         </a>
                                     </td>
                                 </tr>

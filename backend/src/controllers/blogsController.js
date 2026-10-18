@@ -13,8 +13,12 @@ const safeParse = (data, fallback) => {
 // Helper to format blog record for API consumption
 const formatBlog = (blog) => {
   if (!blog) return null;
+  const cleanTitle = blog.title ? blog.title.replace(/[—–]/g, '-').replace(/\s+/g, ' ') : blog.title;
+  const cleanSummary = blog.summary ? blog.summary.replace(/[—–]/g, '-').replace(/\s+/g, ' ') : blog.summary;
   return {
     ...blog,
+    title: cleanTitle,
+    summary: cleanSummary,
     featured: Boolean(blog.featured),
     tags: typeof blog.tags === 'string' ? safeParse(blog.tags, []) : (blog.tags || []),
     content: typeof blog.content === 'string' ? safeParse(blog.content, { sections: [], keyTakeaways: [] }) : (blog.content || { sections: [], keyTakeaways: [] })
