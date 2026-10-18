@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import {
     ChevronRight, Calendar, Users, FileText, AlertTriangle, TrendingUp, Calculator,
     Shield, Briefcase, BarChart, Search, CheckCircle, Flag, Building, Factory, Hotel,
-    Layers, Zap, Activity, BarChart2, Clock
+    Layers, Zap, Activity, BarChart2, Clock, XCircle
 } from 'lucide-react';
 import RainbowButton from '../../components/RainbowButton';
 import ContactModal from '../../components/ContactModal';
@@ -262,10 +262,10 @@ const ProjectPlanningTablet = () => {
                             </div>
                         </div>
                     </section>
-                    <section className="py-16 md:py-24 px-6 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-100">
+                    <section className="py-12 md:py-16 px-6 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-100">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto">
-                                <div className="text-center mb-16">
+                                <div className="text-center mb-10">
                                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-2 leading-tight">Core Planning Services</h2>
                                 </div>
 
@@ -358,10 +358,10 @@ const ProjectPlanningTablet = () => {
                     </RevealOnScroll>
 
                     {/* 5. WHY MANO */}
-                    <section className="py-16 md:py-24 px-6 md:px-12 bg-white/[0.02] animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-300">
+                    <section className="py-12 md:py-16 px-6 md:px-12 bg-white/[0.02] animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-300">
                         <div className="max-w-7xl mx-auto">
                             <RevealOnScroll>
-                                <div className="mb-12 md:mb-16">
+                                <div className="mb-8 md:mb-10">
                                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight">Why MANO for <span className="text-blue-500">Project Planning?</span></h2>
                                 </div>
                             </RevealOnScroll>
@@ -392,10 +392,10 @@ const ProjectPlanningTablet = () => {
 
 
                     {/* COMPARISON SECTION */}
-                    <section className="py-16 md:py-24 px-6 md:px-12 bg-white/5 backdrop-blur-sm border-y border-white/5 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-400">
+                    <section className="py-12 md:py-16 px-6 md:px-12 bg-white/5 backdrop-blur-sm border-y border-white/5 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-400">
                         <div className="max-w-7xl mx-auto">
                             <RevealOnScroll>
-                                <div className="text-center mb-12 md:mb-16">
+                                <div className="text-center mb-8 md:mb-10">
                                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-2 leading-tight">Impact of Professional Planning</h2>
                                 </div>
                             </RevealOnScroll>
@@ -413,11 +413,11 @@ const ProjectPlanningTablet = () => {
                                             <h3 className="text-3xl font-bold text-red-500 mb-8">Without Professional Planning</h3>
 
                                             <ul className="space-y-5 text-left w-full pl-4 grow">
-                                                <li className="flex items-start text-gray-300 text-lg"><span className="text-red-500 mr-3 text-xl">✕</span> Frequent project delays & missed deadlines</li>
-                                                <li className="flex items-start text-gray-300 text-lg"><span className="text-red-500 mr-3 text-xl">✕</span> Resource bottlenecks & inefficiency</li>
-                                                <li className="flex items-start text-gray-300 text-lg"><span className="text-red-500 mr-3 text-xl">✕</span> Significant cost overruns & budget leaks</li>
-                                                <li className="flex items-start text-gray-300 text-lg"><span className="text-red-500 mr-3 text-xl">✕</span> Unpredictable outcomes & high risk</li>
-                                                <li className="flex items-start text-gray-300 text-lg"><span className="text-red-500 mr-3 text-xl">✕</span> Disconnected execution strategy</li>
+                                                <li className="flex items-start text-gray-300 text-lg"><XCircle className="w-6 h-6 text-red-500 mr-3 shrink-0" /> Frequent project delays & missed deadlines</li>
+                                                <li className="flex items-start text-gray-300 text-lg"><XCircle className="w-6 h-6 text-red-500 mr-3 shrink-0" /> Resource bottlenecks & inefficiency</li>
+                                                <li className="flex items-start text-gray-300 text-lg"><XCircle className="w-6 h-6 text-red-500 mr-3 shrink-0" /> Significant cost overruns & budget leaks</li>
+                                                <li className="flex items-start text-gray-300 text-lg"><XCircle className="w-6 h-6 text-red-500 mr-3 shrink-0" /> Unpredictable outcomes & high risk</li>
+                                                <li className="flex items-start text-gray-300 text-lg"><XCircle className="w-6 h-6 text-red-500 mr-3 shrink-0" /> Disconnected execution strategy</li>
                                             </ul>
 
                                             <div className="mt-8 pt-8 border-t border-red-500/20">
@@ -489,10 +489,10 @@ const ProjectPlanningTablet = () => {
                     />
 
                     {/* 7. PROCESS FLOW */}
-                    <section className="py-24 px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-600">
+                    <section className="py-12 md:py-16 px-6 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-600">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto">
-                                <div className="text-center mb-20">
+                                <div className="text-center mb-10">
                                     <h2 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-4 leading-normal">Project Planning Process Flow</h2>
                                 </div>
 
@@ -514,11 +514,11 @@ const ProjectPlanningTablet = () => {
                         </RevealOnScroll>
                     </section>
                     {/* 6. WHY MANO */}
-                    <section className="py-16 md:py-24 px-6 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-400">
+                    <section className="py-12 md:py-16 px-6 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-400">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                                 <div>
-                                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-6 mb-8 leading-tight">
+                                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-4 mb-6 leading-tight">
                                         Why MANO for <span className="text-blue-500 block sm:inline lg:block">Project Planning?</span>
                                     </h2>
                                     <div className="space-y-8">
@@ -569,7 +569,7 @@ const ProjectPlanningTablet = () => {
                     </section>
 
                     {/* 8. TRUST STATEMENT */}
-                    <section className="py-16 md:py-24 px-6 md:px-12 text-center animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-700">
+                    <section className="py-12 md:py-16 px-6 md:px-12 text-center animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-700">
                         <div className="max-w-4xl mx-auto p-8 md:p-12 rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent hover:to-blue-600/10 hover:border-blue-500/30 transition-all duration-500 backdrop-blur-md group">
                             <p className="text-xl md:text-3xl font-medium text-white leading-relaxed group-hover:text-blue-100 transition-colors">
                                 "MANO Project Consultants is trusted for delivering realistic, reliable, and execution-focused project planning solutions that enable successful project outcomes."
@@ -578,7 +578,7 @@ const ProjectPlanningTablet = () => {
                     </section>
 
                     {/* 9. CTA */}
-                    <section className="py-16 md:py-24 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-800">
+                    <section className="py-12 md:py-16 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-800">
                         <div className="absolute inset-0 bg-blue-900/20"></div>
                         <div className="max-w-4xl mx-auto px-6 md:px-12 text-center relative z-10">
                             <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">Plan Smart. Execute with Confidence.</h2>

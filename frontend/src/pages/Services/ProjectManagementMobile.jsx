@@ -156,7 +156,7 @@ const ProjectManagementMobile = () => {
             title: "Cost, Time & Scope Control",
             desc: "Maintaining project discipline across all critical parameters.",
             items: [
-                { text: "Time–cost–scope alignment", icon: Target },
+                { text: "Time, cost, and scope alignment", icon: Target },
                 { text: "Impact assessment", icon: Hammer },
                 { text: "Change control support", icon: PenTool },
                 { text: "Performance forecasting", icon: Lightbulb }
@@ -184,7 +184,7 @@ const ProjectManagementMobile = () => {
                 { text: "Drawing reviews", icon: PenTool },
                 { text: "Change impact tracking", icon: Activity },
                 { text: "Constructability checks", icon: Hammer },
-                { text: "Design–site alignment", icon: Layout }
+                { text: "Design and site alignment", icon: Layout }
             ],
             icon: PenTool
         },
@@ -300,7 +300,7 @@ const ProjectManagementMobile = () => {
                     </section>
 
                     {/* 3. CORE SERVICES */}
-                    <section className="py-10 md:py-24 px-4 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-100">
+                    <section className="py-10 md:py-16 px-4 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-100">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto px-0 md:px-6">
                                 <div className="text-center mb-8 md:mb-20">
@@ -344,7 +344,7 @@ const ProjectManagementMobile = () => {
                     </section>
 
                     {/* 4. SPECIALIZED SERVICES */}
-                    <section className="py-10 md:py-24 px-4 md:px-12 bg-white/[0.02] animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-200">
+                    <section className="py-10 md:py-16 px-4 md:px-12 bg-white/[0.02] animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-200">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto">
                                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-4 sm:pb-12 mb-5 sm:mb-8 border-b border-white/10">Specialized Project Management Services</h2>
@@ -441,7 +441,7 @@ const ProjectManagementMobile = () => {
                     </RevealOnScroll>
 
                     {/* 6. WHY MANO */}
-                    <section className="py-10 md:py-24 px-4 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-400">
+                    <section className="py-10 md:py-16 px-4 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-400">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-16 items-center">
                                 <div>
@@ -529,7 +529,7 @@ const ProjectManagementMobile = () => {
                     />
 
                     {/* 8. PROCESS FLOW - Horizontal Glowing Timeline */}
-                    <section className="py-12 md:py-24 px-4 md:px-6 overflow-x-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-600">
+                    <section className="py-12 md:py-16 px-4 md:px-6 overflow-x-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-600">
                         <div className="max-w-7xl mx-auto">
                             <RevealOnScroll>
                                 <div className="text-center mb-8 md:mb-24">
@@ -565,7 +565,7 @@ const ProjectManagementMobile = () => {
                     </section>
 
                     {/* 9. TRUST STATEMENT */}
-                    <section className="py-10 md:py-24 px-4 md:px-12 text-center animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-700">
+                    <section className="py-10 md:py-16 px-4 md:px-12 text-center animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-700">
                         <div className="max-w-4xl mx-auto p-4 sm:p-8 md:p-12 rounded-2xl sm:rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent hover:to-blue-600/10 hover:border-blue-500/30 transition-all duration-500 backdrop-blur-md group">
                             <p className="text-base sm:text-xl md:text-3xl font-medium text-white leading-relaxed group-hover:text-blue-100 transition-colors">
                                 "MANO is trusted by developers, contractors, and institutions for delivering structured, high-performance project management backed by discipline, clarity, and accountability."
@@ -573,7 +573,7 @@ const ProjectManagementMobile = () => {
                         </div>
                     </section>
 
-                    <section className="py-10 md:py-24 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-800">
+                    <section className="py-10 md:py-16 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-800">
                         <div className="absolute inset-0 bg-blue-900/20"></div>
                         <div className="max-w-4xl mx-auto px-4 md:px-6 text-center relative z-10">
                             <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold text-white mb-5 sm:mb-6 leading-tight">Lead Your Project Toward Certainty.</h2>
