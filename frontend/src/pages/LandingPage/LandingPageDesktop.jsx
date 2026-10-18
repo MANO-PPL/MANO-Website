@@ -263,13 +263,13 @@ export default function LandingPageDesktop() {
       <LandingHero />
 
       {/* Why Choose Section with Gradient */}
-      <section className="relative px-6 sm:px-12 py-16 sm:py-24 border-t border-white/5 bg-gradient-to-b from-black to-blue-950/20">
+      <section className="relative px-6 sm:px-12 py-12 sm:py-16 border-t border-white/5 bg-gradient-to-b from-black to-blue-950/20">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.08)_0,rgba(0,0,0,0)_100%)] pointer-events-none"></div>
         <RevealOnScroll>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-6 text-center mb-12 relative z-10">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-4 text-center mb-10 relative z-10">
             Why Businesses <span className="text-blue-500">Choose</span> MANO Consultants
           </h2>
-          <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+          <p className="text-gray-400 text-center mb-10 max-w-2xl mx-auto">
             With 12 years of excellence, we blend deep industry knowledge with client-centric<br className="hidden sm:block" />
             approach to deliver measurable results in every project.
           </p>
@@ -295,7 +295,7 @@ export default function LandingPageDesktop() {
                         <path d="M20 6L9 17L4 12" stroke="#3B82F6" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </span>
-                    <p className="text-gray-300 leading-relaxed">From feasibility to final handover — complete lifecycle management under one roof.</p>
+                    <p className="text-gray-300 leading-relaxed">From feasibility to final handover, complete lifecycle management under one roof.</p>
                   </div>
                 </div>
               </div>
@@ -359,10 +359,10 @@ export default function LandingPageDesktop() {
       </section>
 
       {/* WHY CLIENTS TRUST US STRIP */}
-      <section className="py-16 sm:py-24 border-y border-white/5 bg-white/[0.02]">
+      <section className="py-12 sm:py-16 border-y border-white/5 bg-white/[0.02]">
         <RevealOnScroll>
           <div className="max-w-7xl mx-auto px-6">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-16 text-white leading-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-10 text-white leading-tight">
               Why <span className="text-blue-500">Clients Trust</span> Us
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -370,7 +370,7 @@ export default function LandingPageDesktop() {
                 { title: "Predictable Delivery", text: "Timely execution backed by strong planning and monitoring.", icon: Clock },
                 { title: "Transparent Processes", text: "Fully documented, audit-ready systems at every step.", icon: FileText },
                 { title: "Cost & Risk Control", text: "Data-driven decisions ensure optimized cost and minimized risk.", icon: ShieldCheck },
-                { title: "End-to-End Support", text: "From drawings to handover — we manage everything.", icon: Handshake },
+                { title: "End-to-End Support", text: "From drawings to handover, we manage everything.", icon: Handshake },
               ].map((item, index) => (
                 <div key={index} className="group relative p-8 rounded-2xl border border-white/10 hover:border-blue-500/30 transition-all shadow-lg overflow-hidden backdrop-blur-xl bg-gradient-to-r from-transparent to-white/5 hover:to-blue-600/10 flex flex-col items-start h-full animated-white-border">
                   <div className="w-14 h-14 rounded-xl bg-blue-600/10 border border-blue-500/20 text-blue-400 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-blue-600/20 group-hover:border-blue-500/30 transition-all duration-300 shadow-[0_0_15px_rgba(37,99,235,0.1)]">
@@ -391,7 +391,7 @@ export default function LandingPageDesktop() {
       </RevealOnScroll>
 
       {/* Services Section with Hex/Grid Pattern */}
-      <section id="services" className="relative px-6 sm:px-12 py-16 sm:py-24 overflow-hidden border-t border-white/5 bg-gradient-to-b from-black to-blue-950/30">
+      <section id="services" className="relative px-6 sm:px-12 py-12 sm:py-16 overflow-hidden border-t border-white/5 bg-gradient-to-b from-black to-blue-950/30">
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/5 blur-[120px] rounded-full pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/5 blur-[100px] rounded-full pointer-events-none"></div>
         <RevealOnScroll>
@@ -507,9 +507,9 @@ export default function LandingPageDesktop() {
       </section>
 
       {/* Featured Projects Carousel */}
-      <section className="py-16 sm:py-24 overflow-hidden relative">
+      <section className="py-12 sm:py-16 overflow-hidden relative">
         <RevealOnScroll>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-12 sm:mb-20 bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-6">Featured Projects</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-10 bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-2">Featured Projects</h2>
           <div className="relative h-[400px] sm:h-[520px] flex items-center justify-center">
             <div className="relative w-full flex items-center justify-center">
               {projects.map((project, index) => {
@@ -598,10 +598,10 @@ export default function LandingPageDesktop() {
       </section>
 
       {/* Testimonials */}
-      <section className="px-4 py-16 sm:py-24 overflow-hidden">
+      <section className="px-4 py-12 sm:py-16 overflow-hidden">
         <RevealOnScroll>
           <div className="mx-auto w-full">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-12 sm:mb-20 bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-6">Testimonials</h2>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-10 bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-2">Testimonials</h2>
 
             <div className="relative flex h-[500px] sm:h-[700px] w-full flex-row items-center justify-center gap-6 overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]">
               <TestimonialsColumn testimonials={testimonials} duration={15} />
@@ -613,10 +613,10 @@ export default function LandingPageDesktop() {
       </section>
 
       {/* FAQs with Light Gradient */}
-      <section className="relative px-6 sm:px-12 py-16 sm:py-24 border-t border-white/5 bg-gradient-to-b from-black via-blue-950/10 to-black">
+      <section className="relative px-6 sm:px-12 py-12 sm:py-16 border-t border-white/5 bg-gradient-to-b from-black via-blue-950/10 to-black">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100px_100px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none opacity-50"></div>
         <RevealOnScroll>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-16 bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-6">Frequently Asked Questions (FAQs)</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-10 bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-2">Frequently Asked Questions (FAQs)</h2>
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
             {faqs.map((faq, index) => (
               <div
@@ -640,10 +640,10 @@ export default function LandingPageDesktop() {
       </section>
 
       {/* Contact Form with Highlight */}
-      <section id="contact-section" className="relative px-6 sm:px-12 py-16 sm:py-24 overflow-hidden">
+      <section id="contact-section" className="relative px-6 sm:px-12 py-12 sm:py-16 overflow-hidden">
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none"></div>
         <RevealOnScroll>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-16 bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-6 relative z-10">Ready to Start Your Project?</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-10 bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-2 relative z-10">Ready to Start Your Project?</h2>
           <ContactForm />
         </RevealOnScroll>
       </section>

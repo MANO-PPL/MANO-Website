@@ -96,7 +96,7 @@ export default function BlogPageMobile() {
             <PageHero
                 title="MANO Knowledge"
                 subtitle="Hub"
-                description="Expert insights on project management, construction trends, cost engineering, and quality assurance — from 12+ years in India's construction industry."
+                description="Expert insights on project management, construction trends, cost engineering, and quality assurance, backed by 12+ years in India's construction industry."
                 badgeText="Insights & Articles"
                 layout="diagonal-4"
                 showCards={false}
@@ -159,8 +159,10 @@ export default function BlogPageMobile() {
                         <p className="text-gray-400 text-xs">Loading insights...</p>
                     </div>
                 ) : filteredPosts.length === 0 ? (
-                    <div className="text-center py-16">
-                        <div className="text-5xl mb-3">🔍</div>
+                    <div className="text-center py-10 sm:py-16">
+                        <div className="w-14 h-14 rounded-2xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-3 text-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.2)]">
+                            <Search className="w-6 h-6" />
+                        </div>
                         <h3 className="text-lg font-bold text-white mb-1">No articles found</h3>
                         <p className="text-gray-500 text-sm">Try a different category</p>
                         <button onClick={() => { setActiveCategory("All"); }} className="mt-5 px-5 py-2.5 rounded-full bg-blue-600 text-white font-semibold text-sm">Reset</button>

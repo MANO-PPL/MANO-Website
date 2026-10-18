@@ -45,14 +45,14 @@ export const blogPosts = [
   { id: 1, title: "The Future of Construction Project Management in India: 2026 and Beyond", summary: "India's construction sector is undergoing a digital revolution. From AI-powered scheduling to IoT-enabled site monitoring, discover the technologies shaping the future of project management consultancy.", author: "Mugilan Muthaiah", authorRole: "Founder & MD, MANO Projects", date: "March 10, 2026", readTime: "8 min read", category: "Project Management", image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800&auto=format&fit=crop", featured: true, tags: ["PMC", "Digital Transformation", "India Infrastructure"] },
   { id: 2, title: "How to Control Cost Overruns on Large-Scale Residential Projects", summary: "Cost overruns are the single biggest threat to project profitability. Our experts share a proven five-step framework for keeping residential tower budgets on track from day one.", author: "Amirthavalli Mugilan", authorRole: "Director, MANO Projects", date: "March 5, 2026", readTime: "6 min read", category: "Cost & Finance", image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=800&auto=format&fit=crop", featured: true, tags: ["Cost Control", "Budgeting", "Residential"] },
   { id: 3, title: "QA/QC Frameworks That Actually Work: Lessons from 50+ Projects", summary: "Generic quality checklists rarely survive first contact with the site. We break down the adaptive QA/QC matrix MANO uses across residential, commercial, and industrial projects.", author: "Rahul Mehta", authorRole: "QA/QC Head", date: "February 28, 2026", readTime: "7 min read", category: "Quality & Safety", image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&auto=format&fit=crop", featured: false, tags: ["QA/QC", "Quality", "Construction Standards"] },
-  { id: 4, title: "EPC vs PMC: Which Model Is Right for Your Infrastructure Project?", summary: "Choosing between EPC and PMC delivery isn't just a cost decision — it's about risk allocation, control, and capability. Here's a comprehensive comparison to help developers decide.", author: "Priya Sharma", authorRole: "Senior Project Consultant", date: "February 20, 2026", readTime: "9 min read", category: "EPC & Construction", image: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=800&auto=format&fit=crop", featured: false, tags: ["EPC", "PMC", "Delivery Models"] },
+  { id: 4, title: "EPC vs PMC: Which Model Is Right for Your Infrastructure Project?", summary: "Choosing between EPC and PMC delivery isn't just a cost decision; it is about risk allocation, control, and capability. Here is a comprehensive comparison to help developers decide.", author: "Priya Sharma", authorRole: "Senior Project Consultant", date: "February 20, 2026", readTime: "9 min read", category: "EPC & Construction", image: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=800&auto=format&fit=crop", featured: false, tags: ["EPC", "PMC", "Delivery Models"] },
   { id: 5, title: "Green Building in India: What Real Estate Developers Need to Know", summary: "LEED, GRIHA, and IGBC certifications are no longer optional for premium projects. Understand the regulatory shifts and financial incentives driving sustainable construction across India.", author: "Aditi Rao", authorRole: "Sustainability Consultant", date: "February 14, 2026", readTime: "5 min read", category: "Industry Trends", image: "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop", featured: false, tags: ["Green Building", "Sustainability", "LEED"] },
-  { id: 6, title: "Contract Management Best Practices: Avoiding the 5 Most Common Disputes", summary: "Contractor disputes can kill project timelines and margins. Our legal and project teams identify the five clauses every builder ignores — and the exact language to fix them.", author: "Kiran Desai", authorRole: "Contract Manager", date: "February 7, 2026", readTime: "6 min read", category: "Project Management", image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=800&auto=format&fit=crop", featured: false, tags: ["Contracts", "Dispute Resolution", "Legal"] },
-  { id: 7, title: "Mumbai's Real Estate Boom: What It Means for Project Consultants", summary: "Mumbai is witnessing an unprecedented real estate surge in the MMR belt — Borivali, Thane, and Navi Mumbai are at the centre. Here's how PMCs are adapting to handle the volume.", author: "Suresh Nair", authorRole: "Regional Head - Mumbai", date: "January 31, 2026", readTime: "7 min read", category: "Real Estate", image: "https://images.unsplash.com/photo-1529467307119-693a53006ab5?q=80&w=800&auto=format&fit=crop", featured: false, tags: ["Mumbai", "Real Estate", "MMR"] },
+  { id: 6, title: "Contract Management Best Practices: Avoiding the 5 Most Common Disputes", summary: "Contractor disputes can kill project timelines and margins. Our legal and project teams identify the five clauses every builder ignores, along with the exact language to fix them.", author: "Kiran Desai", authorRole: "Contract Manager", date: "February 7, 2026", readTime: "6 min read", category: "Project Management", image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=800&auto=format&fit=crop", featured: false, tags: ["Contracts", "Dispute Resolution", "Legal"] },
+  { id: 7, title: "Mumbai's Real Estate Boom: What It Means for Project Consultants", summary: "Mumbai is witnessing an unprecedented real estate surge in the MMR belt, with Borivali, Thane, and Navi Mumbai at the centre. Here is how PMCs are adapting to handle the volume.", author: "Suresh Nair", authorRole: "Regional Head - Mumbai", date: "January 31, 2026", readTime: "7 min read", category: "Real Estate", image: "https://images.unsplash.com/photo-1529467307119-693a53006ab5?q=80&w=800&auto=format&fit=crop", featured: false, tags: ["Mumbai", "Real Estate", "MMR"] },
   { id: 8, title: "EHS Audit Checklist: 30 Points Every Construction Site Must Pass", summary: "Environment, Health, and Safety compliance is non-negotiable. Our EHS team distilled a practical 30-point audit checklist from over 200 site inspections across residential and commercial projects.", author: "Vijay Kumar", authorRole: "EHS Lead", date: "January 25, 2026", readTime: "10 min read", category: "Quality & Safety", image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=800&auto=format&fit=crop", featured: false, tags: ["EHS", "Safety", "Audit", "Checklist"] },
-  { id: 9, title: "How We Delivered a 3,10,230 Sq.ft. Residential Tower in Borivali — On Time", summary: "A deep-dive case study into the Ananda Residency project: the planning challenges, the execution insights, and the change management decisions that made the difference.", author: "Mugilan Muthaiah", authorRole: "Founder & MD, MANO Projects", date: "January 18, 2026", readTime: "12 min read", category: "Project Management", image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop", featured: false, tags: ["Case Study", "Residential", "Borivali"] },
-  { id: 10, title: "Quantity Survey in 2026: Why Billing Audits Save More Than They Cost", summary: "Over-billing by contractors remains rampant. We analysed 1,000+ invoices across 15 projects and found the most common billing irregularities — and how proper QS catches them every time.", author: "Tanvi Shah", authorRole: "Quantity Surveyor", date: "January 12, 2026", readTime: "8 min read", category: "Cost & Finance", image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=800&auto=format&fit=crop", featured: false, tags: ["Quantity Survey", "Billing", "Audit"] },
-  { id: 11, title: "CPM & PERT Scheduling: A Practical Guide for Project Planners", summary: "Critical Path Method and PERT aren't just examination concepts — they're the backbone of every successful project plan. This guide shows how MANO applies them on real high-rise projects.", author: "Anand Krishnan", authorRole: "Planning Manager", date: "January 6, 2026", readTime: "9 min read", category: "Project Management", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop", featured: false, tags: ["CPM", "PERT", "Planning", "Scheduling"] },
+  { id: 9, title: "How We Delivered a 3,10,230 Sq.ft. Residential Tower in Borivali On Time", summary: "A deep-dive case study into the Ananda Residency project: the planning challenges, the execution insights, and the change management decisions that made the difference.", author: "Mugilan Muthaiah", authorRole: "Founder & MD, MANO Projects", date: "January 18, 2026", readTime: "12 min read", category: "Project Management", image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop", featured: false, tags: ["Case Study", "Residential", "Borivali"] },
+  { id: 10, title: "Quantity Survey in 2026: Why Billing Audits Save More Than They Cost", summary: "Over-billing by contractors remains rampant. We analysed 1,000+ invoices across 15 projects to uncover common billing irregularities and how proper QS catches them every time.", author: "Tanvi Shah", authorRole: "Quantity Surveyor", date: "January 12, 2026", readTime: "8 min read", category: "Cost & Finance", image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=800&auto=format&fit=crop", featured: false, tags: ["Quantity Survey", "Billing", "Audit"] },
+  { id: 11, title: "CPM & PERT Scheduling: A Practical Guide for Project Planners", summary: "Critical Path Method and PERT aren't just examination concepts: they are the backbone of every successful project plan. This guide shows how MANO applies them on real high-rise projects.", author: "Anand Krishnan", authorRole: "Planning Manager", date: "January 6, 2026", readTime: "9 min read", category: "Project Management", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop", featured: false, tags: ["CPM", "PERT", "Planning", "Scheduling"] },
   { id: 12, title: "International Construction Projects: Key Lessons from Our Congo Experience", summary: "Managing the Hotel Moon Palace in Kinshasa taught our team invaluable lessons about cross-cultural coordination, international procurement, and remote site management.", author: "Mugilan Muthaiah", authorRole: "Founder & MD, MANO Projects", date: "December 28, 2025", readTime: "11 min read", category: "EPC & Construction", image: "https://images.unsplash.com/photo-1520869562399-e772f042f422?q=80&w=800&auto=format&fit=crop", featured: false, tags: ["International", "Case Study", "Africa"] },
 ];
 
@@ -140,7 +140,7 @@ export default function BlogPageDesktop() {
       <PageHero
         title="MANO Knowledge"
         subtitle="Hub"
-        description="Expert perspectives on project management, construction trends, cost engineering, and quality assurance — from 12+ years at the forefront of India's building boom."
+        description="Expert perspectives on project management, construction trends, cost engineering, and quality assurance, backed by 12+ years at the forefront of India's building boom."
         badgeText="Insights & Articles"
         layout="bento-5"
         showCards={false}
@@ -190,7 +190,7 @@ export default function BlogPageDesktop() {
       </section>
 
       {/* ── ALL POSTS ────────────────────────────────────────────────── */}
-      <section className="py-16 md:py-20 px-6 md:px-12">
+      <section className="py-10 md:py-14 px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
           <RevealOnScroll>
             <div className="flex items-center justify-between mb-10">
@@ -205,14 +205,16 @@ export default function BlogPageDesktop() {
           </RevealOnScroll>
 
           {loading ? (
-            <div className="py-24 text-center">
+            <div className="py-12 sm:py-16 text-center">
               <div className="w-12 h-12 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
               <p className="text-gray-400 text-sm">Loading insights and articles...</p>
             </div>
           ) : filteredPosts.length === 0 ? (
             <RevealOnScroll>
-              <div className="text-center py-24">
-                <div className="text-6xl mb-4">🔍</div>
+              <div className="text-center py-12 sm:py-16">
+                <div className="w-16 h-16 rounded-2xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-4 text-blue-400 shadow-[0_0_25px_rgba(59,130,246,0.2)]">
+                  <Search className="w-8 h-8" />
+                </div>
                 <h3 className="text-xl font-bold text-white mb-2">No articles found</h3>
                 <p className="text-gray-500">Try a different category</p>
                 <button onClick={() => { setActiveCategory("All"); }} className="mt-6 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-colors">Reset Filters</button>
@@ -242,7 +244,7 @@ export default function BlogPageDesktop() {
       </section>
 
       {/* ── TOPICS GRID ──────────────────────────────────────────────── */}
-      <section className="py-16 md:py-24 px-6 md:px-12 bg-white/[0.02] border-t border-white/5">
+      <section className="py-10 md:py-14 px-6 md:px-12 bg-white/[0.02] border-t border-white/5">
         <RevealOnScroll>
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-14">
@@ -288,7 +290,7 @@ export default function BlogPageDesktop() {
       </section>
 
       {/* ── CTA ──────────────────────────────────────────────────────── */}
-      <section className="py-16 md:py-24 px-6 md:px-12 bg-white/[0.02] border-t border-white/5">
+      <section className="py-10 md:py-14 px-6 md:px-12 bg-white/[0.02] border-t border-white/5">
         <RevealOnScroll>
           <div className="max-w-4xl mx-auto text-center">
             <div className="p-10 md:p-14 rounded-3xl border border-white/10 bg-gradient-to-br from-blue-600/10 via-transparent to-transparent hover:border-blue-500/30 transition-all duration-500">

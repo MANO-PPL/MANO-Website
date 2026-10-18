@@ -1,5 +1,4 @@
-import React from 'react';
-import { Search, Filter, Plus, FileText, Edit2, Trash2, User as UserIcon, Calendar } from 'lucide-react';
+import { Search, Filter, Plus, FileText, Edit2, Trash2, User as UserIcon, Calendar, Star } from 'lucide-react';
 import CustomSelect from '../components/CustomSelect';
 
 const BlogsTab = ({
@@ -109,7 +108,7 @@ const BlogsTab = ({
                                         <span className="flex items-center gap-1"><Calendar size={11} /> {blog.date}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        {blog.featured && <span className="bg-amber-900/30 border border-amber-800/80 text-amber-400 px-2 py-0.5 rounded font-bold">★ Featured</span>}
+                                        {blog.featured && <span className="inline-flex items-center gap-1 bg-amber-900/30 border border-amber-800/80 text-amber-400 px-2 py-0.5 rounded font-bold"><Star size={11} className="fill-amber-400" /> Featured</span>}
                                         <span>{blog.read_time}</span>
                                     </div>
                                 </div>

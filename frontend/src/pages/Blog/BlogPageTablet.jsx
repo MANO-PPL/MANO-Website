@@ -86,7 +86,7 @@ export default function BlogPageTablet() {
             <PageHero
                 title="MANO Knowledge"
                 subtitle="Hub"
-                description="Expert insights on project management, construction trends, cost engineering, and quality assurance — from 12+ years at the forefront of India's building industry."
+                description="Expert insights on project management, construction trends, cost engineering, and quality assurance, backed by 12+ years at the forefront of India's building industry."
                 badgeText="Insights & Articles"
                 layout="mosaic-5"
                 showCards={false}
@@ -160,8 +160,10 @@ export default function BlogPageTablet() {
                 </RevealOnScroll>
 
                 {filteredPosts.length === 0 ? (
-                    <div className="text-center py-20">
-                        <div className="text-5xl mb-3">🔍</div>
+                    <div className="text-center py-12 sm:py-16">
+                        <div className="w-16 h-16 rounded-2xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-4 text-blue-400 shadow-[0_0_25px_rgba(59,130,246,0.2)]">
+                            <Search className="w-8 h-8" />
+                        </div>
                         <h3 className="text-xl font-bold text-white mb-2">No articles found</h3>
                         <p className="text-gray-500 text-sm">Try a different search term or category</p>
                         <button onClick={() => { setSearchQuery(""); setActiveCategory("All"); }} className="mt-5 px-6 py-3 rounded-full bg-blue-600 text-white font-semibold text-sm">Reset Filters</button>

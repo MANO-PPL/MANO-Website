@@ -247,7 +247,7 @@ const AboutUsMobile = () => {
                             {[
                                 { name: 'Stakeholder Focus', desc: 'We are committed to fostering strong values, ethical practices, and a clear vision that balances the interests of all stakeholders.', icon: Target },
                                 { name: 'Sustainability', desc: 'We actively promote social responsibility by contributing toward a pollution-free and sustainable environment.', icon: Leaf },
-                                { name: 'Integrity & Transparency', desc: 'Integrity is at the core of our character—guided by strong business ethics, transparency, and clearly defined standards of professional conduct.', icon: ShieldCheck },
+                                { name: 'Integrity & Transparency', desc: 'Integrity is at the core of our character, guided by strong business ethics, transparency, and clearly defined standards of professional conduct.', icon: ShieldCheck },
                                 { name: 'Collective Ownership', desc: 'We believe in collective ownership, encouraging accountability, collaboration, and shared responsibility across all assigned projects.', icon: Users }
                             ].map((item, index) => (
                                 <div
@@ -293,7 +293,7 @@ const AboutUsMobile = () => {
                                             "To become a significant force in the real estate sector through the development of self-owned real estate and industrial projects.",
                                             "To be recognized for excellence through a team of highly competent engineers who earn client trust by delivering complex projects within timelines.",
                                             "To position MANO as a trusted partner that contributes to the prosperity and diligence of associated organizations.",
-                                            "To achieve a milestone of 6 million sq. ft. of construction by FY 2025–26, with a projected turnover of ₹50 crore."
+                                            "To achieve a milestone of 6 million sq. ft. of construction by FY 2025-26, with a projected turnover of ₹50 crore."
                                         ].map((item, i) => (
                                             <li key={i} className="flex gap-4 items-start group/item">
                                                 <div className="mt-1 w-5 h-5 rounded-full bg-blue-900/50 flex items-center justify-center border border-blue-500/50 group-hover/item:bg-blue-600 group-hover/item:border-blue-600 transition-colors">
@@ -445,7 +445,7 @@ const AboutUsMobile = () => {
                                             "Mrs. Gayathri Segar (M Arch)",
                                             "Mr. Raj Narayanan (BE- Civil)",
                                             "Mr. Sanjeev Gupta (BE Civil Head - Billing)",
-                                            "Miss. Priyal Singh (BA–Administration & HR)",
+                                            "Miss. Priyal Singh (BA - Administration & HR)",
                                             "Mr. Syed Arshal Qazi (BE Civil)",
                                             "Mr. Nikhil Dangle (BE Civil)",
                                             "Mr. Harshad Padwal (BD)",
@@ -458,7 +458,7 @@ const AboutUsMobile = () => {
                                             "Mrs. Gayathri Segar (M Arch)",
                                             "Mr. Raj Narayanan (BE- Civil)",
                                             "Mr. Sanjeev Gupta (BE Civil Head - Billing)",
-                                            "Miss. Priyal Singh (BA–Administration & HR)",
+                                            "Miss. Priyal Singh (BA - Administration & HR)",
                                             "Mr. Syed Arshal Qazi (BE Civil)",
                                             "Mr. Nikhil Dangle (BE Civil)",
                                             "Mr. Harshad Padwal (BD)",

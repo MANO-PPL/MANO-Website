@@ -295,7 +295,7 @@ export default function LandingPageMobile() {
                         <path d="M20 6L9 17L4 12" stroke="#3B82F6" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </span>
-                    <p className="text-sm text-gray-300 leading-relaxed">From feasibility to final handover — complete lifecycle management under one roof.</p>
+                    <p className="text-sm text-gray-300 leading-relaxed">From feasibility to final handover, complete lifecycle management under one roof.</p>
                   </div>
                 </div>
               </div>
@@ -370,7 +370,7 @@ export default function LandingPageMobile() {
                 { title: "Predictable Delivery", text: "Timely execution backed by strong planning and monitoring.", icon: Clock },
                 { title: "Transparent Processes", text: "Fully documented, audit-ready systems at every step.", icon: FileText },
                 { title: "Cost & Risk Control", text: "Data-driven decisions ensure optimized cost and minimized risk.", icon: ShieldCheck },
-                { title: "End-to-End Support", text: "From drawings to handover — we manage everything.", icon: Handshake },
+                { title: "End-to-End Support", text: "From drawings to handover, we manage everything.", icon: Handshake },
               ].map((item, index) => (
                 <div key={index} className="group relative p-5 rounded-xl border border-white/10 hover:border-blue-500/30 transition-all shadow-lg overflow-hidden backdrop-blur-xl bg-gradient-to-r from-transparent to-white/5 hover:to-blue-600/10 flex flex-col items-start h-full animated-white-border">
                   <div className="w-10 h-10 rounded-lg bg-blue-600/10 border border-blue-500/20 text-blue-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-blue-600/20 group-hover:border-blue-500/30 transition-all duration-300 shadow-[0_0_15px_rgba(37,99,235,0.1)]">

@@ -220,12 +220,12 @@ const AboutUsDesktop = () => {
                             <CountUp end={90} />%+ Client Satisfaction Rate
                         </h2>
 
-                        <h2 className="mt-48 text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-12">CORE VALUES</h2>
+                        <h2 className="mt-16 text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-6">CORE VALUES</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-6xl mx-auto">
                             {[
                                 { name: 'Stakeholder Focus', desc: 'We are committed to fostering strong values, ethical practices, and a clear vision that balances the interests of all stakeholders.', icon: Target },
                                 { name: 'Sustainability', desc: 'We actively promote social responsibility by contributing toward a pollution-free and sustainable environment.', icon: Leaf },
-                                { name: 'Integrity & Transparency', desc: 'Integrity is at the core of our character—guided by strong business ethics, transparency, and clearly defined standards of professional conduct.', icon: ShieldCheck },
+                                { name: 'Integrity & Transparency', desc: 'Integrity is at the core of our character, guided by strong business ethics, transparency, and clearly defined standards of professional conduct.', icon: ShieldCheck },
                                 { name: 'Collective Ownership', desc: 'We believe in collective ownership, encouraging accountability, collaboration, and shared responsibility across all assigned projects.', icon: Users }
                             ].map((item, index) => (
                                 <div
@@ -271,7 +271,7 @@ const AboutUsDesktop = () => {
                                             "To become a significant force in the real estate sector through the development of self-owned real estate and industrial projects.",
                                             "To be recognized for excellence through a team of highly competent engineers who earn client trust by delivering complex projects within timelines.",
                                             "To position MANO as a trusted partner that contributes to the prosperity and diligence of associated organizations.",
-                                            "To achieve a milestone of 6 million sq. ft. of construction by FY 2025–26, with a projected turnover of ₹50 crore."
+                                            "To achieve a milestone of 6 million sq. ft. of construction by FY 2025-26, with a projected turnover of ₹50 crore."
                                         ].map((item, i) => (
                                             <li key={i} className="flex gap-4 items-start group/item">
                                                 <div className="mt-1 w-5 h-5 rounded-full bg-blue-900/50 flex items-center justify-center border border-blue-500/50 group-hover/item:bg-blue-600 group-hover/item:border-blue-600 transition-colors">
@@ -325,9 +325,9 @@ const AboutUsDesktop = () => {
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100px_100px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none"></div>
                 <RevealOnScroll>
                     <div className="max-w-7xl mx-auto text-left">
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-12 sm:mb-16 text-center bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-2">About The Team</h2>
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-8 sm:mb-10 text-center bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-2">About The Team</h2>
 
-                        <div className="space-y-20">
+                        <div className="space-y-12 sm:space-y-16">
                             {[
                                 {
                                     name: "Mr. Mugilan Muthaiah",
@@ -404,8 +404,8 @@ const AboutUsDesktop = () => {
                         </div>
 
                         {/* Team Grid (Brief list) */}
-                        <div className="mt-20 sm:mt-32">
-                            <div className="text-center mb-12 sm:mb-16">
+                        <div className="mt-12 sm:mt-16">
+                            <div className="text-center mb-8 sm:mb-10">
                                 <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">Our Engineering Strength</h3>
                                 <p className="text-gray-400 text-sm sm:text-base px-4">A dedicated team of 50+ young, dynamic & qualified engineers mentored by industry leaders.</p>
                             </div>
@@ -423,7 +423,7 @@ const AboutUsDesktop = () => {
                                             "Mrs. Gayathri Segar (M Arch)",
                                             "Mr. Raj Narayanan (BE- Civil)",
                                             "Mr. Sanjeev Gupta (BE Civil Head - Billing)",
-                                            "Miss. Priyal Singh (BA–Administration & HR)",
+                                            "Miss. Priyal Singh (BA - Administration & HR)",
                                             "Mr. Syed Arshal Qazi (BE Civil)",
                                             "Mr. Nikhil Dangle (BE Civil)",
                                             "Mr. Harshad Padwal (BD)",
@@ -436,7 +436,7 @@ const AboutUsDesktop = () => {
                                             "Mrs. Gayathri Segar (M Arch)",
                                             "Mr. Raj Narayanan (BE- Civil)",
                                             "Mr. Sanjeev Gupta (BE Civil Head - Billing)",
-                                            "Miss. Priyal Singh (BA–Administration & HR)",
+                                            "Miss. Priyal Singh (BA - Administration & HR)",
                                             "Mr. Syed Arshal Qazi (BE Civil)",
                                             "Mr. Nikhil Dangle (BE Civil)",
                                             "Mr. Harshad Padwal (BD)",
@@ -459,7 +459,7 @@ const AboutUsDesktop = () => {
             </section>
 
             {/* Contact Form */}
-            <section id="contact-section" className="relative px-6 py-16 sm:py-24 overflow-hidden bg-gradient-to-t from-blue-950/20 to-black border-t border-white/5">
+            <section id="contact-section" className="relative px-6 py-12 sm:py-16 overflow-hidden bg-gradient-to-t from-blue-950/20 to-black border-t border-white/5">
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-blue-600/10 blur-[100px] rounded-full pointer-events-none"></div>
                 <RevealOnScroll>
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-12 sm:mb-16 bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-6 sm:pb-2">Ready to Start Your Project?</h2>
