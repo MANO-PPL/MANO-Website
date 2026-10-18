@@ -28,7 +28,7 @@ import BlogModal from './modals/BlogModal';
 import ProjectModal from './modals/ProjectModal';
 import DeleteConfirmModal from './modals/DeleteConfirmModal';
 
-const ADMIN_PROJECTS_BASE_URL = PROJECTS_ADMIN_API_URL || PROJECTS_API_URL;
+const ADMIN_PROJECTS_BASE_URL = PROJECTS_API_URL;
 
 const AdminDashboard = ({ token, onLogout }) => {
     // Active Navigation Tabs
@@ -189,7 +189,7 @@ const AdminDashboard = ({ token, onLogout }) => {
         setCandidatesLoading(true);
         try {
             const url = platform 
-                ? `${API_BASE_URL}/api/mano-admin-portal-dashboard-secure/${platform}/resumes` 
+                ? `${ADMIN_RESUMES_API_URL}?platform=${platform}` 
                 : ADMIN_RESUMES_API_URL;
             const response = await fetch(url, { headers });
             const data = await response.json();
@@ -210,7 +210,7 @@ const AdminDashboard = ({ token, onLogout }) => {
         setJobsLoading(true);
         try {
             const url = platform 
-                ? `${API_BASE_URL}/api/${platform}/jobs?all=true` 
+                ? `${ADMIN_JOBS_API_URL}?all=true&platform=${platform}` 
                 : `${ADMIN_JOBS_API_URL}?all=true`;
             const response = await fetch(url);
             const data = await response.json();
@@ -455,8 +455,7 @@ const AdminDashboard = ({ token, onLogout }) => {
         if (!deleteConfirmJob) return;
         setIsDeletingJob(true);
         try {
-            const platform = (deleteConfirmJob.platform || 'pmc').toLowerCase();
-            const response = await fetch(`${API_BASE_URL}/api/${platform}/jobs/${deleteConfirmJob.id}`, {
+            const response = await fetch(`${ADMIN_JOBS_API_URL}/${deleteConfirmJob.id}`, {
                 method: 'DELETE',
                 headers
             });
@@ -785,7 +784,14 @@ const AdminDashboard = ({ token, onLogout }) => {
                 headers: { 'x-admin-token': token },
                 body: formData
             });
-            const data = await response.json();
+            let data = {};
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                data = await response.json();
+            } else {
+                const text = await response.text();
+                data = { ok: false, message: `Server returned ${response.status}: ${response.statusText}` };
+            }
             if (response.ok && data.ok) {
                 toast.success(isEditing ? 'Project updated!' : 'Project created!');
                 resetProjectForm();

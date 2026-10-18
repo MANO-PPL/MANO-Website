@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 import { ToastContainer } from "react-toastify";
@@ -84,9 +84,21 @@ const BrandLayout = ({ brand }) => {
 
 function App() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isAdminPath = location.pathname.startsWith('/mano-admin-portal-dashboard-secure') ||
-                      location.pathname.startsWith('/admin') ||
-                      location.pathname.startsWith('/admin-portal-dashboard-secure');
+                      location.pathname.startsWith('/mano-portal');
+
+  // Secret keyboard shortcut: Ctrl+Shift+A or Cmd+Shift+A to navigate to Admin Portal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+        e.preventDefault();
+        navigate('/mano-portal');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate]);
 
   return (
     <>
@@ -97,6 +109,8 @@ function App() {
         {/* Admin Portal: isolated layout, no Navbar/Footer */}
         <Route path="/mano-admin-portal-dashboard-secure" element={<AdminPortal />} />
         <Route path="/mano-admin-portal-dashboard-secure/*" element={<AdminPortal />} />
+        <Route path="/mano-portal" element={<AdminPortal />} />
+        <Route path="/mano-portal/*" element={<AdminPortal />} />
 
         {/* Admin URL aliases: all redirect to the correct admin route */}
         <Route path="/admin" element={<Navigate to="/mano-admin-portal-dashboard-secure" replace />} />

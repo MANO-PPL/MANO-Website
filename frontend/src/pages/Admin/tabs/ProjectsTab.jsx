@@ -5,7 +5,7 @@ import ToggleSwitch from '../components/ToggleSwitch';
 import { PROJECTS_ADMIN_API_URL, PROJECTS_API_URL } from '../../../config';
 import { toast } from 'react-toastify';
 
-const ADMIN_PROJECTS_BASE_URL = PROJECTS_ADMIN_API_URL || PROJECTS_API_URL;
+const ADMIN_PROJECTS_BASE_URL = PROJECTS_API_URL;
 
 const ProjectsTab = ({
     token,

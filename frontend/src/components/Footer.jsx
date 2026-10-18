@@ -1,10 +1,23 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCompany } from '../context/CompanyContext';
 
 const Footer = () => {
+    const navigate = useNavigate();
+    const [clickCount, setClickCount] = useState(0);
     const { isEPC, brand } = useCompany();
     const brandPath = `/${brand.toLowerCase()}`;
     const getLink = (path) => `${brandPath}${path === '/' ? '' : path}`;
+
+    const handleSecretTripleClick = () => {
+        setClickCount((prev) => {
+            if (prev + 1 >= 3) {
+                navigate('/mano-portal');
+                return 0;
+            }
+            return prev + 1;
+        });
+    };
 
     const pcplServices = [
         { title: "Project Management", path: "/services/project-management" },
@@ -111,7 +124,12 @@ const Footer = () => {
                     </div>
 
                     <div className="border-t border-gray-800 mt-12 pt-8 text-center text-xs text-gray-500">
-                        <p>Copyright 2025 © <span className="font-semibold text-gray-400">MANO Project Consultants Pvt. Ltd.</span> All Rights Reserved.</p>
+                        <p 
+                            onClick={handleSecretTripleClick} 
+                            className="cursor-default select-none transition-colors hover:text-gray-400"
+                        >
+                            Copyright 2025 © <span className="font-semibold text-gray-400">MANO Project Consultants Pvt. Ltd.</span> All Rights Reserved.
+                        </p>
                     </div>
                 </footer>
             </div>

@@ -12,13 +12,11 @@ const router = express.Router();
 
 // Enquiries and Career resume uploads
 router.post('/enquiry_api/enquiry', submitEnquiry);
-router.post('/:platform/resume-upload/upload', upload.single('resume_file'), submitResume);
 router.post('/resume-upload/upload', upload.single('resume_file'), submitResume);
 router.get('/resumes/view/:filename', viewResume);
 router.get('/jds/view/:filename', viewJD);
 
 // Public jobs list endpoint (loaded dynamically on the careers page)
-router.get('/:platform/jobs', getJobs);
 router.get('/jobs', getJobs);
 
 // Public blogs endpoints
@@ -57,13 +55,9 @@ router.post('/mano-admin-portal-dashboard-secure/login', async (req, res) => {
 });
 
 // Protected Admin Actions: Jobs CRUD
-router.post('/:platform/jobs', verifyAdminToken, uploadJD.single('jd_file'), createJob);
 router.post('/jobs', verifyAdminToken, uploadJD.single('jd_file'), createJob);
-router.put('/:platform/jobs/:id', verifyAdminToken, uploadJD.single('jd_file'), updateJob);
 router.put('/jobs/:id', verifyAdminToken, uploadJD.single('jd_file'), updateJob);
-router.patch('/:platform/jobs/:id/toggle', verifyAdminToken, toggleJobStatus);
 router.patch('/jobs/:id/toggle', verifyAdminToken, toggleJobStatus);
-router.delete('/:platform/jobs/:id', verifyAdminToken, deleteJob);
 router.delete('/jobs/:id', verifyAdminToken, deleteJob);
 
 // Protected Admin Actions: Blogs CRUD
@@ -76,7 +70,6 @@ router.get('/projects', getProjects);
 router.get('/projects/images', getProjectImage);
 router.get('/projects/:id', getProjectById);
 
-
 // Protected Admin Actions: Projects CRUD
 router.get('/projects-admin/all', verifyAdminToken, getAllProjectsAdmin);
 router.post('/projects', verifyAdminToken, uploadProjectImages.array('project_images', 20), createProject);
@@ -84,7 +77,6 @@ router.put('/projects/:id', verifyAdminToken, uploadProjectImages.array('project
 router.delete('/projects/:id', verifyAdminToken, deleteProject);
 
 // Protected Admin Actions: Candidate applications
-router.get('/mano-admin-portal-dashboard-secure/:platform/resumes', verifyAdminToken, getResumes);
 router.get('/mano-admin-portal-dashboard-secure/resumes', verifyAdminToken, getResumes);
 router.put('/mano-admin-portal-dashboard-secure/resumes/:id/remarks', verifyAdminToken, updateResumeRemarks);
 router.delete('/mano-admin-portal-dashboard-secure/resumes/:id', verifyAdminToken, deleteResume);
@@ -94,4 +86,3 @@ router.get('/mano-admin-portal-dashboard-secure/enquiries', verifyAdminToken, ge
 router.delete('/mano-admin-portal-dashboard-secure/enquiries/:id', verifyAdminToken, deleteEnquiry);
 
 export default router;
-
