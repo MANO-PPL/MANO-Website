@@ -132,7 +132,7 @@ const JobModal = ({
                                                      : 'bg-[#0d1117] border-[#30363d] text-[#8b949e] hover:border-[#58a6ff] hover:text-[#e6edf3]'
                                              }`}
                                          >
-                                             {p === 'pmc' ? 'PMC — Project Management' : 'EPC — Engineering & Procurement'}
+                                             {p === 'pmc' ? 'PMC - Project Management' : 'EPC - Engineering & Procurement'}
                                          </button>
                                      );
                                  })}
@@ -215,7 +215,7 @@ const JobModal = ({
                                         <p className="text-[#e6edf3] font-semibold group-hover:text-[#58a6ff] transition-colors">
                                             {jobForm.jd_file_path && !jobForm.remove_jd ? 'Replace JD file' : 'Upload JD file'}
                                         </p>
-                                        <p>PDF, DOC or DOCX &mdash; up to 50 MB</p>
+                                        <p>PDF, DOC or DOCX (up to 50 MB)</p>
                                     </div>
                                 )}
                             </label>

@@ -22,7 +22,7 @@ export default function ProjectsHero() {
             </motion.div>
 
             {/* Content Container */}
-            <div className="relative z-10 w-full max-w-7xl mx-auto px-6 pt-40 flex flex-col items-center text-center">
+            <div className="relative z-10 w-full max-w-7xl mx-auto px-6 pt-16 sm:pt-20 flex flex-col items-center text-center">
                 <div className="max-w-4xl flex flex-col items-center">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}

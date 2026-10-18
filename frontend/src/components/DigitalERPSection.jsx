@@ -13,7 +13,7 @@ const DigitalERPSection = ({
 }) => {
 
     return (
-        <section className="py-8 md:py-24 px-5 md:px-6 relative overflow-hidden">
+        <section className="py-8 md:py-16 px-5 md:px-6 relative overflow-hidden">
             <div className="max-w-7xl mx-auto">
             <div className="relative group p-5 md:p-12 rounded-2xl md:rounded-[2rem] border border-white/10 bg-[#0a0a0c] overflow-hidden shadow-2xl">
                     {/* Background Glow */}

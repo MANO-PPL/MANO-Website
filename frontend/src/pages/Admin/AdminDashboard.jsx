@@ -1400,8 +1400,8 @@ const AdminDashboard = ({ token, onLogout }) => {
                                     {viewingBlog.category}
                                 </span>
                                 {viewingBlog.featured && (
-                                    <span className="bg-amber-900/30 border border-amber-800/80 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded">
-                                        ★ Featured
+                                    <span className="inline-flex items-center gap-1 bg-amber-900/30 border border-amber-800/80 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded">
+                                        <Star size={10} className="fill-amber-400" /> Featured
                                     </span>
                                 )}
                                 <h3 className="text-lg font-bold text-[#e6edf3] mt-2 leading-snug">

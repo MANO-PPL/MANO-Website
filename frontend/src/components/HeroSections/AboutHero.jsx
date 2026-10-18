@@ -80,7 +80,7 @@ export default function AboutHero({ showStatsCard = true }) {
             {/* Dark Gradient Overlay for Text Visibility */}
             <div className={`absolute inset-0 z-0 ${isDesktopHero ? 'bg-gradient-to-r from-black/90 via-black/50 to-transparent' : 'bg-gradient-to-r from-black/95 via-black/60 to-transparent'}`} />
 
-            <div className={`relative z-10 mx-auto w-full ${showStatsCard ? 'max-w-[1500px] min-h-screen flex items-center' : 'max-w-[1200px]'} px-6 pt-24 pb-12 sm:px-8 md:pt-32 md:pb-20 lg:px-12`}>
+            <div className={`relative z-10 mx-auto w-full ${showStatsCard ? 'max-w-[1500px] min-h-screen flex items-center' : 'max-w-[1200px]'} px-6 pt-24 pb-12 sm:px-8 md:pt-32 md:pb-12 lg:px-12`}>
                 <div className={`${showStatsCard ? 'grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-8 items-center w-full' : 'flex flex-col justify-center'} ${showStatsCard ? '' : 'pt-8'}`}>
 
                     <div className={`${showStatsCard ? 'lg:col-span-7' : ''} flex flex-col justify-center space-y-8 text-center lg:text-left items-center lg:items-start`}>

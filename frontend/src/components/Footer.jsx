@@ -37,8 +37,8 @@ const Footer = () => {
                 {/* Beam of Light Effect */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[150%] aspect-square -translate-y-[85%] bg-blue-600/30 blur-[100px] rounded-full pointer-events-none"></div>
 
-                <footer className="footer-font px-6 sm:px-12 md:px-16 lg:px-24 xl:px-32 w-full text-sm text-gray-400 bg-black pt-16 md:pt-24 pb-8 relative z-10">
-                    <div className="max-w-7xl mx-auto flex flex-col md:grid md:grid-cols-2 lg:flex lg:flex-row justify-between gap-12 lg:gap-24">
+                <footer className="footer-font px-6 sm:px-12 md:px-16 lg:px-24 xl:px-32 w-full text-sm text-gray-400 bg-black pt-12 md:pt-16 pb-8 relative z-10">
+                    <div className="max-w-7xl mx-auto flex flex-col md:grid md:grid-cols-2 lg:flex lg:flex-row justify-between gap-10 lg:gap-16">
 
                         {/* Column 1: Logo & Contact */}
                         <div className="space-y-6 max-w-sm">

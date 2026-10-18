@@ -335,7 +335,7 @@ export default function PageHero({
             {/* Dark Gradient Overlay for Text Visibility - Adjusted for visibility */}
             <div className={`absolute inset-0 z-0 ${layout === 'minimal-centered' ? 'bg-black/60' : 'bg-gradient-to-r from-black/60 via-black/40 to-transparent'}`} />
 
-            <div className="relative z-10 mx-auto w-full max-w-[1500px] px-6 pt-24 pb-12 sm:px-8 md:pt-32 md:pb-20 lg:px-12">
+            <div className="relative z-10 mx-auto w-full max-w-[1500px] px-6 pt-24 pb-12 sm:px-8 md:pt-32 md:pb-12 lg:px-12">
                 {layout === 'minimal-centered' ? (
                     <div className="flex flex-col items-center text-center justify-center max-w-4xl mx-auto pt-12 pb-12">
                         {/* Centered Badge */}

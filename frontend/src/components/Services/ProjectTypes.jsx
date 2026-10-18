@@ -2,7 +2,7 @@ import React from 'react';
 
 const ProjectTypes = ({ title, description, items, compactMobile = false }) => {
     return (
-        <section className={`border-y border-white/5 bg-black/50 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-800 ${compactMobile ? 'py-10 md:py-24 px-4 md:px-12' : 'py-16 md:py-24 px-6 md:px-12'}`}>
+        <section className={`border-y border-white/5 bg-black/50 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-800 ${compactMobile ? 'py-8 md:py-12 px-4 md:px-12' : 'py-12 md:py-16 px-6 md:px-12'}`}>
             <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
             `}</style>

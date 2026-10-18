@@ -41,7 +41,7 @@ export default function LandingHero() {
 
     return (
         <div className="relative w-full min-h-screen text-white font-sans flex flex-col justify-between">
-            {/* SEO-only H1 — visually hidden but crawlable by Google */}
+            {/* SEO-only H1: visually hidden but crawlable by Google */}
             <h1 className="sr-only">
                 {isEPC
                     ? "Engineering Procurement and Construction (EPC) Services | MANO Projects Private Limited"
@@ -91,7 +91,7 @@ export default function LandingHero() {
             {/* Dark Gradient Overlay for Text Visibility */}
             <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/95 via-black/60 to-transparent" />
 
-            <div className="relative z-10 mx-auto w-full max-w-[1500px] px-6 pt-24 pb-12 sm:px-8 md:pt-32 md:pb-20 lg:px-12">
+            <div className="relative z-10 mx-auto w-full max-w-[1500px] px-6 pt-24 pb-12 sm:px-8 md:pt-32 md:pb-12 lg:px-12">
                 <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-8 items-center">
 
                     {/* --- LEFT COLUMN --- */}
