@@ -186,23 +186,23 @@ const Projects = () => {
             <div id="featured-projects"></div>
 
             {/* 2. FEATURED PROJECTS SHOWCASE */}
-            <section id="featured-projects" className="py-16 sm:py-24 px-6 relative overflow-hidden">
+            <section id="featured-projects" className="py-12 sm:py-16 px-6 relative overflow-hidden">
                 <div className="absolute top-1/2 right-0 w-96 h-96 bg-blue-500/10 blur-[120px] rounded-full pointer-events-none"></div>
                 <div className="max-w-7xl mx-auto">
                     <RevealOnScroll>
-                        <div className="mb-12 sm:mb-20">
-                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">Featured Masterpieces</h2>
+                        <div className="mb-8 sm:mb-10">
+                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6">Featured Masterpieces</h2>
                             <p className="text-gray-400 max-w-2xl text-sm sm:text-base">A selection of our most complex and successfully delivered projects.</p>
                         </div>
                     </RevealOnScroll>
 
                     {loading ? (
-                        <div className="flex flex-col items-center justify-center py-24 gap-4">
+                        <div className="flex flex-col items-center justify-center py-12 sm:py-16 gap-4">
                             <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
                             <p className="text-gray-500 text-sm">Loading featured projects...</p>
                         </div>
                     ) : (
-                        <div className="space-y-16 sm:space-y-32">
+                        <div className="space-y-12 sm:space-y-16">
                             {featuredProjects.map((project, index) => (
                                 <RevealOnScroll key={project.id || index}>
                                     <div className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-8 sm:gap-16 items-center`}>
@@ -244,17 +244,17 @@ const Projects = () => {
             </section>
 
             {/* 3. CATEGORIZED PROJECT GRID */}
-            <section className="py-16 sm:py-24 px-6 bg-white/[0.02]">
+            <section className="py-12 sm:py-16 px-6 bg-white/[0.02]">
                 <div className="max-w-7xl mx-auto">
                     <RevealOnScroll>
-                        <div className="text-center mb-12 sm:mb-16">
-                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">Our Diverse Portfolio</h2>
+                        <div className="text-center mb-8 sm:mb-10">
+                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6">Our Diverse Portfolio</h2>
                             <p className="text-gray-400 text-sm sm:text-base">Explore our work across different sectors.</p>
                         </div>
                     </RevealOnScroll>
 
                     {/* Category Filter */}
-                    <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-12 sm:mb-16 overflow-x-auto pb-4 no-scrollbar">
+                    <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8 sm:mb-10 overflow-x-auto pb-4 no-scrollbar">
                         {categories.map((cat) => (
                             <button
                                 key={cat}
@@ -325,12 +325,12 @@ const Projects = () => {
             </section>
 
             {/* 5. CTA SECTION */}
-            <section className="py-20 sm:py-32 px-6 relative overflow-hidden">
+            <section className="py-12 sm:py-16 px-6 relative overflow-hidden">
                 <div className="absolute inset-0 bg-blue-900/10"></div>
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,1)_0%,rgba(20,20,50,0.5)_50%,rgba(0,0,0,1)_100%)]"></div>
 
                 <div className="max-w-4xl mx-auto text-center relative z-10">
-                    <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold text-white mb-10 leading-tight">
+                    <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold text-white mb-6 sm:mb-8 leading-tight">
                         Build Your Project With a <br className="hidden sm:block" />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">Trusted Partner.</span>
                     </h2>

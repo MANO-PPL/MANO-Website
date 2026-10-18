@@ -277,7 +277,7 @@ const ProjectsMobile = () => {
             <div id="featured-projects"></div>
 
             {/* 2. FEATURED PROJECTS SHOWCASE */}
-            <section id="featured-projects" className="py-16 sm:py-24 px-6 relative overflow-hidden">
+            <section id="featured-projects" className="py-10 sm:py-16 px-4 sm:px-6 relative overflow-hidden">
                 <div className="absolute top-1/2 right-0 w-96 h-96 bg-blue-500/10 blur-[120px] rounded-full pointer-events-none"></div>
                 <div className="max-w-7xl mx-auto">
                     <RevealOnScroll>
@@ -288,12 +288,12 @@ const ProjectsMobile = () => {
                     </RevealOnScroll>
 
                     {loading ? (
-                        <div className="flex flex-col items-center justify-center py-20 gap-3">
+                        <div className="flex flex-col items-center justify-center py-10 gap-3">
                             <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
                             <p className="text-gray-500 text-xs">Loading projects...</p>
                         </div>
                     ) : (
-                        <div className="space-y-10 sm:space-y-32">
+                        <div className="space-y-10 sm:space-y-16">
                             {featuredProjects.map((project, index) => (
                                 <RevealOnScroll key={index}>
                                     <div className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-5 sm:gap-16 items-center`}>
@@ -337,7 +337,7 @@ const ProjectsMobile = () => {
             </section>
 
             {/* 3. CATEGORIZED PROJECT GRID */}
-            <section className="py-12 sm:py-24 px-4 sm:px-6 bg-white/[0.02]">
+            <section className="py-10 sm:py-16 px-4 sm:px-6 bg-white/[0.02]">
                 <div className="max-w-7xl mx-auto">
                     <RevealOnScroll>
                         <div className="text-center mb-8 sm:mb-16">
@@ -418,7 +418,7 @@ const ProjectsMobile = () => {
 
 
             {/* 5. CTA SECTION */}
-            <section className="py-14 sm:py-32 px-4 sm:px-6 relative overflow-hidden">
+            <section className="py-10 sm:py-16 px-4 sm:px-6 relative overflow-hidden">
                 <div className="absolute inset-0 bg-blue-900/10"></div>
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,1)_0%,rgba(20,20,50,0.5)_50%,rgba(0,0,0,1)_100%)]"></div>
 

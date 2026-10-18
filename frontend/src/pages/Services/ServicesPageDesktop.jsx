@@ -205,10 +205,10 @@ const ServicesPageDesktop = () => {
                     {/* 3. CORE SERVICES */}
                     {isEPC ? (
                         /* EPC SPECIFIC VIEW - ONE MAIN SERVICE */
-                        <section id="core-services" className="py-16 md:py-24 px-6 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-100">
+                        <section id="core-services" className="py-12 md:py-16 px-6 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-100">
                             <RevealOnScroll>
                                 <div className="max-w-7xl mx-auto">
-                                    <div className="text-center mb-16">
+                                    <div className="text-center mb-10">
                                         <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-2 leading-tight">Our Specialized Service</h2>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-8 max-w-4xl mx-auto">
@@ -237,10 +237,10 @@ const ServicesPageDesktop = () => {
                     ) : (
                         /* PMC DEFAULT VIEW */
                         <>
-                            <section id="core-services" className="py-16 md:py-24 px-6 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-100">
+                            <section id="core-services" className="py-12 md:py-16 px-6 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-100">
                                 <RevealOnScroll>
                                     <div className="max-w-7xl mx-auto">
-                                        <div className="text-center mb-16">
+                                        <div className="text-center mb-10">
                                             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-2 leading-tight">Our Core Services</h2>
                                         </div>
 
@@ -283,10 +283,10 @@ const ServicesPageDesktop = () => {
                                 </RevealOnScroll>
                             </section>
 
-                            <section className="py-16 md:py-24 px-6 md:px-12 bg-white/[0.02] animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-200">
+                            <section className="py-12 md:py-16 px-6 md:px-12 bg-white/[0.02] animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-200">
                                 <RevealOnScroll>
                                     <div className="max-w-7xl mx-auto">
-                                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-6 sm:pb-12 mb-8 border-b border-white/10 leading-tight">Specialized Services</h2>
+                                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-4 mb-6 border-b border-white/10 leading-tight">Specialized Services</h2>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             {specializedServices.map((service, index) => (
@@ -332,12 +332,12 @@ const ServicesPageDesktop = () => {
                     )}
 
                     {/* 5. WHY CHOOSE MANO */}
-                    <section className="py-16 md:py-24 px-6 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-300">
+                    <section className="py-12 md:py-16 px-6 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-300">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                                 <div>
                                     <span className="text-blue-500 font-semibold tracking-wider text-sm uppercase mb-4 block">Service Philosophy</span>
-                                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-4 sm:pb-6 mb-8 leading-tight">
+                                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-3 mb-6 leading-tight">
                                         Why Choose <span className="text-blue-500 block sm:inline lg:block">MANO Consultants?</span>
                                     </h2>
                                     <div className="space-y-8">
@@ -420,10 +420,10 @@ const ServicesPageDesktop = () => {
                     />
 
                     {/* 7. SERVICE DELIVERY MODEL */}
-                    <section className="py-16 md:py-24 px-6 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-500">
+                    <section className="py-12 md:py-16 px-6 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-500">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto">
-                                <div className="text-center mb-16 md:mb-20">
+                                <div className="text-center mb-10">
                                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-4 leading-normal">Service Delivery Model</h2>
                                 </div>
 
@@ -446,7 +446,7 @@ const ServicesPageDesktop = () => {
                     </section>
 
                     {/* 8. TRUST STATEMENT */}
-                    <section className="py-16 md:py-24 px-6 md:px-12 text-center animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-600">
+                    <section className="py-12 md:py-16 px-6 md:px-12 text-center animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-600">
                         <div className="max-w-4xl mx-auto p-8 md:p-12 rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent hover:to-blue-600/10 hover:border-blue-500/30 transition-all duration-500 backdrop-blur-md group">
                             <p className="text-xl md:text-3xl font-medium text-white leading-relaxed group-hover:text-blue-100 transition-colors">
                                 "Trusted by developers, corporations, and institutions across India for delivering reliable, transparent, and results-driven consulting services."
@@ -455,7 +455,7 @@ const ServicesPageDesktop = () => {
                     </section>
 
                     {/* 9. CTA */}
-                    <section className="py-16 md:py-24 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-700">
+                    <section className="py-12 md:py-16 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-700">
                         <div className="absolute inset-0 bg-blue-900/20"></div>
                         <div className="max-w-4xl mx-auto px-6 md:px-12 text-center relative z-10">
                             <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">Ready to Elevate Your Project?</h2>

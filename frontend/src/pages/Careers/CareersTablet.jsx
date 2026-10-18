@@ -173,7 +173,7 @@ const CareersTablet = ({ jobs, brand, loading }) => {
             >
             <>
                     {/* 2. WHY WORK WITH US - VALUE STRIP */}
-                    <section className="py-16 border-y border-white/5 bg-white/5 backdrop-blur-sm">
+                    <section className="py-12 border-y border-white/5 bg-white/5 backdrop-blur-sm">
                         <div className="max-w-7xl mx-auto px-6">
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                                 {values.map((item, index) => (
@@ -190,11 +190,11 @@ const CareersTablet = ({ jobs, brand, loading }) => {
                     </section>
 
                     {/* 3. OUR VALUES */}
-                    <section className="py-16 sm:py-24 px-6 relative overflow-hidden">
+                    <section className="py-12 sm:py-16 px-6 relative overflow-hidden">
                         <div className="absolute top-1/2 left-0 w-96 h-96 bg-blue-500/10 blur-[100px] rounded-full pointer-events-none"></div>
                         <div className="max-w-7xl mx-auto">
                             <RevealOnScroll>
-                                <div className="text-center mb-12 sm:mb-20">
+                                <div className="text-center mb-8 sm:mb-12">
                                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">Why Join <span className="text-blue-500">Mano</span>?</h2>
                                     <p className="text-gray-400 max-w-2xl mx-auto text-sm sm:text-base px-4">We foster an environment where innovation meets precision, and every team member is empowered to grow.</p>
                                 </div>
@@ -221,11 +221,11 @@ const CareersTablet = ({ jobs, brand, loading }) => {
                     </section>
 
                     {/* 4. OUR WORK CULTURE */}
-                    <section className="py-16 sm:py-24 px-6 relative">
+                    <section className="py-12 sm:py-16 px-6 relative">
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 blur-[120px] rounded-full -z-10"></div>
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto">
-                                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center text-white mb-12 sm:mb-16">Our Work Culture</h2>
+                                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center text-white mb-8 sm:mb-10">Our Work Culture</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                                     {culture.map((item, index) => (
                                         <div key={index} className="group p-8 rounded-2xl border border-white/10 overflow-hidden hover:border-blue-500/30 transition-all shadow-lg backdrop-blur-xl bg-gradient-to-r from-transparent to-white/5 hover:to-blue-600/10 relative animated-white-border">
@@ -246,10 +246,10 @@ const CareersTablet = ({ jobs, brand, loading }) => {
                     </section>
 
                     {/* 5. OPEN POSITIONS */}
-                    <section id="positions" className="py-16 sm:py-24 px-6 bg-white/[0.02]">
+                    <section id="positions" className="py-12 sm:py-16 px-6 bg-white/[0.02]">
                         <div className="max-w-7xl mx-auto">
                             <RevealOnScroll>
-                                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-16">
+                                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 sm:mb-10">
                                     <div>
                                         <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">Open Positions</h2>
                                         <p className="text-gray-400 text-sm sm:text-base">Discover your next career move at Mano.</p>
@@ -357,7 +357,7 @@ const CareersTablet = ({ jobs, brand, loading }) => {
                     </section>
 
                     {/* 6. LIFE AT MANO (Optional Culture) */}
-                    <section className="py-16 sm:py-24 px-6">
+                    <section className="py-12 sm:py-16 px-6">
                         <div className="max-w-7xl mx-auto">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="relative group overflow-hidden rounded-2xl h-80">
@@ -386,9 +386,9 @@ const CareersTablet = ({ jobs, brand, loading }) => {
                     </section>
 
                     {/* 7. EMPLOYEE PERSPECTIVES (CAROUSEL) */}
-                    <section className="py-24 px-6 bg-black text-center">
+                    <section className="py-12 sm:py-16 px-6 bg-black text-center">
                         <div className="max-w-7xl mx-auto">
-                            <h2 className="text-4xl md:text-5xl font-bold text-center mb-20 bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-6">Employee Perspectives</h2>
+                            <h2 className="text-4xl md:text-5xl font-bold text-center mb-10 bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-2">Employee Perspectives</h2>
 
                             {/* Outer Glass Container */}
                             <div className="relative w-full border border-white/10 rounded-[2.5rem] bg-white/[0.02] backdrop-blur-sm min-h-[400px] flex flex-col justify-center px-4 md:px-12 py-12 md:py-16">
@@ -456,7 +456,7 @@ const CareersTablet = ({ jobs, brand, loading }) => {
                     </section>
 
                     {/* 8. CTA SECTION */}
-                    <section className="py-20 sm:py-32 px-6 relative overflow-hidden">
+                    <section className="py-12 sm:py-16 px-6 relative overflow-hidden">
                         <div className="absolute inset-0 bg-blue-900/10"></div>
                         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,1)_0%,rgba(20,20,50,0.5)_50%,rgba(0,0,0,1)_100%)]"></div>
 

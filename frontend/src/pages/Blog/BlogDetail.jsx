@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft, Calendar, Clock, User, Tag, ChevronRight,
   Briefcase, Calculator, Shield, Hammer, TrendingUp, Building,
-  BookOpen, Share2, Copy, Check, ArrowRight
+  BookOpen, Share2, Copy, Check, ArrowRight, FileQuestion
 } from "lucide-react";
 import { CategoryBadge } from "./BlogPage";
 import ContactModal from "../../components/ContactModal";
@@ -97,7 +97,9 @@ export default function BlogDetail() {
     return (
       <div className="min-h-screen bg-blue-pattern text-white flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4">📄</div>
+          <div className="w-16 h-16 rounded-2xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-4 text-blue-400 shadow-[0_0_25px_rgba(59,130,246,0.2)]">
+            <FileQuestion className="w-8 h-8" />
+          </div>
           <h1 className="text-2xl font-bold mb-4">Article not found</h1>
           <button onClick={() => navigate(-1)} className="px-6 py-3 bg-blue-600 rounded-full font-semibold hover:bg-blue-500 transition-colors">
             Go Back
