@@ -265,7 +265,7 @@ const EHSAuditingMobile = () => {
                             </div>
                         </div>
                     </section>
-                    <section className="py-10 md:py-24 px-4 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-100">
+                    <section className="py-10 md:py-16 px-4 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-100">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto px-0 md:px-6">
                                 <div className="text-center mb-8 md:mb-16">
@@ -341,7 +341,7 @@ const EHSAuditingMobile = () => {
                     </section>
 
                     {/* 5. COMPARISON SECTION - CENTRAL AXIS STYLE */}
-                    <section className="py-10 md:py-24 px-4 md:px-12 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-300">
+                    <section className="py-10 md:py-16 px-4 md:px-12 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-300">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto">
                                 <div className="text-center mb-8 md:mb-16">
@@ -424,7 +424,7 @@ const EHSAuditingMobile = () => {
                     </RevealOnScroll>
 
                     {/* 6. WHY MANO */}
-                    <section className="py-10 md:py-24 px-4 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-400">
+                    <section className="py-10 md:py-16 px-4 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-400">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-16 items-center">
                                 <div>
@@ -512,7 +512,7 @@ const EHSAuditingMobile = () => {
                     />
 
                     {/* 8. PROCESS FLOW */}
-                    <section className="py-12 md:py-24 px-4 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-600">
+                    <section className="py-12 md:py-16 px-4 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-600">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto">
                                 <div className="text-center mb-8 md:mb-20">
@@ -538,7 +538,7 @@ const EHSAuditingMobile = () => {
                     </section>
 
                     {/* 9. TRUST STATEMENT */}
-                    <section className="py-10 md:py-24 px-4 md:px-12 text-center animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-700">
+                    <section className="py-10 md:py-16 px-4 md:px-12 text-center animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-700">
                         <div className="max-w-4xl mx-auto p-4 sm:p-8 md:p-12 rounded-2xl sm:rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent hover:to-blue-600/10 hover:border-blue-500/30 transition-all duration-500 backdrop-blur-md group">
                             <p className="text-base sm:text-xl md:text-3xl font-medium text-white leading-relaxed group-hover:text-blue-100 transition-colors">
                                 "Organizations trust MANO Project Consultants for ensuring safe, compliant, and risk-free working environments through professional EHS audits and safety management systems."
@@ -547,7 +547,7 @@ const EHSAuditingMobile = () => {
                     </section>
 
                     {/* 10. CTA */}
-                    <section className="py-10 md:py-24 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-800">
+                    <section className="py-10 md:py-16 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-800">
                         <div className="absolute inset-0 bg-blue-900/20"></div>
                         <div className="max-w-4xl mx-auto px-4 md:px-12 text-center relative z-10">
                             <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold text-white mb-5 sm:mb-6 leading-tight">Safety First. Compliance Always.</h2>
