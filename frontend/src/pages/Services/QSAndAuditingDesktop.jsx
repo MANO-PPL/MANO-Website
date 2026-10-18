@@ -5,7 +5,7 @@ import {
     Calculator, FileCheck, CreditCard, TrendingUp,
     CheckCircle, AlertTriangle, FileText, Layers, ShieldCheck, Users,
     ClipboardCheck, BadgeCheck, Scale, Landmark, Target,
-    ChevronRight, BarChart3, Layout, Activity
+    ChevronRight, BarChart3, Layout, Activity, XCircle
 } from 'lucide-react';
 import RainbowButton from '../../components/RainbowButton';
 import ContactModal from '../../components/ContactModal';
@@ -244,11 +244,11 @@ const QSAndAuditingDesktop = () => {
             >
             <>
 
-                    <section className="py-16 md:py-24 px-6 md:px-12 relative animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-100">
+                    <section className="py-12 md:py-16 px-6 md:px-12 relative animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-100">
                         <div className="absolute top-1/4 left-0 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto">
-                                <div className="text-center mb-16">
+                                <div className="text-center mb-10">
                                     <span className="text-blue-500 font-bold tracking-widest uppercase text-sm">Comprehensive Expertise</span>
                                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mt-4 leading-tight">Core Quantity Survey & Billing Services</h2>
                                 </div>
@@ -314,10 +314,10 @@ const QSAndAuditingDesktop = () => {
                     </section>
 
                     {/* 5. COMPARISON BAR - Mandatory Dual Bar Layout */}
-                    <section className="py-16 md:py-24 px-6 md:px-12 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-300">
+                    <section className="py-12 md:py-16 px-6 md:px-12 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-300">
                         <div className="max-w-7xl mx-auto">
                             <RevealOnScroll>
-                                <div className="text-center mb-12 md:mb-16">
+                                <div className="text-center mb-8 md:mb-10">
                                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 leading-tight">Why Quantity Survey & Billing Audits Are Essential</h2>
                                 </div>
                             </RevealOnScroll>
@@ -335,11 +335,11 @@ const QSAndAuditingDesktop = () => {
                                             <h3 className="text-3xl font-bold text-red-500 mb-8">Without Proper QS & Billing Audit</h3>
 
                                             <ul className="space-y-5 text-left w-full pl-4 grow">
-                                                <li className="flex items-start text-gray-300 text-lg"><span className="text-red-500 mr-3 text-xl">✕</span> Overbilling & inflated quantities</li>
-                                                <li className="flex items-start text-gray-300 text-lg"><span className="text-red-500 mr-3 text-xl">✕</span> Financial leakages & hidden costs</li>
-                                                <li className="flex items-start text-gray-300 text-lg"><span className="text-red-500 mr-3 text-xl">✕</span> Incorrect measurement records</li>
-                                                <li className="flex items-start text-gray-300 text-lg"><span className="text-red-500 mr-3 text-xl">✕</span> Hidden discrepancies in bills</li>
-                                                <li className="flex items-start text-gray-300 text-lg"><span className="text-red-500 mr-3 text-xl">✕</span> No commercial transparency</li>
+                                                <li className="flex items-start text-gray-300 text-lg"><XCircle className="w-6 h-6 text-red-500 mr-3 shrink-0" /> Overbilling & inflated quantities</li>
+                                                <li className="flex items-start text-gray-300 text-lg"><XCircle className="w-6 h-6 text-red-500 mr-3 shrink-0" /> Financial leakages & hidden costs</li>
+                                                <li className="flex items-start text-gray-300 text-lg"><XCircle className="w-6 h-6 text-red-500 mr-3 shrink-0" /> Incorrect measurement records</li>
+                                                <li className="flex items-start text-gray-300 text-lg"><XCircle className="w-6 h-6 text-red-500 mr-3 shrink-0" /> Hidden discrepancies in bills</li>
+                                                <li className="flex items-start text-gray-300 text-lg"><XCircle className="w-6 h-6 text-red-500 mr-3 shrink-0" /> No commercial transparency</li>
                                             </ul>
 
                                             <div className="mt-8 pt-8 border-t border-red-500/20">
@@ -393,12 +393,12 @@ const QSAndAuditingDesktop = () => {
                     </RevealOnScroll>
 
                     {/* 6. WHY MANO - Glass Cards */}
-                    <section className="py-16 md:py-24 px-6 md:px-12 bg-white/[0.02] animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-400">
+                    <section className="py-12 md:py-16 px-6 md:px-12 bg-white/[0.02] animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-400">
                         <div className="max-w-7xl mx-auto">
                             <RevealOnScroll>
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                                     <div>
-                                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-6 mb-8 leading-tight">
+                                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-t from-gray-500 to-white pb-4 mb-6 leading-tight">
                                             Why MANO for <span className="text-blue-500 block sm:inline lg:block">Quantity Survey & Billing Audit?</span>
                                         </h2>
                                         <div className="space-y-8">
@@ -487,10 +487,10 @@ const QSAndAuditingDesktop = () => {
                     />
 
                     {/* 8. PROCESS FLOW - Horizontal Glowing Timeline */}
-                    <section className="py-24 px-6 overflow-x-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-600">
+                    <section className="py-12 md:py-16 px-6 overflow-x-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-600">
                         <div className="max-w-7xl mx-auto">
                             <RevealOnScroll>
-                                <div className="text-center mb-16 md:mb-24">
+                                <div className="text-center mb-8 md:mb-10">
                                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mt-4 leading-tight">QS & Billing Audit Process Flow</h2>
                                 </div>
                             </RevealOnScroll>
@@ -523,7 +523,7 @@ const QSAndAuditingDesktop = () => {
                     </section>
 
                     {/* 9. TRUST STATEMENT */}
-                    <section className="py-16 md:py-24 px-6 md:px-12 text-center animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-700">
+                    <section className="py-12 md:py-16 px-6 md:px-12 text-center animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-700">
                         <div className="max-w-4xl mx-auto p-8 md:p-12 rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent hover:to-blue-600/10 hover:border-blue-500/30 transition-all duration-500 backdrop-blur-md group">
                             <p className="text-xl md:text-3xl font-medium text-white leading-relaxed group-hover:text-blue-100 transition-colors">
                                 "Top developers and contractors rely on MANO Project Consultants for precise, transparent, and dispute-free quantity and billing verification systems."
@@ -532,7 +532,7 @@ const QSAndAuditingDesktop = () => {
                     </section>
 
                     {/* 10. CTA */}
-                    <section className="py-16 md:py-24 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-800">
+                    <section className="py-12 md:py-16 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-800">
                         <div className="absolute inset-0 bg-blue-900/20"></div>
                         <div className="max-w-4xl mx-auto px-6 md:px-12 text-center relative z-10">
                             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">

@@ -298,7 +298,7 @@ const EPCMobile = () => {
                     </section>
 
                     {/* 3. EPC DELIVERY MODEL - VALUE PROPOSITION */}
-                    <section className="py-10 md:py-24 px-4 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-100">
+                    <section className="py-10 md:py-16 px-4 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-100">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-12">
@@ -326,7 +326,7 @@ const EPCMobile = () => {
                     </section>
 
                     {/* 4. CORE EPC SERVICES */}
-                    <section className="py-10 md:py-24 px-4 md:px-12 bg-white/5 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-200">
+                    <section className="py-10 md:py-16 px-4 md:px-12 bg-white/5 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-200">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto">
                                 <div className="text-center mb-8 md:mb-16">
@@ -369,7 +369,7 @@ const EPCMobile = () => {
                     </section>
 
                     {/* 5. SUPPLY CHAIN & PROCUREMENT INTELLIGENCE */}
-                    <section className="py-12 md:py-24 px-4 md:px-6 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-300">
+                    <section className="py-12 md:py-16 px-4 md:px-6 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-300">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 lg:gap-16 items-center">
                                 <div className="w-full lg:w-1/2 text-center lg:text-left">
@@ -434,7 +434,7 @@ const EPCMobile = () => {
                     </section>
 
                     {/* 6. SPECIALIZED EPC CAPABILITIES */}
-                    <section className="py-10 md:py-24 px-4 md:px-12 bg-white/5 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-400">
+                    <section className="py-10 md:py-16 px-4 md:px-12 bg-white/5 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-400">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto">
                                 <div className="text-center mb-8 md:mb-16">
@@ -463,7 +463,7 @@ const EPCMobile = () => {
                     </section>
 
                     {/* 7. COMPARISON SECTION */}
-                    <section className="py-10 md:py-24 px-4 md:px-12 bg-black backdrop-blur-sm border-y border-white/5 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-500">
+                    <section className="py-10 md:py-16 px-4 md:px-12 bg-black backdrop-blur-sm border-y border-white/5 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-500">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto">
                                 <div className="text-center mb-8 md:mb-16">
@@ -541,7 +541,7 @@ const EPCMobile = () => {
                     </section>
 
                     {/* 8. DIGITAL EPC MANAGEMENT SYSTEMS */}
-                    <section className="py-10 md:py-24 px-4 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-600">
+                    <section className="py-10 md:py-16 px-4 md:px-12 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-600">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto rounded-2xl sm:rounded-3xl bg-gradient-to-r from-blue-900/40 to-black border border-white/10 p-4 sm:p-8 md:p-16 relative overflow-hidden">
                                 <div className="absolute top-0 right-0 p-32 bg-blue-500/10 blur-[100px] rounded-full"></div>
@@ -597,7 +597,7 @@ const EPCMobile = () => {
                     </section>
 
                     {/* 9. WHY MANO FOR EPC */}
-                    <section className="py-10 md:py-24 px-4 md:px-12 bg-white/5 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-700">
+                    <section className="py-10 md:py-16 px-4 md:px-12 bg-white/5 animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-700">
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto">
                                 <div className="text-center mb-8 md:mb-16">
@@ -657,7 +657,7 @@ const EPCMobile = () => {
                     />
 
                     {/* 11. PROCESS FLOW */}
-                    <section className="py-12 md:py-24 px-4 md:px-12 bg-black relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-900">
+                    <section className="py-12 md:py-16 px-4 md:px-12 bg-black relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-900">
                         {/* Background Decor */}
                         <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-blue-900/50 to-transparent"></div>
 
@@ -704,7 +704,7 @@ const EPCMobile = () => {
                     </section>
 
                     {/* 12. TRUST STATEMENT */}
-                    <section className="py-10 md:py-24 px-4 md:px-12 text-center animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-1000">
+                    <section className="py-10 md:py-16 px-4 md:px-12 text-center animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-1000">
                         <div className="max-w-4xl mx-auto p-4 sm:p-8 md:p-12 rounded-2xl sm:rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent hover:to-blue-600/10 hover:border-blue-500/30 transition-all duration-500 backdrop-blur-md group">
                             <p className="text-base sm:text-xl md:text-3xl font-medium text-white leading-relaxed group-hover:text-blue-100 transition-colors">
                                 "Developers and infrastructure leaders trust MANO Project Consultants for delivering integrated EPC consultancy solutions that ensure speed, cost control, and execution reliability."
@@ -713,7 +713,7 @@ const EPCMobile = () => {
                     </section>
 
                     {/* 13. CTA */}
-                    <section className="py-10 md:py-24 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-1000">
+                    <section className="py-10 md:py-16 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-1000">
                         <div className="absolute inset-0 bg-blue-900/20"></div>
                         <div className="max-w-6xl mx-auto px-4 md:px-12 text-center relative z-10">
                             <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold text-white mb-5 sm:mb-6 leading-tight">Integrate Engineering, Procurement & Execution Seamlessly.</h2>

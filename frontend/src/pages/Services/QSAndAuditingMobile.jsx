@@ -247,7 +247,7 @@ const QSAndAuditingMobile = () => {
                             </div>
                         </div>
                     </section>
-                    <section className="py-10 md:py-24 px-4 md:px-12 relative animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-100">
+                    <section className="py-10 md:py-16 px-4 md:px-12 relative animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-100">
                         <div className="absolute top-1/4 left-0 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
                         <RevealOnScroll>
                             <div className="max-w-7xl mx-auto">
@@ -317,7 +317,7 @@ const QSAndAuditingMobile = () => {
                     </section>
 
                     {/* 5. COMPARISON BAR - Mandatory Dual Bar Layout */}
-                    <section className="py-10 md:py-24 px-4 md:px-12 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-300">
+                    <section className="py-10 md:py-16 px-4 md:px-12 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-300">
                         <div className="max-w-7xl mx-auto">
                             <RevealOnScroll>
                                 <div className="text-center mb-8 md:mb-16">
@@ -396,7 +396,7 @@ const QSAndAuditingMobile = () => {
                     </RevealOnScroll>
 
                     {/* 6. WHY MANO - Glass Cards */}
-                    <section className="py-10 md:py-24 px-4 md:px-12 bg-white/[0.02] animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-400">
+                    <section className="py-10 md:py-16 px-4 md:px-12 bg-white/[0.02] animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-400">
                         <div className="max-w-7xl mx-auto">
                             <RevealOnScroll>
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-16 items-center">
@@ -491,7 +491,7 @@ const QSAndAuditingMobile = () => {
                     />
 
                     {/* 8. PROCESS FLOW - Horizontal Glowing Timeline */}
-                    <section className="py-12 md:py-24 px-4 md:px-6 overflow-x-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-600">
+                    <section className="py-12 md:py-16 px-4 md:px-6 overflow-x-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-600">
                         <div className="max-w-7xl mx-auto">
                             <RevealOnScroll>
                                 <div className="text-center mb-8 md:mb-24">
@@ -527,7 +527,7 @@ const QSAndAuditingMobile = () => {
                     </section>
 
                     {/* 9. TRUST STATEMENT */}
-                    <section className="py-10 md:py-24 px-4 md:px-12 text-center animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-700">
+                    <section className="py-10 md:py-16 px-4 md:px-12 text-center animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-700">
                         <div className="max-w-4xl mx-auto p-4 sm:p-8 md:p-12 rounded-2xl sm:rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent hover:to-blue-600/10 hover:border-blue-500/30 transition-all duration-500 backdrop-blur-md group">
                             <p className="text-base sm:text-xl md:text-3xl font-medium text-white leading-relaxed group-hover:text-blue-100 transition-colors">
                                 "Top developers and contractors rely on MANO Project Consultants for precise, transparent, and dispute-free quantity and billing verification systems."
@@ -536,7 +536,7 @@ const QSAndAuditingMobile = () => {
                     </section>
 
                     {/* 10. CTA */}
-                    <section className="py-10 md:py-24 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-800">
+                    <section className="py-10 md:py-16 relative overflow-hidden animate-in fade-in duration-1000 slide-in-from-bottom-10 delay-800">
                         <div className="absolute inset-0 bg-blue-900/20"></div>
                         <div className="max-w-4xl mx-auto px-4 md:px-12 text-center relative z-10">
                             <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-5 sm:mb-6 leading-tight">
